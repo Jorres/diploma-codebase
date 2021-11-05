@@ -42,8 +42,8 @@ def build_formula(n, m, lines, colors):
     colors = list(range(1, colors + 1))
 
     # A variable is colored at least once
-    for i in range(1, n + 1):
-        formula.append(list(map(lambda color: v_to_id(i, color), colors)))
+    for v in range(1, n + 1):
+        formula.append(list(map(lambda color: v_to_id(v, color), colors)))
 
     # Ends of an edge are colored differently
     for line in lines[1:]:

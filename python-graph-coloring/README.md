@@ -38,6 +38,5 @@ python main.py N /path/to/graph/file
 
 ### TODO 
 
-- Add condition: every variable must have at most one color assigned to it
 - Add tests (including big ones)
 - Spend just a bit of time to try and runtime-profile the whole thing
