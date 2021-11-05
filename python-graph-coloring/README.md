@@ -1,3 +1,7 @@
+## Disclaimer
+
+An explicit decision was made to not handle any runtime errors, UB's everywhere, use with care!
+
 ## Installation 
 
 1. Create virtual environment (optional)
