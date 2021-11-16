@@ -1,7 +1,7 @@
 import json
 import sys
 import pysat.formula
-import random 
+import random
 
 from pysat.solvers import Lingeling
 from pysat.solvers import Minisat22
@@ -96,11 +96,12 @@ def read_tables(filename):
     n, m = map(int, lines[0].split(" "))
 
     curline = 2
-    for i in range(0, m):
-        for j in range(0, 2 ** n):
-            ith_fun_jth_bit = int(lines[curline])
+    for j in range(0, 2 ** n):
+        jth_bits = lines[curline].strip()
+        assert(len(jth_bits) == m)
+        for i in range(0, m):
+            ith_fun_jth_bit = int(jth_bits[i])
             f_truthtables[i + 1][j] = ith_fun_jth_bit
-            curline = curline + 1
         curline = curline + 1
 
     return n, m, f_truthtables
@@ -169,7 +170,8 @@ def generate_schema(n, m, f_truthtables, schema_size, should_log):
         print("No solution with schema size up to", schema_size)
         return
 
-    gr, f_to_node, node_truthtables = interpret_as_graph(cur_size, model, should_log)
+    gr, f_to_node, node_truthtables = interpret_as_graph(
+        cur_size, model, should_log)
     return gr, f_to_node, node_truthtables, found_scheme_size
 
 
@@ -178,8 +180,8 @@ def test(max_n, max_m):
     # Random functions go brrr
     for num in range(0, 100):
         print("Running example...", num)
-        n = random.randint(3, max_n)
-        m = random.randint(3, max_m)
+        n = random.randint(2, max_n)
+        m = random.randint(2, max_m)
 
         f_truthtables = defaultdict(dict)
 
@@ -193,7 +195,6 @@ def test(max_n, max_m):
 
         V.validate(gr, f_to_node, f_truthtables,
                    node_truthtables, n, m, found_scheme_size)
-
 
 def main():
     first_arg = sys.argv[1]
@@ -217,4 +218,3 @@ def main():
 
 
 main()
-
