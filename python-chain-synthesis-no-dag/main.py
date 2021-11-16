@@ -107,9 +107,15 @@ def read_tables(filename):
 
 
 def try_solve(formula):
+    H.clean_pool()
     with Minisat22(bootstrap_with=formula.clauses) as solver:
         solution_exists = solver.solve()
-        print("No solution yet...")
+        if solution_exists:
+            # Just for general information, don't have a proper
+            # understanding how to interpret solver's stats.
+            print(solver.accum_stats())
+        else:
+            print("No solution yet...")
         return solution_exists, solver.get_model()
 
 
