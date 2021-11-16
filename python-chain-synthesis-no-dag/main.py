@@ -1,7 +1,10 @@
 import json
 import sys
 import pysat.formula
+import random 
+
 from pysat.solvers import Lingeling
+from pysat.solvers import Minisat22
 from collections import defaultdict
 
 import helpers as H
@@ -79,7 +82,7 @@ def construct_formula(f_truthtables, n, m, r):
                 for t in truth_table:
                     check_truth_table_bit(n, i, k, j, t, formula)
 
-    H.pretty_print_formula(formula)
+    # H.pretty_print_formula(formula)
     return formula
 
 
@@ -104,15 +107,15 @@ def read_tables(filename):
 
 
 def try_solve(formula):
-    with Lingeling(bootstrap_with=formula.clauses, with_proof=True) as ling:
-        solution_exists = ling.solve()
-        if solution_exists is False:
-            print(ling.get_proof())
-        return solution_exists, ling.get_model()
+    with Minisat22(bootstrap_with=formula.clauses) as solver:
+        solution_exists = solver.solve()
+        print("No solution yet...")
+        return solution_exists, solver.get_model()
 
 
-def interpret_as_graph(r, model):
-    print("The schema consists of", r, "additional nodes")
+def interpret_as_graph(r, model, should_log):
+    if should_log:
+        print("The schema consists of", r, "additional nodes")
 
     gr = dict()
     f_to_node = dict()
@@ -126,30 +129,28 @@ def interpret_as_graph(r, model):
             if variable > 0:
                 h, i = key['ids']
                 f_to_node[h] = i
-                print("Output", h, "is located at vertex", i)
+                if should_log:
+                    print("Output", h, "is located at vertex", i)
 
         if key['char'] == "f":
             i, p, q = key['ids']
             result = variable > 0
             node_truthtables[i][p][q] = result
-            print("Vertex", i, "produces from", p, q,
-                  "value", result)
+            if should_log:
+                print("Vertex", i, "produces from", p, q,
+                      "value", result)
 
         if key['char'] == "s":
             i, j, k = key['ids']
             if variable > 0:
                 gr[i] = (j, k)
-                print("Vertex", i, "is calculated from", j, k)
+                if should_log:
+                    print("Vertex", i, "is calculated from", j, k)
 
     return gr, f_to_node, node_truthtables
 
 
-def main():
-    schema_size = sys.argv[1]
-    truth_tables_file = sys.argv[2]
-
-    n, m, f_truthtables = read_tables(truth_tables_file)
-
+def generate_schema(n, m, f_truthtables, schema_size, should_log):
     found_scheme_size = -1
     for cur_size in range(1, int(schema_size)):
         formula = construct_formula(f_truthtables, n, m, cur_size)
@@ -162,9 +163,52 @@ def main():
         print("No solution with schema size up to", schema_size)
         return
 
-    gr, f_to_node, node_truthtables = interpret_as_graph(cur_size, model)
+    gr, f_to_node, node_truthtables = interpret_as_graph(cur_size, model, should_log)
+    return gr, f_to_node, node_truthtables, found_scheme_size
+
+
+def test(max_n, max_m):
+    # Throw a bunch of random functions, for now
+    # Random functions go brrr
+    for num in range(0, 100):
+        print("Running example...", num)
+        n = random.randint(3, max_n)
+        m = random.randint(3, max_m)
+
+        f_truthtables = defaultdict(dict)
+
+        for i in range(0, m):
+            for j in range(0, 2 ** n):
+                ith_fun_jth_bit = random.randint(0, 1)
+                f_truthtables[i + 1][j] = ith_fun_jth_bit
+
+        gr, f_to_node, node_truthtables, found_scheme_size = generate_schema(
+            n, m, f_truthtables, 100, False)
+
+        V.validate(gr, f_to_node, f_truthtables,
+                   node_truthtables, n, m, found_scheme_size)
+
+
+def main():
+    first_arg = sys.argv[1]
+    print(first_arg)
+    if first_arg == "test":
+        max_n = sys.argv[2]
+        max_m = sys.argv[3]
+        test(int(max_n), int(max_m))
+        return
+
+    schema_size = first_arg
+    truth_tables_file = sys.argv[2]
+
+    n, m, f_truthtables = read_tables(truth_tables_file)
+
+    gr, f_to_node, node_truthtables, found_scheme_size = generate_schema(
+        n, m, f_truthtables, schema_size, True)
+
     V.validate(gr, f_to_node, f_truthtables,
                node_truthtables, n, m, found_scheme_size)
 
 
 main()
+

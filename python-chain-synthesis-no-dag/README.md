@@ -36,3 +36,14 @@ In the following snippet, N is the maximum number of vertices a generated schema
 ```
 python main.py N /path/to/truthtables/file
 ```
+
+### Run tests
+
+In the following snippet, N is the maximum number of vertices a generated schema can contain, 
+and M is the maximum number of functions a tester will attempt to generate.
+
+```
+python main.py test N M
+```
+
+
