@@ -1,11 +1,9 @@
 import helpers as H
 import schema_generator as S
 
-TEST_SUITE_FILE = "initial_tests.txt"
 
-
-def main():
-    f = open(TEST_SUITE_FILE, "r")
+def benchmark(test_suite_file):
+    f = open(test_suite_file, "r")
     lines = f.readlines()
     f.close()
 
@@ -20,7 +18,3 @@ def main():
         schema_generator.generate_fixed_size_schema(
             n, m, f_truthtables, schema_size)
         print(test_id, " : ", schema_generator.last_sat_attempt_time)
-
-
-if __name__ == "__main__":
-    main()

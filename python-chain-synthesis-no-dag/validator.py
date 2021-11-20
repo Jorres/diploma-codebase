@@ -10,7 +10,8 @@ def validate(gr, f_to_node, f_truthtables, node_truthtables,
         for v in range(n + 1, n + schema_size + 1):
             # vertex `v` depends on i, j: j < i < v
             i, j = gr[v]
-            propagated_values[v] = node_truthtables[v][propagated_values[i]][propagated_values[j]]
+            propagated_values[v] = node_truthtables[v][propagated_values[i]
+                                                       ][propagated_values[j]]
 
         for target_f in range(1, m + 1):
             assert(propagated_values[f_to_node[target_f]] ==

@@ -34,7 +34,7 @@ BLANK        |
 In the following snippet, N is the maximum number of vertices a generated schema can contain. 
 
 ```
-python app.py N /path/to/truthtables/file
+python schema_generator.py N /path/to/truthtables/file
 ```
 
 ### Run randomly-generated tests
@@ -50,17 +50,21 @@ python random_tester.py N M
 
 Fixed test-suite file consists of one or more of the following:
 ```
-N M
+N M S
 <truthtable>
----
 ```
+N - variables, M - functions, S - precise size of a schema to generate.
 For example:
 ```
-2 1
+2 1 1
 0
 1
 1
 0
----
+```
+
+To run a benchmark, which will take tests from `initial_tests.txt`:
+```
+python benchmarker.py
 ```
 

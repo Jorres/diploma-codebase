@@ -207,20 +207,13 @@ class TSchemaGenerator():
         return gr, f_to_node, node_truthtables
 
 
-def read_tables(filename):
-    f = open(filename, "r")
+def run_fixed(truth_tables_file, schema_size):
+    random.seed()
+
+    f = open(truth_tables_file, "r")
     lines = f.readlines()
     f.close()
-    n, m, f_truthtables, newshift = H.read_one_test(lines, curshift=0)
-    return n, m, f_truthtables
-
-
-def main():
-    random.seed()
-    schema_size = sys.argv[1]
-    truth_tables_file = sys.argv[2]
-
-    n, m, f_truthtables = read_tables(truth_tables_file)
+    n, m, f_truthtables, _ = H.read_one_test(lines, curshift=0)
 
     schemaGenerator = TSchemaGenerator(should_pretty_print=True)
     gr, f_to_node, node_truthtables, found_scheme_size = schemaGenerator.generate_schema(
@@ -228,7 +221,3 @@ def main():
 
     V.validate(gr, f_to_node, f_truthtables,
                node_truthtables, n, m, found_scheme_size)
-
-
-if __name__ == "__main__":
-    main()
