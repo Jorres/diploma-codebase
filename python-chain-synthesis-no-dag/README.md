@@ -29,21 +29,38 @@ BLANK        |
 1  |         |
 ```
 
-### Run
+### Run with a predefined input
 
 In the following snippet, N is the maximum number of vertices a generated schema can contain. 
 
 ```
-python main.py N /path/to/truthtables/file
+python app.py N /path/to/truthtables/file
 ```
 
-### Run tests
+### Run randomly-generated tests
 
 In the following snippet, N is the maximum number of vertices a generated schema can contain, 
 and M is the maximum number of functions a tester will attempt to generate.
 
 ```
-python main.py test N M
+python random_tester.py N M
 ```
 
+### Run benchmark with a fixed test-suite
+
+Fixed test-suite file consists of one or more of the following:
+```
+N M
+<truthtable>
+---
+```
+For example:
+```
+2 1
+0
+1
+1
+0
+---
+```
 
