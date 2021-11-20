@@ -1,70 +1,14 @@
-## Disclaimer
+## Description 
 
-An explicit decision was made to not handle any runtime errors, UB's everywhere, use with care!
+This is a simple CLI application. Its goal is to generate boolean schemas, starting with a naive encoding 
+and keeping a log of what optimizations where done and their usefulness.
 
 ## Installation 
 
 1. Create virtual environment (optional)
-2. Run `pipx install -r requirements.txt`
+2. Run `[pip|pip3] install -r requirements.txt`
 
 ## Usage
 
-### Formatting input data
-
-In the following snippet, `n` is the number of arguments of every function and `m` is the number
-of functions. `m` blocks follow, each containing `2 ** n` lines, representing truth table of each 
-of `m` functions. Truth tables are separated by blank lines. 
-
-```
-n m
-BLANK
-0  |         |
-...| 2 ** n  |
-1  |         |
-BLANK        |
-...          | m
-BLANK        |
-0  |         |
-...| 2 ** n  |
-1  |         |
-```
-
-### Run with a predefined input
-
-In the following snippet, N is the maximum number of vertices a generated schema can contain. 
-
-```
-python schema_generator.py N /path/to/truthtables/file
-```
-
-### Run randomly-generated tests
-
-In the following snippet, N is the maximum number of vertices a generated schema can contain, 
-and M is the maximum number of functions a tester will attempt to generate.
-
-```
-python random_tester.py N M
-```
-
-### Run benchmark with a fixed test-suite
-
-Fixed test-suite file consists of one or more of the following:
-```
-N M S
-<truthtable>
-```
-N - variables, M - functions, S - precise size of a schema to generate.
-For example:
-```
-2 1 1
-0
-1
-1
-0
-```
-
-To run a benchmark, which will take tests from `initial_tests.txt`:
-```
-python benchmarker.py
-```
+Run `python app.py --help`.
 
