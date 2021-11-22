@@ -8,9 +8,9 @@ import suite_generator as G
 
 def generate_suite(n, m, amount, max_size):
     """
-    Run a long, long computation that prints to 
-    `initial_tests.txt` several tests that run longer 
-    than 1 second.
+    Run a long, long computation that prints to
+    `benchmark_results/*.txt` several tests that run SAT 
+    longer than 1 second.
 
     Generated tests may not be smallest
     in terms of schema size due to generation algorithm
@@ -25,12 +25,14 @@ def generate_suite(n, m, amount, max_size):
     G.generate_suite(n, m, amount, max_size)
 
 
-def benchmark(test_suite_filename):
+def benchmark(test_suite_filename, iterations=1):
     """
     Perform a benchmark on test suite from a file.
     :param test_suite_filename: file to take tests from
+    :param iterations: how many times to run the benchmark
+    to reduce runtime drift (default 1)
     """
-    B.benchmark(test_suite_filename)
+    B.benchmark(test_suite_filename, iterations)
     pass
 
 

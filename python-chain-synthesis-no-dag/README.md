@@ -11,4 +11,5 @@ and keeping a log of what optimizations where done and their usefulness.
 ## Usage
 
 Run `python app.py --help`.
+You can also run `--help` on subcommands.
 
