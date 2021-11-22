@@ -58,11 +58,13 @@ class TSchemaGenerator():
     def construct_formula(self, f_truthtables, n, m, r):
         formula = pysat.formula.CNF()
 
-        new_nodes = range(n + 1, n + r + 1)
+        last_new_node = n + r + 1
+        new_nodes = range(n + 1, last_new_node)
         truth_table = range(0, 2 ** n)
+        functions = range(1, m + 1)
 
         # Output vertices are equal to truth table's rows
-        for h in range(1, m + 1):
+        for h in functions:
             for i in new_nodes:
                 for t in truth_table:
                     # [0, 1] to [-1, 1]
@@ -73,7 +75,7 @@ class TSchemaGenerator():
                     ])
 
         # Every output exists somewhere in the chain
-        for h in range(1, m + 1):
+        for h in functions:
             formula.append([self.pool.v_to_id("g", [h, i])
                             for i in new_nodes])
 
@@ -109,6 +111,22 @@ class TSchemaGenerator():
                 self.pool.v_to_id("f", [i, 1, 0]),
                 -1 * self.pool.v_to_id("f", [i, 1, 1])
             ])
+
+        # Each step is used at least once,
+        # either as intermediary step
+        # or as an output vertex.
+        # TODO benchmark without this and with this
+        # for i in new_nodes:
+        #     lst = []
+        #     for k in functions:
+        #         lst.append(self.pool.v_to_id("g", [k, i]))
+        #     for ish in range(i + 1, last_new_node):
+        #         for j in range(1, i):
+        #             lst.append(self.pool.v_to_id("s", [ish, i, j]))
+        #     for ish in range(i + 1, last_new_node):
+        #         for j in range(i + 1, ish):
+        #             lst.append(self.pool.v_to_id("s", [ish, j, i]))
+        #     formula.append(lst)
 
         # H.pretty_print_formula(formula)
         return formula
