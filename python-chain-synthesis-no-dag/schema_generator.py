@@ -1,5 +1,4 @@
 import json
-import sys
 import pysat.formula
 import random
 import time
@@ -11,6 +10,7 @@ from threading import Timer
 
 import helpers as H
 import validator as V
+import fence_generator as F
 
 
 def interrupt(s):
@@ -116,17 +116,17 @@ class TSchemaGenerator():
         # either as intermediary step
         # or as an output vertex.
         # TODO benchmark without this and with this
-        # for i in new_nodes:
-        #     lst = []
-        #     for k in functions:
-        #         lst.append(self.pool.v_to_id("g", [k, i]))
-        #     for ish in range(i + 1, last_new_node):
-        #         for j in range(1, i):
-        #             lst.append(self.pool.v_to_id("s", [ish, i, j]))
-        #     for ish in range(i + 1, last_new_node):
-        #         for j in range(i + 1, ish):
-        #             lst.append(self.pool.v_to_id("s", [ish, j, i]))
-        #     formula.append(lst)
+        for i in new_nodes:
+            lst = []
+            for k in functions:
+                lst.append(self.pool.v_to_id("g", [k, i]))
+            for ish in range(i + 1, last_new_node):
+                for j in range(1, i):
+                    lst.append(self.pool.v_to_id("s", [ish, j, i]))
+            for ish in range(i + 1, last_new_node):
+                for j in range(i + 1, ish):
+                    lst.append(self.pool.v_to_id("s", [ish, i, j]))
+            formula.append(lst)
 
         # H.pretty_print_formula(formula)
         return formula
@@ -151,27 +151,50 @@ class TSchemaGenerator():
                       '{0:.2f}s'.format(solver.time()))
                 return False, None
 
-    def generate_schema(self, n, m, f_truthtables, schema_size):
+    def generate_schema(self, n, m, f_truthtables, schema_size, mode="brute"):  # fences
         self.pool = H.TPoolHolder()
         found_scheme_size = -1
-        for cur_size in range(1, int(schema_size)):
-            formula = self.construct_formula(f_truthtables, n, m, cur_size)
-            t1 = time.time()
-            solved, model = self.try_solve(cur_size, formula)
-            t2 = time.time()
-            if solved:
-                found_scheme_size = cur_size
-                break
+        if mode == "brute":
+            for cur_size in range(1, int(schema_size)):
+                formula = self.construct_formula(f_truthtables, n, m, cur_size)
+                t1 = time.time()
+                solved, model = self.try_solve(cur_size, formula)
+                t2 = time.time()
+                if solved:
+                    found_scheme_size = cur_size
+                    break
 
-        self.last_sat_attempt_time = t2 - t1
+            self.last_sat_attempt_time = t2 - t1
 
-        if found_scheme_size == -1:
-            print("No solution with schema size up to", schema_size)
-            return
+            if found_scheme_size == -1:
+                print("No solution with schema size up to", schema_size)
+                return
 
-        gr, f_to_node, node_truthtables = self.interpret_as_graph(
-            cur_size, model)
-        return gr, f_to_node, node_truthtables, found_scheme_size
+            gr, f_to_node, node_truthtables = self.interpret_as_graph(
+                cur_size, model)
+            return gr, f_to_node, node_truthtables, found_scheme_size
+        else:
+            fence_generator = F.TFenceGenerator(schema_size)
+            while True:
+                fence = fence_generator.yield_one()
+                if fence is None:
+                    print("No solution with schema size up to", schema_size)
+                    return
+
+                cur_size, formula = self.construct_formula_on_fence(
+                    f_truthtables, n, m, fence)
+                t1 = time.time()
+                solved, model = self.try_solve(cur_size, formula)
+                t2 = time.time()
+                if solved:
+                    found_scheme_size = cur_size
+                    break
+
+            self.last_sat_attempt_time = t2 - t1
+
+            gr, f_to_node, node_truthtables = self.interpret_as_graph(
+                cur_size, model)
+            return gr, f_to_node, node_truthtables, found_scheme_size
 
     def generate_fixed_size_schema(self, n, m, f_truthtables, cur_size):
         '''Undefined behaviour if supplied task is UNSAT'''

@@ -25,14 +25,16 @@ def generate_suite(n, m, amount, max_size):
     G.generate_suite(n, m, amount, max_size)
 
 
-def benchmark(test_suite_filename, iterations=1):
+def benchmark(test_suite_filename, description, iterations=1):
     """
     Perform a benchmark on test suite from a file.
     :param test_suite_filename: file to take tests from
+    :param description: a string to be stored in benchmark 
+    results for easier understanding of the change made
     :param iterations: how many times to run the benchmark
     to reduce runtime drift (default 1)
     """
-    B.benchmark(test_suite_filename, iterations)
+    B.benchmark(test_suite_filename, description, iterations)
     pass
 
 
