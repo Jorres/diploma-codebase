@@ -63,7 +63,7 @@ def read_bench_test(lines, curshift):
 
 def make_random_test(max_n, max_m):
     n = random.randint(2, max_n)
-    m = random.randint(2, max_m)
+    m = random.randint(1, max_m)
     return make_precise_test(n, m)
 
 
@@ -76,3 +76,5 @@ def make_precise_test(n, m):
             f_truthtables[i + 1][j] = ith_fun_jth_bit
     return n, m, f_truthtables
 
+def mydump(something):
+    print(json.dumps(something, indent=4))

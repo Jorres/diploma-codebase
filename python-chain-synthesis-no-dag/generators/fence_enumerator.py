@@ -15,7 +15,7 @@ def partitions(n):
 # TODO this class is a proof-of-concept and is non-asymptotically 
 # inefficient. It works around 500 times slower than a reference implementation
 # in C++. Consider replacing this. 
-class TFenceGenerator:
+class TFenceEnumerator:
     def __init__(self, schema_size):
         self.schema_size = schema_size
         self.partiter = partitions(schema_size)
@@ -34,7 +34,7 @@ class TFenceGenerator:
         except StopIteration:
             self.perm = None
 
-    def yield_one(self):
+    def iter(self):
         while True:
             self.next_partition()
             if self.part is not None:
@@ -70,8 +70,8 @@ class TFenceGenerator:
 
 
 def main():
-    fg = TFenceGenerator(10)
-    fgy = fg.yield_one()
+    fg = TFenceEnumerator(10)
+    fgy = fg.iter()
     for a in fgy:
         print(a)
 

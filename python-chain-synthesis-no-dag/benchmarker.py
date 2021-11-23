@@ -5,17 +5,17 @@ import os.path
 from math import floor
 
 import helpers as H
-import schema_generator as S
+import schema_generator_pipeline as S
 
 
-def benchmark(test_suite_file, description, iterations):
+def benchmark(test_suite_file, description, mode, iterations):
     test_suite_file = os.path.basename(test_suite_file)
     f = open(os.path.join("test_suites", test_suite_file), "r")
     lines = f.readlines()
     f.close()
 
-    schema_generator = S.TSchemaGenerator(
-        should_pretty_print=False, should_limit_time=False)
+    schema_generator = S.TSchemaPipeline(
+        should_pretty_print=False, should_limit_time=False, mode=mode)
 
     current_bench_id = 0
 
