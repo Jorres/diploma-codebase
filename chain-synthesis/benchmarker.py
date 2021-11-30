@@ -32,25 +32,29 @@ def benchmark(test_suite_file, description, mode, iterations):
     test_id = 1
     benchmark_results['description'] = description
     with open(filename, "w+") as resultfile:
+        total_time = 0
         while curshift < len(lines):
-            n, m, f_truthtables, schema_size, curshift = H.read_bench_test(
+            n, m, f_truthtables, curshift = H.read_one_test(
                 lines, curshift)
             print("Benchmarking example ", test_id)
-            sum_time = 0
+            test_time = 0
             test_result = dict()
             test_result['test_id'] = test_id
             test_result['runtimes'] = list()
             for _ in range(0, iterations):
-                schema_generator.generate_fixed_size_schema(
-                    n, m, f_truthtables, schema_size)
-                sum_time += schema_generator.last_sat_attempt_time
+                gr = schema_generator.generate_schema(
+                    n, m, f_truthtables, 20)
+                test_time += schema_generator.acc_time
                 test_result['runtimes'].append(
-                    schema_generator.last_sat_attempt_time)
+                    schema_generator.acc_time)
+                test_result['schema_size'] = gr.schema_size
 
-            test_result['avg_runtime'] = sum_time / iterations
+            test_result['avg_one_test_runtime'] = test_time / iterations
+            total_time += test_time
             benchmark_results[test_id] = test_result
             test_id += 1
 
+        benchmark_results['total_time'] = total_time / test_id
         resultfile.write(json.dumps(benchmark_results, indent=4))
 
     compare_with_previous(benchmark_results, test_id,

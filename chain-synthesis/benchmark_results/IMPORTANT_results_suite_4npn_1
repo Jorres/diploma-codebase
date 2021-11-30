@@ -1,0 +1,1778 @@
+{
+    "description": "Brute attempt on 4NPN",
+    "1": {
+        "test_id": 1,
+        "runtimes": [
+            0.00045490264892578125
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.00045490264892578125
+    },
+    "2": {
+        "test_id": 2,
+        "runtimes": [
+            0.0012395381927490234
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0012395381927490234
+    },
+    "3": {
+        "test_id": 3,
+        "runtimes": [
+            0.0005352497100830078
+        ], "schema_size": 1, "avg_one_test_runtime": 0.0005352497100830078
+    },
+    "4": {
+        "test_id": 4,
+        "runtimes": [
+            0.0013725757598876953
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0013725757598876953
+    },
+    "5": {
+        "test_id": 5,
+        "runtimes": [
+            0.0014979839324951172
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0014979839324951172
+    },
+    "6": {
+        "test_id": 6,
+        "runtimes": [
+            0.0003337860107421875
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.0003337860107421875
+    },
+    "7": {
+        "test_id": 7,
+        "runtimes": [
+            0.0014028549194335938
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0014028549194335938
+    },
+    "8": {
+        "test_id": 8,
+        "runtimes": [
+            0.0015044212341308594
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015044212341308594
+    },
+    "9": {
+        "test_id": 9,
+        "runtimes": [
+            0.0014920234680175781
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0014920234680175781
+    },
+    "10": {
+        "test_id": 10,
+        "runtimes": [
+            0.0015153884887695312
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015153884887695312
+    },
+    "11": {
+        "test_id": 11,
+        "runtimes": [
+            0.0015192031860351562
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015192031860351562
+    },
+    "12": {
+        "test_id": 12,
+        "runtimes": [
+            0.002226114273071289
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.002226114273071289
+    },
+    "13": {
+        "test_id": 13,
+        "runtimes": [
+            0.0015964508056640625
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015964508056640625
+    },
+    "14": {
+        "test_id": 14,
+        "runtimes": [
+            0.005750179290771484
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.005750179290771484
+    },
+    "15": {
+        "test_id": 15,
+        "runtimes": [
+            0.0005087852478027344
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.0005087852478027344
+    },
+    "16": {
+        "test_id": 16,
+        "runtimes": [
+            0.0015435218811035156
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015435218811035156
+    },
+    "17": {
+        "test_id": 17,
+        "runtimes": [
+            0.0004515647888183594
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.0004515647888183594
+    },
+    "18": {
+        "test_id": 18,
+        "runtimes": [
+            0.0016100406646728516
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016100406646728516
+    },
+    "19": {
+        "test_id": 19,
+        "runtimes": [
+            0.0016353130340576172
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016353130340576172
+    },
+    "20": {
+        "test_id": 20,
+        "runtimes": [
+            0.0036118030548095703
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0036118030548095703
+    },
+    "21": {
+        "test_id": 21,
+        "runtimes": [
+            0.0017042160034179688
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017042160034179688
+    },
+    "22": {
+        "test_id": 22,
+        "runtimes": [
+            0.004475831985473633
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004475831985473633
+    },
+    "23": {
+        "test_id": 23,
+        "runtimes": [
+            0.0014865398406982422
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0014865398406982422
+    },
+    "24": {
+        "test_id": 24,
+        "runtimes": [
+            0.0036432743072509766
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0036432743072509766
+    },
+    "25": {
+        "test_id": 25,
+        "runtimes": [
+            0.004930019378662109
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004930019378662109
+    },
+    "26": {
+        "test_id": 26,
+        "runtimes": [
+            0.0014727115631103516
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0014727115631103516
+    },
+    "27": {
+        "test_id": 27,
+        "runtimes": [
+            0.0015401840209960938
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015401840209960938
+    },
+    "28": {
+        "test_id": 28,
+        "runtimes": [
+            0.0015439987182617188
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015439987182617188
+    },
+    "29": {
+        "test_id": 29,
+        "runtimes": [
+            0.005229949951171875
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.005229949951171875
+    },
+    "30": {
+        "test_id": 30,
+        "runtimes": [
+            0.004467964172363281
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004467964172363281
+    },
+    "31": {
+        "test_id": 31,
+        "runtimes": [
+            0.004225730895996094
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004225730895996094
+    },
+    "32": {
+        "test_id": 32,
+        "runtimes": [
+            0.0015492439270019531
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015492439270019531
+    },
+    "33": {
+        "test_id": 33,
+        "runtimes": [
+            0.0017099380493164062
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017099380493164062
+    },
+    "34": {
+        "test_id": 34,
+        "runtimes": [
+            0.00397944450378418
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.00397944450378418
+    },
+    "35": {
+        "test_id": 35,
+        "runtimes": [
+            0.004134416580200195
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004134416580200195
+    },
+    "36": {
+        "test_id": 36,
+        "runtimes": [
+            0.003298521041870117
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003298521041870117
+    },
+    "37": {
+        "test_id": 37,
+        "runtimes": [
+            0.0037946701049804688
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0037946701049804688
+    },
+    "38": {
+        "test_id": 38,
+        "runtimes": [
+            0.001697540283203125
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001697540283203125
+    },
+    "39": {
+        "test_id": 39,
+        "runtimes": [
+            0.0015416145324707031
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015416145324707031
+    },
+    "40": {
+        "test_id": 40,
+        "runtimes": [
+            0.001588582992553711
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001588582992553711
+    },
+    "41": {
+        "test_id": 41,
+        "runtimes": [
+            0.004484415054321289
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004484415054321289
+    },
+    "42": {
+        "test_id": 42,
+        "runtimes": [
+            0.0060122013092041016
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0060122013092041016
+    },
+    "43": {
+        "test_id": 43,
+        "runtimes": [
+            0.0015861988067626953
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015861988067626953
+    },
+    "44": {
+        "test_id": 44,
+        "runtimes": [
+            0.0016901493072509766
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016901493072509766
+    },
+    "45": {
+        "test_id": 45,
+        "runtimes": [
+            0.004194021224975586
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004194021224975586
+    },
+    "46": {
+        "test_id": 46,
+        "runtimes": [
+            0.0042459964752197266
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0042459964752197266
+    },
+    "47": {
+        "test_id": 47,
+        "runtimes": [
+            0.0038063526153564453
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0038063526153564453
+    },
+    "48": {
+        "test_id": 48,
+        "runtimes": [
+            0.003854513168334961
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003854513168334961
+    },
+    "49": {
+        "test_id": 49,
+        "runtimes": [
+            0.003392457962036133
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003392457962036133
+    },
+    "50": {
+        "test_id": 50,
+        "runtimes": [
+            0.005934000015258789
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.005934000015258789
+    },
+    "51": {
+        "test_id": 51,
+        "runtimes": [
+            0.005312681198120117
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.005312681198120117
+    },
+    "52": {
+        "test_id": 52,
+        "runtimes": [
+            0.0046231746673583984
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0046231746673583984
+    },
+    "53": {
+        "test_id": 53,
+        "runtimes": [
+            0.0048160552978515625
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0048160552978515625
+    },
+    "54": {
+        "test_id": 54,
+        "runtimes": [
+            0.0018041133880615234
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0018041133880615234
+    },
+    "55": {
+        "test_id": 55,
+        "runtimes": [
+            0.006917476654052734
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.006917476654052734
+    },
+    "56": {
+        "test_id": 56,
+        "runtimes": [
+            0.003419160842895508
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003419160842895508
+    },
+    "57": {
+        "test_id": 57,
+        "runtimes": [
+            0.0016303062438964844
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016303062438964844
+    },
+    "58": {
+        "test_id": 58,
+        "runtimes": [
+            0.004065513610839844
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004065513610839844
+    },
+    "59": {
+        "test_id": 59,
+        "runtimes": [
+            0.0037026405334472656
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0037026405334472656
+    },
+    "60": {
+        "test_id": 60,
+        "runtimes": [
+            0.004050731658935547
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004050731658935547
+    },
+    "61": {
+        "test_id": 61,
+        "runtimes": [
+            0.004318714141845703
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004318714141845703
+    },
+    "62": {
+        "test_id": 62,
+        "runtimes": [
+            0.003720521926879883
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003720521926879883
+    },
+    "63": {
+        "test_id": 63,
+        "runtimes": [
+            0.0036077499389648438
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0036077499389648438
+    },
+    "64": {
+        "test_id": 64,
+        "runtimes": [
+            0.0035233497619628906
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0035233497619628906
+    },
+    "65": {
+        "test_id": 65,
+        "runtimes": [
+            0.004261493682861328
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004261493682861328
+    },
+    "66": {
+        "test_id": 66,
+        "runtimes": [
+            0.0018982887268066406
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0018982887268066406
+    },
+    "67": {
+        "test_id": 67,
+        "runtimes": [
+            0.006850242614746094
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.006850242614746094
+    },
+    "68": {
+        "test_id": 68,
+        "runtimes": [
+            0.0038576126098632812
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0038576126098632812
+    },
+    "69": {
+        "test_id": 69,
+        "runtimes": [
+            0.003665924072265625
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003665924072265625
+    },
+    "70": {
+        "test_id": 70,
+        "runtimes": [
+            0.0016460418701171875
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016460418701171875
+    },
+    "71": {
+        "test_id": 71,
+        "runtimes": [
+            0.0035774707794189453
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0035774707794189453
+    },
+    "72": {
+        "test_id": 72,
+        "runtimes": [
+            0.005448579788208008
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.005448579788208008
+    },
+    "73": {
+        "test_id": 73,
+        "runtimes": [
+            0.004453182220458984
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004453182220458984
+    },
+    "74": {
+        "test_id": 74,
+        "runtimes": [
+            0.0018193721771240234
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0018193721771240234
+    },
+    "75": {
+        "test_id": 75,
+        "runtimes": [
+            0.003603696823120117
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003603696823120117
+    },
+    "76": {
+        "test_id": 76,
+        "runtimes": [
+            0.001737356185913086
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001737356185913086
+    },
+    "77": {
+        "test_id": 77,
+        "runtimes": [
+            0.0037813186645507812
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0037813186645507812
+    },
+    "78": {
+        "test_id": 78,
+        "runtimes": [
+            0.001691579818725586
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001691579818725586
+    },
+    "79": {
+        "test_id": 79,
+        "runtimes": [
+            0.0017752647399902344
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017752647399902344
+    },
+    "80": {
+        "test_id": 80,
+        "runtimes": [
+            0.0036323070526123047
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0036323070526123047
+    },
+    "81": {
+        "test_id": 81,
+        "runtimes": [
+            0.00036835670471191406
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.00036835670471191406
+    },
+    "82": {
+        "test_id": 82,
+        "runtimes": [
+            0.0014760494232177734
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0014760494232177734
+    },
+    "83": {
+        "test_id": 83,
+        "runtimes": [
+            0.0015690326690673828
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015690326690673828
+    },
+    "84": {
+        "test_id": 84,
+        "runtimes": [
+            0.0013985633850097656
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0013985633850097656
+    },
+    "85": {
+        "test_id": 85,
+        "runtimes": [
+            0.0019371509552001953
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0019371509552001953
+    },
+    "86": {
+        "test_id": 86,
+        "runtimes": [
+            0.0015430450439453125
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015430450439453125
+    },
+    "87": {
+        "test_id": 87,
+        "runtimes": [
+            0.0017726421356201172
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017726421356201172
+    },
+    "88": {
+        "test_id": 88,
+        "runtimes": [
+            0.002214193344116211
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.002214193344116211
+    },
+    "89": {
+        "test_id": 89,
+        "runtimes": [
+            0.0013468265533447266
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0013468265533447266
+    },
+    "90": {
+        "test_id": 90,
+        "runtimes": [
+            0.0003762245178222656
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.0003762245178222656
+    },
+    "91": {
+        "test_id": 91,
+        "runtimes": [
+            0.003502368927001953
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003502368927001953
+    },
+    "92": {
+        "test_id": 92,
+        "runtimes": [
+            0.003926992416381836
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003926992416381836
+    },
+    "93": {
+        "test_id": 93,
+        "runtimes": [
+            0.0015568733215332031
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015568733215332031
+    },
+    "94": {
+        "test_id": 94,
+        "runtimes": [
+            0.0019097328186035156
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0019097328186035156
+    },
+    "95": {
+        "test_id": 95,
+        "runtimes": [
+            0.00160980224609375
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.00160980224609375
+    },
+    "96": {
+        "test_id": 96,
+        "runtimes": [
+            0.0016810894012451172
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016810894012451172
+    },
+    "97": {
+        "test_id": 97,
+        "runtimes": [
+            0.0018379688262939453
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0018379688262939453
+    },
+    "98": {
+        "test_id": 98,
+        "runtimes": [
+            0.0017113685607910156
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017113685607910156
+    },
+    "99": {
+        "test_id": 99,
+        "runtimes": [
+            0.003971576690673828
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003971576690673828
+    },
+    "100": {
+        "test_id": 100,
+        "runtimes": [
+            0.0017375946044921875
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017375946044921875
+    },
+    "101": {
+        "test_id": 101,
+        "runtimes": [
+            0.001680135726928711
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001680135726928711
+    },
+    "102": {
+        "test_id": 102,
+        "runtimes": [
+            0.0015118122100830078
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015118122100830078
+    },
+    "103": {
+        "test_id": 103,
+        "runtimes": [
+            0.0017116069793701172
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017116069793701172
+    },
+    "104": {
+        "test_id": 104,
+        "runtimes": [
+            0.004103422164916992
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004103422164916992
+    },
+    "105": {
+        "test_id": 105,
+        "runtimes": [
+            0.0016396045684814453
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016396045684814453
+    },
+    "106": {
+        "test_id": 106,
+        "runtimes": [
+            0.0015869140625
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015869140625
+    },
+    "107": {
+        "test_id": 107,
+        "runtimes": [
+            0.00036644935607910156
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.00036644935607910156
+    },
+    "108": {
+        "test_id": 108,
+        "runtimes": [
+            0.003675222396850586
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003675222396850586
+    },
+    "109": {
+        "test_id": 109,
+        "runtimes": [
+            0.0003905296325683594
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.0003905296325683594
+    },
+    "110": {
+        "test_id": 110,
+        "runtimes": [
+            0.001567840576171875
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001567840576171875
+    },
+    "111": {
+        "test_id": 111,
+        "runtimes": [
+            0.0016870498657226562
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016870498657226562
+    },
+    "112": {
+        "test_id": 112,
+        "runtimes": [
+            0.003885030746459961
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003885030746459961
+    },
+    "113": {
+        "test_id": 113,
+        "runtimes": [
+            0.0016167163848876953
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016167163848876953
+    },
+    "114": {
+        "test_id": 114,
+        "runtimes": [
+            0.0016105175018310547
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016105175018310547
+    },
+    "115": {
+        "test_id": 115,
+        "runtimes": [
+            0.0015878677368164062
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015878677368164062
+    },
+    "116": {
+        "test_id": 116,
+        "runtimes": [
+            0.003331899642944336
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003331899642944336
+    },
+    "117": {
+        "test_id": 117,
+        "runtimes": [
+            0.0024328231811523438
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0024328231811523438
+    },
+    "118": {
+        "test_id": 118,
+        "runtimes": [
+            0.003881216049194336
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003881216049194336
+    },
+    "119": {
+        "test_id": 119,
+        "runtimes": [
+            0.0016586780548095703
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016586780548095703
+    },
+    "120": {
+        "test_id": 120,
+        "runtimes": [
+            0.0016896724700927734
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016896724700927734
+    },
+    "121": {
+        "test_id": 121,
+        "runtimes": [
+            0.004306793212890625
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004306793212890625
+    },
+    "122": {
+        "test_id": 122,
+        "runtimes": [
+            0.0034627914428710938
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0034627914428710938
+    },
+    "123": {
+        "test_id": 123,
+        "runtimes": [
+            0.0015006065368652344
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015006065368652344
+    },
+    "124": {
+        "test_id": 124,
+        "runtimes": [
+            0.0017189979553222656
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017189979553222656
+    },
+    "125": {
+        "test_id": 125,
+        "runtimes": [
+            0.0017161369323730469
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017161369323730469
+    },
+    "126": {
+        "test_id": 126,
+        "runtimes": [
+            0.0017466545104980469
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017466545104980469
+    },
+    "127": {
+        "test_id": 127,
+        "runtimes": [
+            0.004735708236694336
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004735708236694336
+    },
+    "128": {
+        "test_id": 128,
+        "runtimes": [
+            0.0016291141510009766
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016291141510009766
+    },
+    "129": {
+        "test_id": 129,
+        "runtimes": [
+            0.003997087478637695
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003997087478637695
+    },
+    "130": {
+        "test_id": 130,
+        "runtimes": [
+            0.003896474838256836
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003896474838256836
+    },
+    "131": {
+        "test_id": 131,
+        "runtimes": [
+            0.00164031982421875
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.00164031982421875
+    },
+    "132": {
+        "test_id": 132,
+        "runtimes": [
+            0.003849029541015625
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003849029541015625
+    },
+    "133": {
+        "test_id": 133,
+        "runtimes": [
+            0.001634836196899414
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001634836196899414
+    },
+    "134": {
+        "test_id": 134,
+        "runtimes": [
+            0.005430936813354492
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.005430936813354492
+    },
+    "135": {
+        "test_id": 135,
+        "runtimes": [
+            0.003843069076538086
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003843069076538086
+    },
+    "136": {
+        "test_id": 136,
+        "runtimes": [
+            0.0019559860229492188
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0019559860229492188
+    },
+    "137": {
+        "test_id": 137,
+        "runtimes": [
+            0.001562356948852539
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001562356948852539
+    },
+    "138": {
+        "test_id": 138,
+        "runtimes": [
+            0.0015521049499511719
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015521049499511719
+    },
+    "139": {
+        "test_id": 139,
+        "runtimes": [
+            0.0015482902526855469
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015482902526855469
+    },
+    "140": {
+        "test_id": 140,
+        "runtimes": [
+            0.0016531944274902344
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016531944274902344
+    },
+    "141": {
+        "test_id": 141,
+        "runtimes": [
+            0.0016279220581054688
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016279220581054688
+    },
+    "142": {
+        "test_id": 142,
+        "runtimes": [
+            0.0015025138854980469
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015025138854980469
+    },
+    "143": {
+        "test_id": 143,
+        "runtimes": [
+            0.001486063003540039
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001486063003540039
+    },
+    "144": {
+        "test_id": 144,
+        "runtimes": [
+            0.003464937210083008
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003464937210083008
+    },
+    "145": {
+        "test_id": 145,
+        "runtimes": [
+            0.004419088363647461
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004419088363647461
+    },
+    "146": {
+        "test_id": 146,
+        "runtimes": [
+            0.0033342838287353516
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0033342838287353516
+    },
+    "147": {
+        "test_id": 147,
+        "runtimes": [
+            0.001657724380493164
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001657724380493164
+    },
+    "148": {
+        "test_id": 148,
+        "runtimes": [
+            0.0015807151794433594
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015807151794433594
+    },
+    "149": {
+        "test_id": 149,
+        "runtimes": [
+            0.0016093254089355469
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016093254089355469
+    },
+    "150": {
+        "test_id": 150,
+        "runtimes": [
+            0.0038881301879882812
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0038881301879882812
+    },
+    "151": {
+        "test_id": 151,
+        "runtimes": [
+            0.00153350830078125
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.00153350830078125
+    },
+    "152": {
+        "test_id": 152,
+        "runtimes": [
+            0.0015692710876464844
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015692710876464844
+    },
+    "153": {
+        "test_id": 153,
+        "runtimes": [
+            0.004377126693725586
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004377126693725586
+    },
+    "154": {
+        "test_id": 154,
+        "runtimes": [
+            0.001672506332397461
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001672506332397461
+    },
+    "155": {
+        "test_id": 155,
+        "runtimes": [
+            0.0014836788177490234
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0014836788177490234
+    },
+    "156": {
+        "test_id": 156,
+        "runtimes": [
+            0.0015633106231689453
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015633106231689453
+    },
+    "157": {
+        "test_id": 157,
+        "runtimes": [
+            0.004291534423828125
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004291534423828125
+    },
+    "158": {
+        "test_id": 158,
+        "runtimes": [
+            0.003696918487548828
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003696918487548828
+    },
+    "159": {
+        "test_id": 159,
+        "runtimes": [
+            0.004051685333251953
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004051685333251953
+    },
+    "160": {
+        "test_id": 160,
+        "runtimes": [
+            0.0018291473388671875
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0018291473388671875
+    },
+    "161": {
+        "test_id": 161,
+        "runtimes": [
+            0.0018672943115234375
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0018672943115234375
+    },
+    "162": {
+        "test_id": 162,
+        "runtimes": [
+            0.006049633026123047
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.006049633026123047
+    },
+    "163": {
+        "test_id": 163,
+        "runtimes": [
+            0.001630544662475586
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001630544662475586
+    },
+    "164": {
+        "test_id": 164,
+        "runtimes": [
+            0.0015385150909423828
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015385150909423828
+    },
+    "165": {
+        "test_id": 165,
+        "runtimes": [
+            0.0015687942504882812
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015687942504882812
+    },
+    "166": {
+        "test_id": 166,
+        "runtimes": [
+            0.0015170574188232422
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015170574188232422
+    },
+    "167": {
+        "test_id": 167,
+        "runtimes": [
+            0.0037283897399902344
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0037283897399902344
+    },
+    "168": {
+        "test_id": 168,
+        "runtimes": [
+            0.003743410110473633
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003743410110473633
+    },
+    "169": {
+        "test_id": 169,
+        "runtimes": [
+            0.001512765884399414
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001512765884399414
+    },
+    "170": {
+        "test_id": 170,
+        "runtimes": [
+            0.0016264915466308594
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016264915466308594
+    },
+    "171": {
+        "test_id": 171,
+        "runtimes": [
+            0.001756906509399414
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001756906509399414
+    },
+    "172": {
+        "test_id": 172,
+        "runtimes": [
+            0.0032432079315185547
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0032432079315185547
+    },
+    "173": {
+        "test_id": 173,
+        "runtimes": [
+            0.0033605098724365234
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0033605098724365234
+    },
+    "174": {
+        "test_id": 174,
+        "runtimes": [
+            0.0016326904296875
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016326904296875
+    },
+    "175": {
+        "test_id": 175,
+        "runtimes": [
+            0.003616809844970703
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003616809844970703
+    },
+    "176": {
+        "test_id": 176,
+        "runtimes": [
+            0.00384521484375
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.00384521484375
+    },
+    "177": {
+        "test_id": 177,
+        "runtimes": [
+            0.003606081008911133
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003606081008911133
+    },
+    "178": {
+        "test_id": 178,
+        "runtimes": [
+            0.004888772964477539
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004888772964477539
+    },
+    "179": {
+        "test_id": 179,
+        "runtimes": [
+            0.0016560554504394531
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016560554504394531
+    },
+    "180": {
+        "test_id": 180,
+        "runtimes": [
+            0.001558542251586914
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001558542251586914
+    },
+    "181": {
+        "test_id": 181,
+        "runtimes": [
+            0.0003635883331298828
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.0003635883331298828
+    },
+    "182": {
+        "test_id": 182,
+        "runtimes": [
+            0.00154876708984375
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.00154876708984375
+    },
+    "183": {
+        "test_id": 183,
+        "runtimes": [
+            0.004107952117919922
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004107952117919922
+    },
+    "184": {
+        "test_id": 184,
+        "runtimes": [
+            0.0003719329833984375
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.0003719329833984375
+    },
+    "185": {
+        "test_id": 185,
+        "runtimes": [
+            0.0037631988525390625
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0037631988525390625
+    },
+    "186": {
+        "test_id": 186,
+        "runtimes": [
+            0.0017566680908203125
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017566680908203125
+    },
+    "187": {
+        "test_id": 187,
+        "runtimes": [
+            0.0018048286437988281
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0018048286437988281
+    },
+    "188": {
+        "test_id": 188,
+        "runtimes": [
+            0.00035119056701660156
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.00035119056701660156
+    },
+    "189": {
+        "test_id": 189,
+        "runtimes": [
+            0.003794431686401367
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003794431686401367
+    },
+    "190": {
+        "test_id": 190,
+        "runtimes": [
+            0.0017092227935791016
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017092227935791016
+    },
+    "191": {
+        "test_id": 191,
+        "runtimes": [
+            0.004130840301513672
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004130840301513672
+    },
+    "192": {
+        "test_id": 192,
+        "runtimes": [
+            0.0016558170318603516
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016558170318603516
+    },
+    "193": {
+        "test_id": 193,
+        "runtimes": [
+            0.004753828048706055
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004753828048706055
+    },
+    "194": {
+        "test_id": 194,
+        "runtimes": [
+            0.0036830902099609375
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0036830902099609375
+    },
+    "195": {
+        "test_id": 195,
+        "runtimes": [
+            0.004803180694580078
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004803180694580078
+    },
+    "196": {
+        "test_id": 196,
+        "runtimes": [
+            0.004744291305541992
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004744291305541992
+    },
+    "197": {
+        "test_id": 197,
+        "runtimes": [
+            0.00150299072265625
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.00150299072265625
+    },
+    "198": {
+        "test_id": 198,
+        "runtimes": [
+            0.0015244483947753906
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015244483947753906
+    },
+    "199": {
+        "test_id": 199,
+        "runtimes": [
+            0.0015876293182373047
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015876293182373047
+    },
+    "200": {
+        "test_id": 200,
+        "runtimes": [
+            0.0017855167388916016
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017855167388916016
+    },
+    "201": {
+        "test_id": 201,
+        "runtimes": [
+            0.0016088485717773438
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016088485717773438
+    },
+    "202": {
+        "test_id": 202,
+        "runtimes": [
+            0.005203962326049805
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.005203962326049805
+    },
+    "203": {
+        "test_id": 203,
+        "runtimes": [
+            0.0033643245697021484
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.0033643245697021484
+    },
+    "204": {
+        "test_id": 204,
+        "runtimes": [
+            0.005137205123901367
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.005137205123901367
+    },
+    "205": {
+        "test_id": 205,
+        "runtimes": [
+            0.003904104232788086
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.003904104232788086
+    },
+    "206": {
+        "test_id": 206,
+        "runtimes": [
+            0.004320621490478516
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004320621490478516
+    },
+    "207": {
+        "test_id": 207,
+        "runtimes": [
+            0.0016722679138183594
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016722679138183594
+    },
+    "208": {
+        "test_id": 208,
+        "runtimes": [
+            0.005312681198120117
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.005312681198120117
+    },
+    "209": {
+        "test_id": 209,
+        "runtimes": [
+            0.004512786865234375
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004512786865234375
+    },
+    "210": {
+        "test_id": 210,
+        "runtimes": [
+            0.0016260147094726562
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0016260147094726562
+    },
+    "211": {
+        "test_id": 211,
+        "runtimes": [
+            0.0015606880187988281
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015606880187988281
+    },
+    "212": {
+        "test_id": 212,
+        "runtimes": [
+            0.004806995391845703
+        ],
+        "schema_size": 3,
+        "avg_one_test_runtime": 0.004806995391845703
+    },
+    "213": {
+        "test_id": 213,
+        "runtimes": [
+            0.0014617443084716797
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0014617443084716797
+    },
+    "214": {
+        "test_id": 214,
+        "runtimes": [
+            0.0015935897827148438
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015935897827148438
+    },
+    "215": {
+        "test_id": 215,
+        "runtimes": [
+            0.0015954971313476562
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015954971313476562
+    },
+    "216": {
+        "test_id": 216,
+        "runtimes": [
+            0.0015666484832763672
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0015666484832763672
+    },
+    "217": {
+        "test_id": 217,
+        "runtimes": [
+            0.001631021499633789
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.001631021499633789
+    },
+    "218": {
+        "test_id": 218,
+        "runtimes": [
+            0.0017282962799072266
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0017282962799072266
+    },
+    "219": {
+        "test_id": 219,
+        "runtimes": [
+            0.00037598609924316406
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.00037598609924316406
+    },
+    "220": {
+        "test_id": 220,
+        "runtimes": [
+            0.0013675689697265625
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0013675689697265625
+    },
+    "221": {
+        "test_id": 221,
+        "runtimes": [
+            0.0004591941833496094
+        ],
+        "schema_size": 1,
+        "avg_one_test_runtime": 0.0004591941833496094
+    },
+    "222": {
+        "test_id": 222,
+        "runtimes": [
+            0.0013036727905273438
+        ],
+        "schema_size": 2,
+        "avg_one_test_runtime": 0.0013036727905273438
+    },
+    "total_time": 0.0026058990324559234
+}

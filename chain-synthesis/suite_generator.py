@@ -18,8 +18,7 @@ def generate_suite(n, m, amount, max_size, allow_small):
 
         schema_generator = S.TSchemaPipeline(should_pretty_print=False, mode="brute")
 
-        gr, f_to_node, node_truthtables, found_scheme_size = schema_generator.generate_schema(
-            n, m, f_truthtables, max_size)
+        gr = schema_generator.generate_schema(n, m, f_truthtables, max_size)
         elapsed_time = schema_generator.last_sat_attempt_time
 
         lower_bound = 1
@@ -29,11 +28,10 @@ def generate_suite(n, m, amount, max_size, allow_small):
         if elapsed_time > lower_bound:
             with open(filename, "a") as testfile:
                 testfile.write(str(n) + " " + str(m) + " " +
-                               str(found_scheme_size) + "\n")
+                               str(gr.schema_size) + "\n")
                 for j in range(0, 2 ** n):
                     for i in range(0, m):
                         testfile.write(str(f_truthtables[i + 1][j]))
                     testfile.write('\n')
 
-        V.validate(gr, f_to_node, f_truthtables,
-                   node_truthtables, n, m, found_scheme_size)
+        V.validate(gr, f_truthtables, n, m)

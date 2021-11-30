@@ -1,8 +1,15 @@
 import json
 import pysat
 import random
+import enum
 
 from collections import defaultdict
+
+
+class TSolverResult(enum.Enum):
+    sat = 1
+    unsat = 2
+    timed_out = 3
 
 
 class TPoolHolder():
@@ -76,5 +83,11 @@ def make_precise_test(n, m):
             f_truthtables[i + 1][j] = ith_fun_jth_bit
     return n, m, f_truthtables
 
+
 def mydump(something):
     print(json.dumps(something, indent=4))
+
+
+def interrupt_solver(s):
+    s.interrupt()
+

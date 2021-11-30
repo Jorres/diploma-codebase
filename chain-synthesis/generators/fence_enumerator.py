@@ -1,6 +1,4 @@
 from itertools import permutations
-
-
 def partitions(n):
     if n == 0:
         yield []
