@@ -26,5 +26,6 @@ def validate(gr, f_truthtables, n, m):
 
         for target_f in range(1, m + 1):
             v = gr.f_to_node[target_f]
+            # print("Checking", propagated_values[v], " = ", f_truthtables[target_f][inputs])
             assert propagated_values[v] == f_truthtables[target_f][inputs], "faulty node {} calculating function {}".format(
                 v, target_f)

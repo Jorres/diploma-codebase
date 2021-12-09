@@ -30,6 +30,7 @@ class TGraph:
                 i, b, c = key['ids']
                 result = variable > 0
                 node_truthtables_2[i][b][c] = result
+                node_truthtables_2[i][0][0] = False
                 if pretty_print:
                     print("Vertex", i, "produces from", b, c,
                           "value", result)
@@ -45,7 +46,7 @@ class TGraph:
             if key['char'] == "s":
                 i, j, k = key['ids']
                 if variable > 0:
-                    assert i not in node_arity
+                    assert (i not in node_arity) or (node_arity[i] == 2)
                     node_arity[i] = 2
                     gr[i] = (j, k)
                     if pretty_print:
@@ -54,7 +55,7 @@ class TGraph:
             if key['char'] == "q":
                 i, j, k, p = key['ids']
                 if variable > 0:
-                    assert i not in node_arity
+                    assert (i not in node_arity) or (node_arity[i] == 3)
                     node_arity[i] = 3
                     gr[i] = (j, k, p)
                     if pretty_print:

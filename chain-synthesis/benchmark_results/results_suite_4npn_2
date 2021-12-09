@@ -1,0 +1,1559 @@
+{
+    "description": "Brute run, all optimizations",
+    "1": {
+        "test_id": 1,
+        "runtimes": [],
+        "total_runtime": 0.0010395050048828125,
+        "sat_runtime": 0.0007517337799072266,
+        "schema_size": 2
+    },
+    "2": {
+        "test_id": 2,
+        "runtimes": [],
+        "total_runtime": 0.00612330436706543,
+        "sat_runtime": 0.0026068687438964844,
+        "schema_size": 4
+    },
+    "3": {
+        "test_id": 3,
+        "runtimes": [],
+        "total_runtime": 0.0022721290588378906,
+        "sat_runtime": 0.0013065338134765625,
+        "schema_size": 3
+    },
+    "4": {
+        "test_id": 4,
+        "runtimes": [],
+        "total_runtime": 0.002302885055541992,
+        "sat_runtime": 0.0013921260833740234,
+        "schema_size": 3
+    },
+    "5": {
+        "test_id": 5,
+        "runtimes": [],
+        "total_runtime": 0.0024161338806152344,
+        "sat_runtime": 0.001476287841796875,
+        "schema_size": 3
+    },
+    "6": {
+        "test_id": 6,
+        "runtimes": [],
+        "total_runtime": 0.0008192062377929688,
+        "sat_runtime": 0.0005843639373779297,
+        "schema_size": 2
+    },
+    "7": {
+        "test_id": 7,
+        "runtimes": [],
+        "total_runtime": 0.043349266052246094,
+        "sat_runtime": 0.0042572021484375,
+        "schema_size": 5
+    },
+    "8": {
+        "test_id": 8,
+        "runtimes": [],
+        "total_runtime": 0.03916764259338379,
+        "sat_runtime": 0.007278919219970703,
+        "schema_size": 5
+    },
+    "9": {
+        "test_id": 9,
+        "runtimes": [],
+        "total_runtime": 0.006816864013671875,
+        "sat_runtime": 0.0024805068969726562,
+        "schema_size": 4
+    },
+    "10": {
+        "test_id": 10,
+        "runtimes": [],
+        "total_runtime": 0.006632804870605469,
+        "sat_runtime": 0.0026094913482666016,
+        "schema_size": 4
+    },
+    "11": {
+        "test_id": 11,
+        "runtimes": [],
+        "total_runtime": 0.010447502136230469,
+        "sat_runtime": 0.006697654724121094,
+        "schema_size": 4
+    },
+    "12": {
+        "test_id": 12,
+        "runtimes": [],
+        "total_runtime": 0.002264738082885742,
+        "sat_runtime": 0.0013582706451416016,
+        "schema_size": 3
+    },
+    "13": {
+        "test_id": 13,
+        "runtimes": [],
+        "total_runtime": 0.0023603439331054688,
+        "sat_runtime": 0.0014088153839111328,
+        "schema_size": 3
+    },
+    "14": {
+        "test_id": 14,
+        "runtimes": [],
+        "total_runtime": 0.866483211517334,
+        "sat_runtime": 0.015522003173828125,
+        "schema_size": 6
+    },
+    "15": {
+        "test_id": 15,
+        "runtimes": [],
+        "total_runtime": 0.0008273124694824219,
+        "sat_runtime": 0.0005905628204345703,
+        "schema_size": 2
+    },
+    "16": {
+        "test_id": 16,
+        "runtimes": [],
+        "total_runtime": 0.020684242248535156,
+        "sat_runtime": 0.016697406768798828,
+        "schema_size": 4
+    },
+    "17": {
+        "test_id": 17,
+        "runtimes": [],
+        "total_runtime": 0.0008389949798583984,
+        "sat_runtime": 0.0006096363067626953,
+        "schema_size": 2
+    },
+    "18": {
+        "test_id": 18,
+        "runtimes": [],
+        "total_runtime": 0.008533000946044922,
+        "sat_runtime": 0.0041882991790771484,
+        "schema_size": 4
+    },
+    "19": {
+        "test_id": 19,
+        "runtimes": [],
+        "total_runtime": 0.0023200511932373047,
+        "sat_runtime": 0.0013573169708251953,
+        "schema_size": 3
+    },
+    "20": {
+        "test_id": 20,
+        "runtimes": [],
+        "total_runtime": 1.5232274532318115,
+        "sat_runtime": 0.34559035301208496,
+        "schema_size": 6
+    },
+    "21": {
+        "test_id": 21,
+        "runtimes": [],
+        "total_runtime": 0.46692895889282227,
+        "sat_runtime": 0.4317598342895508,
+        "schema_size": 5
+    },
+    "22": {
+        "test_id": 22,
+        "runtimes": [],
+        "total_runtime": 0.23166775703430176,
+        "sat_runtime": 0.18627262115478516,
+        "schema_size": 5
+    },
+    "23": {
+        "test_id": 23,
+        "runtimes": [],
+        "total_runtime": 0.002345561981201172,
+        "sat_runtime": 0.0013484954833984375,
+        "schema_size": 3
+    },
+    "24": {
+        "test_id": 24,
+        "runtimes": [],
+        "total_runtime": 3.1919827461242676,
+        "sat_runtime": 2.106430768966675,
+        "schema_size": 6
+    },
+    "25": {
+        "test_id": 25,
+        "runtimes": [],
+        "total_runtime": 1.0640854835510254,
+        "sat_runtime": 0.007140636444091797,
+        "schema_size": 6
+    },
+    "26": {
+        "test_id": 26,
+        "runtimes": [],
+        "total_runtime": 0.002290010452270508,
+        "sat_runtime": 0.0012843608856201172,
+        "schema_size": 3
+    },
+    "27": {
+        "test_id": 27,
+        "runtimes": [],
+        "total_runtime": 0.0418856143951416,
+        "sat_runtime": 0.004448413848876953,
+        "schema_size": 5
+    },
+    "28": {
+        "test_id": 28,
+        "runtimes": [],
+        "total_runtime": 0.10223841667175293,
+        "sat_runtime": 0.06494760513305664,
+        "schema_size": 5
+    },
+    "29": {
+        "test_id": 29,
+        "runtimes": [],
+        "total_runtime": 110.56787610054016,
+        "sat_runtime": 2.7012033462524414,
+        "schema_size": 7
+    },
+    "30": {
+        "test_id": 30,
+        "runtimes": [],
+        "total_runtime": 1.0588138103485107,
+        "sat_runtime": 0.13354945182800293,
+        "schema_size": 6
+    },
+    "31": {
+        "test_id": 31,
+        "runtimes": [],
+        "total_runtime": 116.03119730949402,
+        "sat_runtime": 0.9429712295532227,
+        "schema_size": 7
+    },
+    "32": {
+        "test_id": 32,
+        "runtimes": [],
+        "total_runtime": 0.0024302005767822266,
+        "sat_runtime": 0.0014719963073730469,
+        "schema_size": 3
+    },
+    "33": {
+        "test_id": 33,
+        "runtimes": [],
+        "total_runtime": 0.0922389030456543,
+        "sat_runtime": 0.05382418632507324,
+        "schema_size": 5
+    },
+    "34": {
+        "test_id": 34,
+        "runtimes": [],
+        "total_runtime": 2.8876850605010986,
+        "sat_runtime": 1.5075480937957764,
+        "schema_size": 6
+    },
+    "35": {
+        "test_id": 35,
+        "runtimes": [],
+        "total_runtime": 4.363396406173706,
+        "sat_runtime": 2.7703471183776855,
+        "schema_size": 6
+    },
+    "36": {
+        "test_id": 36,
+        "runtimes": [],
+        "total_runtime": 0.13640069961547852,
+        "sat_runtime": 0.10154461860656738,
+        "schema_size": 5
+    },
+    "37": {
+        "test_id": 37,
+        "runtimes": [],
+        "total_runtime": 1.2524805068969727,
+        "sat_runtime": 0.02680492401123047,
+        "schema_size": 6
+    },
+    "38": {
+        "test_id": 38,
+        "runtimes": [],
+        "total_runtime": 0.07562589645385742,
+        "sat_runtime": 0.04186391830444336,
+        "schema_size": 5
+    },
+    "39": {
+        "test_id": 39,
+        "runtimes": [],
+        "total_runtime": 1.5477962493896484,
+        "sat_runtime": 0.13734674453735352,
+        "schema_size": 6
+    },
+    "40": {
+        "test_id": 40,
+        "runtimes": [],
+        "total_runtime": 3.285433292388916,
+        "sat_runtime": 2.2359232902526855,
+        "schema_size": 6
+    },
+    "41": {
+        "test_id": 41,
+        "runtimes": [],
+        "total_runtime": 1.7766449451446533,
+        "sat_runtime": 0.6006157398223877,
+        "schema_size": 6
+    },
+    "42": {
+        "test_id": 42,
+        "runtimes": [],
+        "total_runtime": 2.9164066314697266,
+        "sat_runtime": 1.5356485843658447,
+        "schema_size": 6
+    },
+    "43": {
+        "test_id": 43,
+        "runtimes": [],
+        "total_runtime": 0.014575481414794922,
+        "sat_runtime": 0.010519266128540039,
+        "schema_size": 4
+    },
+    "44": {
+        "test_id": 44,
+        "runtimes": [],
+        "total_runtime": 0.002447366714477539,
+        "sat_runtime": 0.0014278888702392578,
+        "schema_size": 3
+    },
+    "45": {
+        "test_id": 45,
+        "runtimes": [],
+        "total_runtime": 1.844351053237915,
+        "sat_runtime": 0.8384153842926025,
+        "schema_size": 6
+    },
+    "46": {
+        "test_id": 46,
+        "runtimes": [],
+        "total_runtime": 2.166274070739746,
+        "sat_runtime": 0.9303402900695801,
+        "schema_size": 6
+    },
+    "47": {
+        "test_id": 47,
+        "runtimes": [],
+        "total_runtime": 107.40529942512512,
+        "sat_runtime": 0.18690752983093262,
+        "schema_size": 7
+    },
+    "48": {
+        "test_id": 48,
+        "runtimes": [],
+        "total_runtime": 1.2979209423065186,
+        "sat_runtime": 0.07321929931640625,
+        "schema_size": 6
+    },
+    "49": {
+        "test_id": 49,
+        "runtimes": [],
+        "total_runtime": 0.060878753662109375,
+        "sat_runtime": 0.013977766036987305,
+        "schema_size": 5
+    },
+    "50": {
+        "test_id": 50,
+        "runtimes": [],
+        "total_runtime": 5.8713133335113525,
+        "sat_runtime": 4.744516372680664,
+        "schema_size": 6
+    },
+    "51": {
+        "test_id": 51,
+        "runtimes": [],
+        "total_runtime": 1.537400722503662,
+        "sat_runtime": 0.24617266654968262,
+        "schema_size": 6
+    },
+    "52": {
+        "test_id": 52,
+        "runtimes": [],
+        "total_runtime": 124.10099625587463,
+        "sat_runtime": 3.331346035003662,
+        "schema_size": 7
+    },
+    "53": {
+        "test_id": 53,
+        "runtimes": [],
+        "total_runtime": 122.05167841911316,
+        "sat_runtime": 0.01988816261291504,
+        "schema_size": 7
+    },
+    "54": {
+        "test_id": 54,
+        "runtimes": [],
+        "total_runtime": 0.008672237396240234,
+        "sat_runtime": 0.0044515132904052734,
+        "schema_size": 4
+    },
+    "55": {
+        "test_id": 55,
+        "runtimes": [],
+        "total_runtime": 1.130460262298584,
+        "sat_runtime": 0.2566382884979248,
+        "schema_size": 6
+    },
+    "56": {
+        "test_id": 56,
+        "runtimes": [],
+        "total_runtime": 1.0654218196868896,
+        "sat_runtime": 0.05231738090515137,
+        "schema_size": 6
+    },
+    "57": {
+        "test_id": 57,
+        "runtimes": [],
+        "total_runtime": 0.006249904632568359,
+        "sat_runtime": 0.002715587615966797,
+        "schema_size": 4
+    },
+    "58": {
+        "test_id": 58,
+        "runtimes": [],
+        "total_runtime": 1.6536638736724854,
+        "sat_runtime": 0.5871963500976562,
+        "schema_size": 6
+    },
+    "59": {
+        "test_id": 59,
+        "runtimes": [],
+        "total_runtime": 0.05788159370422363,
+        "sat_runtime": 0.0051343441009521484,
+        "schema_size": 5
+    },
+    "60": {
+        "test_id": 60,
+        "runtimes": [],
+        "total_runtime": 1.5620291233062744,
+        "sat_runtime": 0.41291332244873047,
+        "schema_size": 6
+    },
+    "61": {
+        "test_id": 61,
+        "runtimes": [],
+        "total_runtime": 106.38547611236572,
+        "sat_runtime": 0.07381296157836914,
+        "schema_size": 7
+    },
+    "62": {
+        "test_id": 62,
+        "runtimes": [],
+        "total_runtime": 0.22577500343322754,
+        "sat_runtime": 0.1860811710357666,
+        "schema_size": 5
+    },
+    "63": {
+        "test_id": 63,
+        "runtimes": [],
+        "total_runtime": 1.7898974418640137,
+        "sat_runtime": 0.4434206485748291,
+        "schema_size": 6
+    },
+    "64": {
+        "test_id": 64,
+        "runtimes": [],
+        "total_runtime": 125.92301821708679,
+        "sat_runtime": 2.0885603427886963,
+        "schema_size": 7
+    },
+    "65": {
+        "test_id": 65,
+        "runtimes": [],
+        "total_runtime": 0.19399070739746094,
+        "sat_runtime": 0.15629267692565918,
+        "schema_size": 5
+    },
+    "66": {
+        "test_id": 66,
+        "runtimes": [],
+        "total_runtime": 0.007241725921630859,
+        "sat_runtime": 0.0035538673400878906,
+        "schema_size": 4
+    },
+    "67": {
+        "test_id": 67,
+        "runtimes": [],
+        "total_runtime": 1.6124861240386963,
+        "sat_runtime": 0.16909313201904297,
+        "schema_size": 6
+    },
+    "68": {
+        "test_id": 68,
+        "runtimes": [],
+        "total_runtime": 137.59074807167053,
+        "sat_runtime": 0.7482070922851562,
+        "schema_size": 7
+    },
+    "69": {
+        "test_id": 69,
+        "runtimes": [],
+        "total_runtime": 1.254870891571045,
+        "sat_runtime": 0.24219632148742676,
+        "schema_size": 6
+    },
+    "70": {
+        "test_id": 70,
+        "runtimes": [],
+        "total_runtime": 1.5362777709960938,
+        "sat_runtime": 0.20038270950317383,
+        "schema_size": 6
+    },
+    "71": {
+        "test_id": 71,
+        "runtimes": [],
+        "total_runtime": 2.239309072494507,
+        "sat_runtime": 1.1194829940795898,
+        "schema_size": 6
+    },
+    "72": {
+        "test_id": 72,
+        "runtimes": [],
+        "total_runtime": 2.794851541519165,
+        "sat_runtime": 1.6928305625915527,
+        "schema_size": 6
+    },
+    "73": {
+        "test_id": 73,
+        "runtimes": [],
+        "total_runtime": 1.5301084518432617,
+        "sat_runtime": 0.30848145484924316,
+        "schema_size": 6
+    },
+    "74": {
+        "test_id": 74,
+        "runtimes": [],
+        "total_runtime": 1.6342096328735352,
+        "sat_runtime": 0.44413161277770996,
+        "schema_size": 6
+    },
+    "75": {
+        "test_id": 75,
+        "runtimes": [],
+        "total_runtime": 1.8146047592163086,
+        "sat_runtime": 0.3625645637512207,
+        "schema_size": 6
+    },
+    "76": {
+        "test_id": 76,
+        "runtimes": [],
+        "total_runtime": 1.471222162246704,
+        "sat_runtime": 0.2690894603729248,
+        "schema_size": 6
+    },
+    "77": {
+        "test_id": 77,
+        "runtimes": [],
+        "total_runtime": 3.6449835300445557,
+        "sat_runtime": 2.0624051094055176,
+        "schema_size": 6
+    },
+    "78": {
+        "test_id": 78,
+        "runtimes": [],
+        "total_runtime": 0.22572112083435059,
+        "sat_runtime": 0.17687273025512695,
+        "schema_size": 5
+    },
+    "79": {
+        "test_id": 79,
+        "runtimes": [],
+        "total_runtime": 0.05113387107849121,
+        "sat_runtime": 0.012934446334838867,
+        "schema_size": 5
+    },
+    "80": {
+        "test_id": 80,
+        "runtimes": [],
+        "total_runtime": 0.13196945190429688,
+        "sat_runtime": 0.09380626678466797,
+        "schema_size": 5
+    },
+    "81": {
+        "test_id": 81,
+        "runtimes": [],
+        "total_runtime": 0.0013434886932373047,
+        "sat_runtime": 0.0011141300201416016,
+        "schema_size": 2
+    },
+    "82": {
+        "test_id": 82,
+        "runtimes": [],
+        "total_runtime": 0.002756357192993164,
+        "sat_runtime": 0.0017349720001220703,
+        "schema_size": 3
+    },
+    "83": {
+        "test_id": 83,
+        "runtimes": [],
+        "total_runtime": 0.010842323303222656,
+        "sat_runtime": 0.006078004837036133,
+        "schema_size": 4
+    },
+    "84": {
+        "test_id": 84,
+        "runtimes": [],
+        "total_runtime": 0.05965256690979004,
+        "sat_runtime": 0.011601448059082031,
+        "schema_size": 5
+    },
+    "85": {
+        "test_id": 85,
+        "runtimes": [],
+        "total_runtime": 0.014263153076171875,
+        "sat_runtime": 0.010445356369018555,
+        "schema_size": 4
+    },
+    "86": {
+        "test_id": 86,
+        "runtimes": [],
+        "total_runtime": 0.4109959602355957,
+        "sat_runtime": 0.371504545211792,
+        "schema_size": 5
+    },
+    "87": {
+        "test_id": 87,
+        "runtimes": [],
+        "total_runtime": 1.1299238204956055,
+        "sat_runtime": 0.09575939178466797,
+        "schema_size": 6
+    },
+    "88": {
+        "test_id": 88,
+        "runtimes": [],
+        "total_runtime": 0.009978055953979492,
+        "sat_runtime": 0.006247758865356445,
+        "schema_size": 4
+    },
+    "89": {
+        "test_id": 89,
+        "runtimes": [],
+        "total_runtime": 0.0034325122833251953,
+        "sat_runtime": 0.0024957656860351562,
+        "schema_size": 3
+    },
+    "90": {
+        "test_id": 90,
+        "runtimes": [],
+        "total_runtime": 0.00019478797912597656,
+        "sat_runtime": 0.00019478797912597656,
+        "schema_size": 1
+    },
+    "91": {
+        "test_id": 91,
+        "runtimes": [],
+        "total_runtime": 131.48128986358643,
+        "sat_runtime": 0.019405603408813477,
+        "schema_size": 7
+    },
+    "92": {
+        "test_id": 92,
+        "runtimes": [],
+        "total_runtime": 114.93482637405396,
+        "sat_runtime": 0.9778215885162354,
+        "schema_size": 7
+    },
+    "93": {
+        "test_id": 93,
+        "runtimes": [],
+        "total_runtime": 2.254617691040039,
+        "sat_runtime": 0.5544915199279785,
+        "schema_size": 6
+    },
+    "94": {
+        "test_id": 94,
+        "runtimes": [],
+        "total_runtime": 1.4251210689544678,
+        "sat_runtime": 0.33077502250671387,
+        "schema_size": 6
+    },
+    "95": {
+        "test_id": 95,
+        "runtimes": [],
+        "total_runtime": 1.4409937858581543,
+        "sat_runtime": 0.15159201622009277,
+        "schema_size": 6
+    },
+    "96": {
+        "test_id": 96,
+        "runtimes": [],
+        "total_runtime": 1.2670652866363525,
+        "sat_runtime": 0.021651268005371094,
+        "schema_size": 6
+    },
+    "97": {
+        "test_id": 97,
+        "runtimes": [],
+        "total_runtime": 0.05592679977416992,
+        "sat_runtime": 0.02114129066467285,
+        "schema_size": 5
+    },
+    "98": {
+        "test_id": 98,
+        "runtimes": [],
+        "total_runtime": 0.0532991886138916,
+        "sat_runtime": 0.012323379516601562,
+        "schema_size": 5
+    },
+    "99": {
+        "test_id": 99,
+        "runtimes": [],
+        "total_runtime": 0.19740915298461914,
+        "sat_runtime": 0.16351938247680664,
+        "schema_size": 5
+    },
+    "100": {
+        "test_id": 100,
+        "runtimes": [],
+        "total_runtime": 0.08634161949157715,
+        "sat_runtime": 0.046007394790649414,
+        "schema_size": 5
+    },
+    "101": {
+        "test_id": 101,
+        "runtimes": [],
+        "total_runtime": 0.07790064811706543,
+        "sat_runtime": 0.03818511962890625,
+        "schema_size": 5
+    },
+    "102": {
+        "test_id": 102,
+        "runtimes": [],
+        "total_runtime": 0.0021724700927734375,
+        "sat_runtime": 0.0013129711151123047,
+        "schema_size": 3
+    },
+    "103": {
+        "test_id": 103,
+        "runtimes": [],
+        "total_runtime": 0.11438417434692383,
+        "sat_runtime": 0.07238483428955078,
+        "schema_size": 5
+    },
+    "104": {
+        "test_id": 104,
+        "runtimes": [],
+        "total_runtime": 0.060820579528808594,
+        "sat_runtime": 0.022892475128173828,
+        "schema_size": 5
+    },
+    "105": {
+        "test_id": 105,
+        "runtimes": [],
+        "total_runtime": 0.045716047286987305,
+        "sat_runtime": 0.007627964019775391,
+        "schema_size": 5
+    },
+    "106": {
+        "test_id": 106,
+        "runtimes": [],
+        "total_runtime": 0.1537022590637207,
+        "sat_runtime": 0.11422181129455566,
+        "schema_size": 5
+    },
+    "107": {
+        "test_id": 107,
+        "runtimes": [],
+        "total_runtime": 0.0078125,
+        "sat_runtime": 0.002767801284790039,
+        "schema_size": 4
+    },
+    "108": {
+        "test_id": 108,
+        "runtimes": [],
+        "total_runtime": 0.9463272094726562,
+        "sat_runtime": 0.020357847213745117,
+        "schema_size": 6
+    },
+    "109": {
+        "test_id": 109,
+        "runtimes": [],
+        "total_runtime": 0.007262468338012695,
+        "sat_runtime": 0.0033025741577148438,
+        "schema_size": 4
+    },
+    "110": {
+        "test_id": 110,
+        "runtimes": [],
+        "total_runtime": 0.0022711753845214844,
+        "sat_runtime": 0.0014002323150634766,
+        "schema_size": 3
+    },
+    "111": {
+        "test_id": 111,
+        "runtimes": [],
+        "total_runtime": 0.0024259090423583984,
+        "sat_runtime": 0.0014140605926513672,
+        "schema_size": 3
+    },
+    "112": {
+        "test_id": 112,
+        "runtimes": [],
+        "total_runtime": 0.11894059181213379,
+        "sat_runtime": 0.07579898834228516,
+        "schema_size": 5
+    },
+    "113": {
+        "test_id": 113,
+        "runtimes": [],
+        "total_runtime": 0.0203092098236084,
+        "sat_runtime": 0.01602911949157715,
+        "schema_size": 4
+    },
+    "114": {
+        "test_id": 114,
+        "runtimes": [],
+        "total_runtime": 0.0068836212158203125,
+        "sat_runtime": 0.002849102020263672,
+        "schema_size": 4
+    },
+    "115": {
+        "test_id": 115,
+        "runtimes": [],
+        "total_runtime": 0.02809000015258789,
+        "sat_runtime": 0.023956775665283203,
+        "schema_size": 4
+    },
+    "116": {
+        "test_id": 116,
+        "runtimes": [],
+        "total_runtime": 0.08464741706848145,
+        "sat_runtime": 0.054135799407958984,
+        "schema_size": 5
+    },
+    "117": {
+        "test_id": 117,
+        "runtimes": [],
+        "total_runtime": 0.00910043716430664,
+        "sat_runtime": 0.0050067901611328125,
+        "schema_size": 4
+    },
+    "118": {
+        "test_id": 118,
+        "runtimes": [],
+        "total_runtime": 0.12268924713134766,
+        "sat_runtime": 0.0886545181274414,
+        "schema_size": 5
+    },
+    "119": {
+        "test_id": 119,
+        "runtimes": [],
+        "total_runtime": 0.28579163551330566,
+        "sat_runtime": 0.23952817916870117,
+        "schema_size": 5
+    },
+    "120": {
+        "test_id": 120,
+        "runtimes": [],
+        "total_runtime": 1.7151906490325928,
+        "sat_runtime": 0.4401509761810303,
+        "schema_size": 6
+    },
+    "121": {
+        "test_id": 121,
+        "runtimes": [],
+        "total_runtime": 2.8727104663848877,
+        "sat_runtime": 1.5902962684631348,
+        "schema_size": 6
+    },
+    "122": {
+        "test_id": 122,
+        "runtimes": [],
+        "total_runtime": 1.3752028942108154,
+        "sat_runtime": 0.014296293258666992,
+        "schema_size": 6
+    },
+    "123": {
+        "test_id": 123,
+        "runtimes": [],
+        "total_runtime": 0.05841875076293945,
+        "sat_runtime": 0.02493429183959961,
+        "schema_size": 5
+    },
+    "124": {
+        "test_id": 124,
+        "runtimes": [],
+        "total_runtime": 0.1278836727142334,
+        "sat_runtime": 0.0901176929473877,
+        "schema_size": 5
+    },
+    "125": {
+        "test_id": 125,
+        "runtimes": [],
+        "total_runtime": 0.4037935733795166,
+        "sat_runtime": 0.365220308303833,
+        "schema_size": 5
+    },
+    "126": {
+        "test_id": 126,
+        "runtimes": [],
+        "total_runtime": 0.05207991600036621,
+        "sat_runtime": 0.01798558235168457,
+        "schema_size": 5
+    },
+    "127": {
+        "test_id": 127,
+        "runtimes": [],
+        "total_runtime": 0.3995053768157959,
+        "sat_runtime": 0.3604550361633301,
+        "schema_size": 5
+    },
+    "128": {
+        "test_id": 128,
+        "runtimes": [],
+        "total_runtime": 0.2483844757080078,
+        "sat_runtime": 0.20866012573242188,
+        "schema_size": 5
+    },
+    "129": {
+        "test_id": 129,
+        "runtimes": [],
+        "total_runtime": 4.453798770904541,
+        "sat_runtime": 3.4374523162841797,
+        "schema_size": 6
+    },
+    "130": {
+        "test_id": 130,
+        "runtimes": [],
+        "total_runtime": 0.1105499267578125,
+        "sat_runtime": 0.07786798477172852,
+        "schema_size": 5
+    },
+    "131": {
+        "test_id": 131,
+        "runtimes": [],
+        "total_runtime": 0.07286882400512695,
+        "sat_runtime": 0.03893399238586426,
+        "schema_size": 5
+    },
+    "132": {
+        "test_id": 132,
+        "runtimes": [],
+        "total_runtime": 2.0985140800476074,
+        "sat_runtime": 0.985994815826416,
+        "schema_size": 6
+    },
+    "133": {
+        "test_id": 133,
+        "runtimes": [],
+        "total_runtime": 0.05708742141723633,
+        "sat_runtime": 0.004963397979736328,
+        "schema_size": 5
+    },
+    "134": {
+        "test_id": 134,
+        "runtimes": [],
+        "total_runtime": 124.47109270095825,
+        "sat_runtime": 3.4735569953918457,
+        "schema_size": 7
+    },
+    "135": {
+        "test_id": 135,
+        "runtimes": [],
+        "total_runtime": 1.514923334121704,
+        "sat_runtime": 0.09226512908935547,
+        "schema_size": 6
+    },
+    "136": {
+        "test_id": 136,
+        "runtimes": [],
+        "total_runtime": 0.08018350601196289,
+        "sat_runtime": 0.03856086730957031,
+        "schema_size": 5
+    },
+    "137": {
+        "test_id": 137,
+        "runtimes": [],
+        "total_runtime": 0.9488787651062012,
+        "sat_runtime": 0.023123502731323242,
+        "schema_size": 6
+    },
+    "138": {
+        "test_id": 138,
+        "runtimes": [],
+        "total_runtime": 1.7481577396392822,
+        "sat_runtime": 0.503852128982544,
+        "schema_size": 6
+    },
+    "139": {
+        "test_id": 139,
+        "runtimes": [],
+        "total_runtime": 1.7930185794830322,
+        "sat_runtime": 0.5352485179901123,
+        "schema_size": 6
+    },
+    "140": {
+        "test_id": 140,
+        "runtimes": [],
+        "total_runtime": 0.041733503341674805,
+        "sat_runtime": 0.004229545593261719,
+        "schema_size": 5
+    },
+    "141": {
+        "test_id": 141,
+        "runtimes": [],
+        "total_runtime": 0.05515480041503906,
+        "sat_runtime": 0.004124641418457031,
+        "schema_size": 5
+    },
+    "142": {
+        "test_id": 142,
+        "runtimes": [],
+        "total_runtime": 0.0801243782043457,
+        "sat_runtime": 0.0405881404876709,
+        "schema_size": 5
+    },
+    "143": {
+        "test_id": 143,
+        "runtimes": [],
+        "total_runtime": 0.06725263595581055,
+        "sat_runtime": 0.0327153205871582,
+        "schema_size": 5
+    },
+    "144": {
+        "test_id": 144,
+        "runtimes": [],
+        "total_runtime": 0.11540794372558594,
+        "sat_runtime": 0.07492327690124512,
+        "schema_size": 5
+    },
+    "145": {
+        "test_id": 145,
+        "runtimes": [],
+        "total_runtime": 1.6312205791473389,
+        "sat_runtime": 0.44572877883911133,
+        "schema_size": 6
+    },
+    "146": {
+        "test_id": 146,
+        "runtimes": [],
+        "total_runtime": 0.4032783508300781,
+        "sat_runtime": 0.3585026264190674,
+        "schema_size": 5
+    },
+    "147": {
+        "test_id": 147,
+        "runtimes": [],
+        "total_runtime": 0.3008384704589844,
+        "sat_runtime": 0.25918030738830566,
+        "schema_size": 5
+    },
+    "148": {
+        "test_id": 148,
+        "runtimes": [],
+        "total_runtime": 0.09786128997802734,
+        "sat_runtime": 0.047689199447631836,
+        "schema_size": 5
+    },
+    "149": {
+        "test_id": 149,
+        "runtimes": [],
+        "total_runtime": 0.06428074836730957,
+        "sat_runtime": 0.02385854721069336,
+        "schema_size": 5
+    },
+    "150": {
+        "test_id": 150,
+        "runtimes": [],
+        "total_runtime": 0.09858083724975586,
+        "sat_runtime": 0.060407400131225586,
+        "schema_size": 5
+    },
+    "151": {
+        "test_id": 151,
+        "runtimes": [],
+        "total_runtime": 0.21284937858581543,
+        "sat_runtime": 0.17107033729553223,
+        "schema_size": 5
+    },
+    "152": {
+        "test_id": 152,
+        "runtimes": [],
+        "total_runtime": 1.3781828880310059,
+        "sat_runtime": 0.0957033634185791,
+        "schema_size": 6
+    },
+    "153": {
+        "test_id": 153,
+        "runtimes": [],
+        "total_runtime": 1.2703742980957031,
+        "sat_runtime": 0.0438542366027832,
+        "schema_size": 6
+    },
+    "154": {
+        "test_id": 154,
+        "runtimes": [],
+        "total_runtime": 0.013642311096191406,
+        "sat_runtime": 0.00999760627746582,
+        "schema_size": 4
+    },
+    "155": {
+        "test_id": 155,
+        "runtimes": [],
+        "total_runtime": 0.014145135879516602,
+        "sat_runtime": 0.010298490524291992,
+        "schema_size": 4
+    },
+    "156": {
+        "test_id": 156,
+        "runtimes": [],
+        "total_runtime": 0.27837061882019043,
+        "sat_runtime": 0.23913264274597168,
+        "schema_size": 5
+    },
+    "157": {
+        "test_id": 157,
+        "runtimes": [],
+        "total_runtime": 1.4056129455566406,
+        "sat_runtime": 0.04868316650390625,
+        "schema_size": 6
+    },
+    "158": {
+        "test_id": 158,
+        "runtimes": [],
+        "total_runtime": 0.0703577995300293,
+        "sat_runtime": 0.027009010314941406,
+        "schema_size": 5
+    },
+    "159": {
+        "test_id": 159,
+        "runtimes": [],
+        "total_runtime": 7.512609481811523,
+        "sat_runtime": 6.272404909133911,
+        "schema_size": 6
+    },
+    "160": {
+        "test_id": 160,
+        "runtimes": [],
+        "total_runtime": 1.1682374477386475,
+        "sat_runtime": 0.009166479110717773,
+        "schema_size": 6
+    },
+    "161": {
+        "test_id": 161,
+        "runtimes": [],
+        "total_runtime": 2.565308094024658,
+        "sat_runtime": 1.15809965133667,
+        "schema_size": 6
+    },
+    "162": {
+        "test_id": 162,
+        "runtimes": [],
+        "total_runtime": 106.76527857780457,
+        "sat_runtime": 0.1605844497680664,
+        "schema_size": 7
+    },
+    "163": {
+        "test_id": 163,
+        "runtimes": [],
+        "total_runtime": 0.007337331771850586,
+        "sat_runtime": 0.0027875900268554688,
+        "schema_size": 4
+    },
+    "164": {
+        "test_id": 164,
+        "runtimes": [],
+        "total_runtime": 0.007888078689575195,
+        "sat_runtime": 0.0036666393280029297,
+        "schema_size": 4
+    },
+    "165": {
+        "test_id": 165,
+        "runtimes": [],
+        "total_runtime": 0.007386445999145508,
+        "sat_runtime": 0.003761768341064453,
+        "schema_size": 4
+    },
+    "166": {
+        "test_id": 166,
+        "runtimes": [],
+        "total_runtime": 0.012481212615966797,
+        "sat_runtime": 0.008083581924438477,
+        "schema_size": 4
+    },
+    "167": {
+        "test_id": 167,
+        "runtimes": [],
+        "total_runtime": 1.2043356895446777,
+        "sat_runtime": 0.05837607383728027,
+        "schema_size": 6
+    },
+    "168": {
+        "test_id": 168,
+        "runtimes": [],
+        "total_runtime": 1.3683381080627441,
+        "sat_runtime": 0.2543938159942627,
+        "schema_size": 6
+    },
+    "169": {
+        "test_id": 169,
+        "runtimes": [],
+        "total_runtime": 0.012679576873779297,
+        "sat_runtime": 0.00848245620727539,
+        "schema_size": 4
+    },
+    "170": {
+        "test_id": 170,
+        "runtimes": [],
+        "total_runtime": 0.016262292861938477,
+        "sat_runtime": 0.011953353881835938,
+        "schema_size": 4
+    },
+    "171": {
+        "test_id": 171,
+        "runtimes": [],
+        "total_runtime": 0.006855487823486328,
+        "sat_runtime": 0.0026984214782714844,
+        "schema_size": 4
+    },
+    "172": {
+        "test_id": 172,
+        "runtimes": [],
+        "total_runtime": 6.46938943862915,
+        "sat_runtime": 5.281585693359375,
+        "schema_size": 6
+    },
+    "173": {
+        "test_id": 173,
+        "runtimes": [],
+        "total_runtime": 1.532426118850708,
+        "sat_runtime": 0.2324237823486328,
+        "schema_size": 6
+    },
+    "174": {
+        "test_id": 174,
+        "runtimes": [],
+        "total_runtime": 0.22457337379455566,
+        "sat_runtime": 0.18618226051330566,
+        "schema_size": 5
+    },
+    "175": {
+        "test_id": 175,
+        "runtimes": [],
+        "total_runtime": 1.891737699508667,
+        "sat_runtime": 0.4494137763977051,
+        "schema_size": 6
+    },
+    "176": {
+        "test_id": 176,
+        "runtimes": [],
+        "total_runtime": 31.399635076522827,
+        "sat_runtime": 30.3136088848114,
+        "schema_size": 6
+    },
+    "177": {
+        "test_id": 177,
+        "runtimes": [],
+        "total_runtime": 2.695667028427124,
+        "sat_runtime": 1.1968894004821777,
+        "schema_size": 6
+    },
+    "178": {
+        "test_id": 178,
+        "runtimes": [],
+        "total_runtime": 1.9831821918487549,
+        "sat_runtime": 0.7011339664459229,
+        "schema_size": 6
+    },
+    "179": {
+        "test_id": 179,
+        "runtimes": [],
+        "total_runtime": 0.050836801528930664,
+        "sat_runtime": 0.016362428665161133,
+        "schema_size": 5
+    },
+    "180": {
+        "test_id": 180,
+        "runtimes": [],
+        "total_runtime": 0.059494972229003906,
+        "sat_runtime": 0.022127389907836914,
+        "schema_size": 5
+    },
+    "181": {
+        "test_id": 181,
+        "runtimes": [],
+        "total_runtime": 0.002309083938598633,
+        "sat_runtime": 0.001337289810180664,
+        "schema_size": 3
+    },
+    "182": {
+        "test_id": 182,
+        "runtimes": [],
+        "total_runtime": 0.13849902153015137,
+        "sat_runtime": 0.0998380184173584,
+        "schema_size": 5
+    },
+    "183": {
+        "test_id": 183,
+        "runtimes": [],
+        "total_runtime": 0.05738329887390137,
+        "sat_runtime": 0.00945734977722168,
+        "schema_size": 5
+    },
+    "184": {
+        "test_id": 184,
+        "runtimes": [],
+        "total_runtime": 0.002379179000854492,
+        "sat_runtime": 0.0014209747314453125,
+        "schema_size": 3
+    },
+    "185": {
+        "test_id": 185,
+        "runtimes": [],
+        "total_runtime": 0.057464599609375,
+        "sat_runtime": 0.01661086082458496,
+        "schema_size": 5
+    },
+    "186": {
+        "test_id": 186,
+        "runtimes": [],
+        "total_runtime": 0.0516049861907959,
+        "sat_runtime": 0.01499176025390625,
+        "schema_size": 5
+    },
+    "187": {
+        "test_id": 187,
+        "runtimes": [],
+        "total_runtime": 0.11098480224609375,
+        "sat_runtime": 0.07469582557678223,
+        "schema_size": 5
+    },
+    "188": {
+        "test_id": 188,
+        "runtimes": [],
+        "total_runtime": 0.0024628639221191406,
+        "sat_runtime": 0.0014939308166503906,
+        "schema_size": 3
+    },
+    "189": {
+        "test_id": 189,
+        "runtimes": [],
+        "total_runtime": 0.42730283737182617,
+        "sat_runtime": 0.38635921478271484,
+        "schema_size": 5
+    },
+    "190": {
+        "test_id": 190,
+        "runtimes": [],
+        "total_runtime": 0.13527369499206543,
+        "sat_runtime": 0.0852653980255127,
+        "schema_size": 5
+    },
+    "191": {
+        "test_id": 191,
+        "runtimes": [],
+        "total_runtime": 0.2834804058074951,
+        "sat_runtime": 0.24051904678344727,
+        "schema_size": 5
+    },
+    "192": {
+        "test_id": 192,
+        "runtimes": [],
+        "total_runtime": 0.1299436092376709,
+        "sat_runtime": 0.08768391609191895,
+        "schema_size": 5
+    },
+    "193": {
+        "test_id": 193,
+        "runtimes": [],
+        "total_runtime": 2.9118781089782715,
+        "sat_runtime": 1.8319754600524902,
+        "schema_size": 6
+    },
+    "194": {
+        "test_id": 194,
+        "runtimes": [],
+        "total_runtime": 0.8669548034667969,
+        "sat_runtime": 0.8259954452514648,
+        "schema_size": 5
+    },
+    "195": {
+        "test_id": 195,
+        "runtimes": [],
+        "total_runtime": 0.08971977233886719,
+        "sat_runtime": 0.045597076416015625,
+        "schema_size": 5
+    },
+    "196": {
+        "test_id": 196,
+        "runtimes": [],
+        "total_runtime": 1.4914429187774658,
+        "sat_runtime": 0.03811216354370117,
+        "schema_size": 6
+    },
+    "197": {
+        "test_id": 197,
+        "runtimes": [],
+        "total_runtime": 0.00817561149597168,
+        "sat_runtime": 0.004228115081787109,
+        "schema_size": 4
+    },
+    "198": {
+        "test_id": 198,
+        "runtimes": [],
+        "total_runtime": 0.05819821357727051,
+        "sat_runtime": 0.01814866065979004,
+        "schema_size": 5
+    },
+    "199": {
+        "test_id": 199,
+        "runtimes": [],
+        "total_runtime": 0.008731365203857422,
+        "sat_runtime": 0.0047380924224853516,
+        "schema_size": 4
+    },
+    "200": {
+        "test_id": 200,
+        "runtimes": [],
+        "total_runtime": 0.11057281494140625,
+        "sat_runtime": 0.0710749626159668,
+        "schema_size": 5
+    },
+    "201": {
+        "test_id": 201,
+        "runtimes": [],
+        "total_runtime": 2.5070135593414307,
+        "sat_runtime": 1.294041395187378,
+        "schema_size": 6
+    },
+    "202": {
+        "test_id": 202,
+        "runtimes": [],
+        "total_runtime": 5.273423910140991,
+        "sat_runtime": 4.1913580894470215,
+        "schema_size": 6
+    },
+    "203": {
+        "test_id": 203,
+        "runtimes": [],
+        "total_runtime": 1.357588529586792,
+        "sat_runtime": 0.014333009719848633,
+        "schema_size": 6
+    },
+    "204": {
+        "test_id": 204,
+        "runtimes": [],
+        "total_runtime": 2.46404767036438,
+        "sat_runtime": 0.6926333904266357,
+        "schema_size": 6
+    },
+    "205": {
+        "test_id": 205,
+        "runtimes": [],
+        "total_runtime": 2.028604507446289,
+        "sat_runtime": 0.5534729957580566,
+        "schema_size": 6
+    },
+    "206": {
+        "test_id": 206,
+        "runtimes": [],
+        "total_runtime": 6.123383045196533,
+        "sat_runtime": 4.497958660125732,
+        "schema_size": 6
+    },
+    "207": {
+        "test_id": 207,
+        "runtimes": [],
+        "total_runtime": 0.007576942443847656,
+        "sat_runtime": 0.0036144256591796875,
+        "schema_size": 4
+    },
+    "208": {
+        "test_id": 208,
+        "runtimes": [],
+        "total_runtime": 1.736171007156372,
+        "sat_runtime": 0.3005695343017578,
+        "schema_size": 6
+    },
+    "209": {
+        "test_id": 209,
+        "runtimes": [],
+        "total_runtime": 2.915802001953125,
+        "sat_runtime": 1.5720553398132324,
+        "schema_size": 6
+    },
+    "210": {
+        "test_id": 210,
+        "runtimes": [],
+        "total_runtime": 0.1688394546508789,
+        "sat_runtime": 0.1282033920288086,
+        "schema_size": 5
+    },
+    "211": {
+        "test_id": 211,
+        "runtimes": [],
+        "total_runtime": 0.2208080291748047,
+        "sat_runtime": 0.18368315696716309,
+        "schema_size": 5
+    },
+    "212": {
+        "test_id": 212,
+        "runtimes": [],
+        "total_runtime": 0.07452106475830078,
+        "sat_runtime": 0.04054832458496094,
+        "schema_size": 5
+    },
+    "213": {
+        "test_id": 213,
+        "runtimes": [],
+        "total_runtime": 0.06096959114074707,
+        "sat_runtime": 0.009322404861450195,
+        "schema_size": 5
+    },
+    "214": {
+        "test_id": 214,
+        "runtimes": [],
+        "total_runtime": 0.006437778472900391,
+        "sat_runtime": 0.002706289291381836,
+        "schema_size": 4
+    },
+    "215": {
+        "test_id": 215,
+        "runtimes": [],
+        "total_runtime": 0.008045434951782227,
+        "sat_runtime": 0.0035932064056396484,
+        "schema_size": 4
+    },
+    "216": {
+        "test_id": 216,
+        "runtimes": [],
+        "total_runtime": 0.007416248321533203,
+        "sat_runtime": 0.002861499786376953,
+        "schema_size": 4
+    },
+    "217": {
+        "test_id": 217,
+        "runtimes": [],
+        "total_runtime": 0.4515831470489502,
+        "sat_runtime": 0.414996862411499,
+        "schema_size": 5
+    },
+    "218": {
+        "test_id": 218,
+        "runtimes": [],
+        "total_runtime": 0.026958227157592773,
+        "sat_runtime": 0.023330211639404297,
+        "schema_size": 4
+    },
+    "219": {
+        "test_id": 219,
+        "runtimes": [],
+        "total_runtime": 0.00019693374633789062,
+        "sat_runtime": 0.00019693374633789062,
+        "schema_size": 1
+    },
+    "220": {
+        "test_id": 220,
+        "runtimes": [],
+        "total_runtime": 0.002761363983154297,
+        "sat_runtime": 0.0017986297607421875,
+        "schema_size": 3
+    },
+    "221": {
+        "test_id": 221,
+        "runtimes": [],
+        "total_runtime": 0.0008518695831298828,
+        "sat_runtime": 0.0006158351898193359,
+        "schema_size": 2
+    },
+    "222": {
+        "test_id": 222,
+        "runtimes": [],
+        "total_runtime": 0.0026454925537109375,
+        "sat_runtime": 0.001659393310546875,
+        "schema_size": 3
+    },
+    "total_average_time": 7.291630356835677,
+    "total_time": 1626.033569574356
+}

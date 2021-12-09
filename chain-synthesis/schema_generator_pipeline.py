@@ -9,8 +9,7 @@ import generators.fences_schema_generator as Fe
 
 
 class TSchemaPipeline():
-    def __init__(self, should_pretty_print, should_limit_time=True, mode="brute"):
-        self.limit_time = should_limit_time
+    def __init__(self, should_pretty_print, mode="brute"):
         self.pretty_print = should_pretty_print
         if mode == "brute":
             self.generator = Br.TBruteGenerator(self)
@@ -18,11 +17,8 @@ class TSchemaPipeline():
             self.generator = Fe.TFenceGenerator(self)
 
     def generate_schema(self, n, m, f_truthtables, schema_size):
-        '''
-        A generic starting point for solving algorithm. `mode` is either
-        `brute` or `fences`.
-        '''
         self.acc_time = 0
+        self.time_per_topology = []
         for cur_size in range(1, int(schema_size)):
             solved, gr = self.generate_fixed_size_schema(n, m, f_truthtables, cur_size)
             if solved:
@@ -35,9 +31,9 @@ class TSchemaPipeline():
         self.generator.refresh()
         solved, model, elapsed = self.generator.try_solve(
             f_truthtables, n, m, cur_size)
+        self.acc_time += elapsed
         if solved:
             self.last_sat_attempt_time = elapsed
-            self.acc_time += elapsed
             gr = G.TGraph(cur_size, model, self.pretty_print, self.generator.pool)
             return True, gr
         else:
