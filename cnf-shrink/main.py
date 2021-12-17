@@ -71,9 +71,9 @@ def validate_against_aig(g, aig):
 
     for input in aig.inputs:
         # Add clause for input equality
+        print(input)
         input_aig_var = start_cnf.input2lit[input]
         input_graph_var = g.what_input_var(input, pool)
-        print(input_aig_var, input_graph_var)
 
         final_cnf.append([-1 * input_aig_var, input_graph_var])
         final_cnf.append([input_aig_var, -1 * input_graph_var])

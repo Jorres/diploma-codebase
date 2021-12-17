@@ -17,8 +17,6 @@ class Graph:
         self.last_new_inv = 0
         self.children = defaultdict(list)
         self.parents = defaultdict(list)
-        self.aig_input_to_short_input = dict()
-        self.aig_output_to_short_output = dict()
 
         self.last_i_gate = 0
         self.last_v_gate = 0
@@ -116,7 +114,6 @@ class Graph:
             aig_outputs.append("o" + str(self.last_output))
             self.last_output += 1
 
-        last_input = 0
         last_inv = 0
         last_and = 0
 
@@ -130,9 +127,7 @@ class Graph:
             le = len(i.children)
             # Zero children mean simple input
             if le == 0:
-                name = 'v' + str(last_input)
-                last_input += 1
-                self.aig_input_to_short_input[i.name] = name
+                name = i.name
             # One child means inverter gate
             if le == 1:
                 name = 'i' + str(last_inv)
@@ -152,17 +147,14 @@ class Graph:
             node_names.append(name)
 
         assert last_and == self.last_a_gate
-        assert last_input == self.last_v_gate
         assert last_inv == self.last_i_gate
 
         outputs = set()
 
         for output in aig_outputs:
-            self.aig_output_to_short_output[output] = output
+            # TODO fix, we do not put 'o0 .. o27' here
+            # we put actual names of nodes like `i100`, `a2`
             outputs.add(output)
-
-        print('Inputs', self.aig_input_to_short_input)
-        print('Outputs', self.aig_output_to_short_output)
 
         self.node_names = node_names
         self.outputs = outputs
@@ -170,18 +162,13 @@ class Graph:
         self.debug_print()
 
     def from_aig(self, aig):
-        last_input = 0
         last_inv = 0
         last_and = 0
-        self.last_new_inv = 0
 
         node_names = []
         node_to_name = dict()
 
-        self.children = defaultdict(list)
-        self.parents = defaultdict(list)
-        self.aig_input_to_short_input = dict()
-        self.aig_output_to_short_output = dict()
+        self.init_datafields()
 
         order = aiger.common.eval_order(aig)
 
@@ -192,9 +179,7 @@ class Graph:
             le = len(i.children)
             # Zero children mean simple input
             if le == 0:
-                name = 'v' + str(last_input)
-                last_input += 1
-                self.aig_input_to_short_input[i.name] = name
+                name = i.name
             # One child means inverter gate
             if le == 1:
                 name = 'i' + str(last_inv)
@@ -217,10 +202,9 @@ class Graph:
 
         for output in aig.outputs:
             assert output in aig.node_map
-            self.aig_output_to_short_output[output] = node_to_name[aig.node_map[output]]
             outputs.add(node_to_name[aig.node_map[output]])
-        print('Inputs', self.aig_input_to_short_input)
-        print('Outputs', self.aig_output_to_short_output)
+
+        print('Outputs', outputs)
 
         self.node_names = node_names
         self.outputs = outputs
@@ -255,15 +239,6 @@ class Graph:
             pass
         return ans
 
-    def update_aig_output_mapping(self, old_value, new_value):
-        # Here we iterate over the whole mapping because I don't
-        # want to precalculate and store one more data memoization.
-        for aig_name, old_stored_value in self.aig_output_to_short_output:
-            if old_stored_value == old_value:
-                self.aig_output_to_short_output[aig_name] = new_value
-                return
-        assert False, "Previous output to replace not found"
-
     def prune(self, to_prune, to_leave, are_equivalent):
         # self.debug_print()
         if to_prune in self.outputs and to_leave in self.outputs:
@@ -287,7 +262,6 @@ class Graph:
                 self.replace_in_list(self.children[parent], to_prune, to_leave)
                 self.parents[to_leave].append(parent)
             if to_prune in self.outputs:
-                self.update_aig_output_mapping(to_prune, to_leave)
                 self.outputs.remove(to_prune)
                 self.outputs.add(to_leave)
         else:
@@ -305,7 +279,6 @@ class Graph:
                 self.parents[new_inv_name].append(parent)
 
             if to_prune in self.outputs:
-                self.update_aig_output_mapping(to_prune, new_inv_name)
                 self.outputs.remove(to_prune)
                 self.outputs.add(new_inv_name)
 
@@ -329,10 +302,8 @@ class Graph:
                 print()
         print("----- END DEBUG PRINTING GRAPH -----")
 
-    def what_input_var(self, aig_input_name, pool):
-        short_name = self.aig_input_to_short_input[aig_input_name]
-        return pool.v_to_id(short_name)
+    def what_input_var(self, input, pool):
+        return pool.v_to_id(input)
 
-    def what_output_var(self, aig_output_name, pool):
-        short_name = self.aig_output_to_short_output[aig_output_name]
-        return pool.v_to_id(short_name)
+    def what_output_var(self, output, pool):
+        return pool.v_to_id(output)
