@@ -59,7 +59,6 @@ def validate_against_aig(g, aig):
     for clause in start_cnf.clauses:
         for var in clause:
             shift = max(shift, var)
-    print(shift)
 
     pool = H.TPoolHolder(start_from=shift + 1)
     my_cnf = H.make_formula_from_my_graph(g, pool)
@@ -71,7 +70,6 @@ def validate_against_aig(g, aig):
 
     for input in aig.inputs:
         # Add clause for input equality
-        print(input)
         input_aig_var = start_cnf.input2lit[input]
         input_graph_var = g.what_input_var(input, pool)
 
@@ -98,36 +96,31 @@ def validate_against_aig(g, aig):
     with Minisat22(bootstrap_with=final_cnf) as solver:
         print("Running SAT-solver to determine scheme equivalency")
         result = solver.solve()
-        print(result)
         if not result:
             print("Hoorah, UNSAT means schemes are equivalent")
         if result:
-            print("Your schema is broken :( #sorrynotsorry")
+            print("Your schema is non-equivalent to the source schema :(")
 
 
 def main():
     # test_path = "./sorts/BubbleSort_7_4.aig"
-    test_path = "./three-and-graph.aag"
+    test_path = "./small-manual-graph.aag"
     aig_instance = aiger.load(test_path)
 
     pool = H.TPoolHolder()
     g = G.Graph()
-    # g.from_file(test_path)
-    # print(aig_instance.inputs)
-    # print(aig_instance.outputs)
+    g.from_file(test_path)
 
-    g.from_aig(aig_instance)
-
-    # total_pruned = 0
-    # last_min = 0
-    # while True:
-    #     formula = H.make_formula_from_my_graph(g, pool)
-    #     g, was_pruned, last_min, pruned_this_time = try_prune_all_pairs(
-    #         g, formula, pool, last_min)
-    #     total_pruned += pruned_this_time
-    #     if not was_pruned:
-    #         break
-    # print(total_pruned)
+    total_pruned = 0
+    last_min = 0
+    while True:
+        formula = H.make_formula_from_my_graph(g, pool)
+        g, was_pruned, last_min, pruned_this_time = try_prune_all_pairs(
+            g, formula, pool, last_min)
+        total_pruned += pruned_this_time
+        if not was_pruned:
+            break
+    print(total_pruned)
 
     validate_against_aig(g, aig_instance)
 

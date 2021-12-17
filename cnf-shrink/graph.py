@@ -17,17 +17,20 @@ class Graph:
         self.last_new_inv = 0
         self.children = defaultdict(list)
         self.parents = defaultdict(list)
+        self.output_name_to_node_name = dict()
+
+        self.node_names = []
+        self.node_to_name = dict()
 
         self.last_i_gate = 0
         self.last_v_gate = 0
         self.last_a_gate = 0
-        self.last_output = 0
 
         # this is a small custom dict, it has all the node ids
-        # and their mapping to names. For example, 
-        # 713 is really an inverter to a literal 712. 
+        # and their mapping to names. For example,
+        # 713 is really an inverter to a literal 712.
         # So it contains two entries, for both 712 and 713, pointing
-        # to 2 node objects.
+        # to correspondind node objects.
         self.literal_to_node = dict()
 
     def make_empty_node(self, node_type):
@@ -54,7 +57,7 @@ class Graph:
         self.literal_to_node[literal] = node
 
     def process_child_maybe_negation(self, order, a, b, parent_children):
-        b_var_literal = (b - b % 2)
+        b_var_literal = b - b % 2
 
         if b % 2 == 1:
             if b not in self.literal_to_node:
@@ -65,150 +68,116 @@ class Graph:
             else:
                 parent_children.append(self.literal_to_node[b])
         else:
+            assert b_var_literal in self.literal_to_node
             parent_children.append(self.literal_to_node[b_var_literal])
 
-    def from_file(self, filename):
-        lines = []
-        with open(filename) as f:
-            lines = f.readlines()
-        first_line_vals = lines[0].split(" ")
-        assert len(first_line_vals) == 6, "Unexpected header"
-        header = lines[0].split(" ")
-        header.pop(0)
+    def graph_edges_from_topsort(self, order):
+        last_inv = 0
+        last_and = 0
 
-        n, n_inputs, l, n_outputs, n_ands = map(int, header)
+        name = ""
+        for i in order:
+            le = len(i.children)
+            # Zero children mean simple input
+            if le == 0:
+                name = i.name
+            # One child means inverter gate
+            if le == 1:
+                name = 'i' + str(last_inv)
+                prename = self.node_to_name[i.children[0]]
+                self.add_edge(prename, name)
+                last_inv += 1
+            # Two children mean and gate
+            if le == 2:
+                name = 'a' + str(last_and)
+                prename_left = self.node_to_name[i.children[0]]
+                prename_right = self.node_to_name[i.children[1]]
+                self.add_edge(prename_left, name)
+                self.add_edge(prename_right, name)
+                last_and += 1
 
+            self.node_to_name[i] = name
+            self.node_names.append(name)
+
+        assert last_and == self.last_a_gate
+        assert last_inv == self.last_i_gate
+        assert len(self.node_names) == len(order)
+
+    def parse_top_order_from_lines(self, n_inputs, n_outputs, n_ands, lines):
         order = []
-        aig_outputs = []
-
-        self.init_datafields()
-
         # Populating order by entities that have only `children []` and `names`
         for i in range(0, n_inputs):
             vnode = self.make_empty_node("v")
-            input_literal = int(lines[i + 1]) 
+            input_literal = int(lines[i + 1])
             assert input_literal % 2 == 0, "Even input literal assumption failed"
             self.put_into_order(order, input_literal, vnode)
 
         for i in range(0, n_ands):
             a, b, c = map(int, lines[i + n_inputs + n_outputs + 1].split(" "))
             anode = self.make_empty_node("a")
+            assert a > b and a > c, "Input file is not topsorted"
             self.process_child_maybe_negation(order, a, b, anode.children)
             self.process_child_maybe_negation(order, a, c, anode.children)
-            assert len(anode.children) == 2, "And gate doesn't have length 2"
+            assert len(anode.children) == 2, "And gate doesn't have 2 children"
             self.put_into_order(order, a, anode)
 
         for i in range(0, n_outputs):
-            o = int(lines[i + 1 + n_inputs])
-            if o % 2 == 1:
-                assert o not in self.literal_to_node, 'The same output meets twice'
+            output_literal = int(lines[i + 1 + n_inputs])
+            if output_literal % 2 == 1:
+                assert output_literal not in self.literal_to_node, 'The same output meets twice'
                 inode = self.make_empty_node("i")
-                i_literal = o
-                son_literal = o - 1
+                i_literal = output_literal
+                son_literal = output_literal - 1
                 inode.children = [self.literal_to_node[son_literal]]
                 self.put_into_order(order, i_literal, inode)
             else:
                 # do nothing, the node has already been inserted
                 # it is `and` gate or an input
                 pass
-            aig_outputs.append("o" + str(self.last_output))
-            self.last_output += 1
+        return order
 
-        last_inv = 0
-        last_and = 0
+    def from_file(self, filename):
+        lines = []
+        with open(filename) as f:
+            lines = f.readlines()
 
-        node_names = []
-        node_to_name = dict()
+        first_line_vals = lines[0].split(" ")
+        assert len(first_line_vals) == 6, "Unexpected header"
+        header = lines[0].split(" ")
+        header.pop(0)  # remove "aag" string from header
 
-        print("Total vertices in graph:", len(order))
-
-        name = ""
-        for i in order:
-            le = len(i.children)
-            # Zero children mean simple input
-            if le == 0:
-                name = i.name
-            # One child means inverter gate
-            if le == 1:
-                name = 'i' + str(last_inv)
-                prename = node_to_name[i.children[0]]
-                self.add_edge(prename, name)
-                last_inv += 1
-            # Two children mean and gate
-            if le == 2:
-                name = 'a' + str(last_and)
-                prename_left = node_to_name[i.children[0]]
-                prename_right = node_to_name[i.children[1]]
-                self.add_edge(prename_left, name)
-                self.add_edge(prename_right, name)
-                last_and += 1
-
-            node_to_name[i] = name
-            node_names.append(name)
-
-        assert last_and == self.last_a_gate
-        assert last_inv == self.last_i_gate
-
-        outputs = set()
-
-        for output in aig_outputs:
-            # TODO fix, we do not put 'o0 .. o27' here
-            # we put actual names of nodes like `i100`, `a2`
-            outputs.add(output)
-
-        self.node_names = node_names
-        self.outputs = outputs
-
-        self.debug_print()
-
-    def from_aig(self, aig):
-        last_inv = 0
-        last_and = 0
-
-        node_names = []
-        node_to_name = dict()
+        _, n_inputs, _, n_outputs, n_ands = map(int, header)
 
         self.init_datafields()
 
-        order = aiger.common.eval_order(aig)
-
+        order = self.parse_top_order_from_lines(
+            n_inputs, n_outputs, n_ands, lines)
         print("Total vertices in graph:", len(order))
 
-        name = ""
-        for i in order:
-            le = len(i.children)
-            # Zero children mean simple input
-            if le == 0:
-                name = i.name
-            # One child means inverter gate
-            if le == 1:
-                name = 'i' + str(last_inv)
-                prename = node_to_name[i.children[0]]
-                self.add_edge(prename, name)
-                last_inv += 1
-            # Two children mean and gate
-            if le == 2:
-                name = 'a' + str(last_and)
-                prename_left = node_to_name[i.children[0]]
-                prename_right = node_to_name[i.children[1]]
-                self.add_edge(prename_left, name)
-                self.add_edge(prename_right, name)
-                last_and += 1
+        self.graph_edges_from_topsort(order)
 
-            node_to_name[i] = name
-            node_names.append(name)
+        self.outputs = set()
+        for i_output in range(0, n_outputs):
+            output_literal = int(lines[n_inputs + 1 + i_output])
+            node = self.literal_to_node[output_literal]
+            name = self.node_to_name[node]
+            self.output_name_to_node_name["o" + str(i_output)] = name
+            self.outputs.add(name)
 
-        outputs = set()
+    def from_aig(self, aig):
+        self.init_datafields()
 
+        order = aiger.common.eval_order(aig)
+        print("Total vertices in graph:", len(order))
+
+        self.graph_edges_from_topsort(order)
+
+        self.outputs = set()
         for output in aig.outputs:
             assert output in aig.node_map
-            outputs.add(node_to_name[aig.node_map[output]])
-
-        print('Outputs', outputs)
-
-        self.node_names = node_names
-        self.outputs = outputs
-        self.debug_print()
+            output_node_name = self.node_to_name[aig.node_map[output]]
+            self.output_name_to_node_name[output] = output_node_name
+            self.outputs.add(output_node_name)
 
     def replace_in_list(self, children, what, with_what):
         for i in range(0, len(children)):
@@ -226,25 +195,24 @@ class Graph:
 
         # Clean the node from all the structures in the graph
         ans += 1
-        print("removing", v)
+        print("Pruning ", v)
         self.children.pop(v)
         self.parents.pop(v)
 
         try:
             self.node_names.remove(v)
         except ValueError:
-            # Sometimes we replace deleted node name
-            # earlier in the pruning process to keep topological
-            # order 
+            # Sometimes we replace deleted node name earlier
+            # in the pruning process to keep topological order
             pass
         return ans
 
     def prune(self, to_prune, to_leave, are_equivalent):
-        # self.debug_print()
         if to_prune in self.outputs and to_leave in self.outputs:
             assert False, "Pruning one of two outputs is unsupported yet"
 
-        # TODO this could be optimized, just precalculate topological number once
+        # Just to make sure that `to_prune` is topologically later than `to_leave`.
+        # TODO this could be optimized, just precalculate topological number once.
         for v in self.node_names:
             if v == to_prune:
                 tmp = to_prune
@@ -254,9 +222,6 @@ class Graph:
             if v == to_leave:
                 break
 
-        was_new_inverter_added = False
-        # From here, `and_b` is topologically earlier than `and_a`.
-
         if are_equivalent:
             for parent in self.parents[to_prune]:
                 self.replace_in_list(self.children[parent], to_prune, to_leave)
@@ -264,10 +229,10 @@ class Graph:
             if to_prune in self.outputs:
                 self.outputs.remove(to_prune)
                 self.outputs.add(to_leave)
+            return self.cut_only(to_prune)
         else:
             new_inv_name = 'i_new' + str(self.last_new_inv)
             print("Inserting new inverter node", new_inv_name)
-            was_new_inverter_added = True
             self.last_new_inv += 1
 
             self.parents[to_leave].append(new_inv_name)
@@ -282,12 +247,10 @@ class Graph:
                 self.outputs.remove(to_prune)
                 self.outputs.add(new_inv_name)
 
+            # TODO 'cut' vs 'copy' replace problem
             self.replace_in_list(self.node_names, to_prune, new_inv_name)
 
-        res = self.cut_only(to_prune)
-        if was_new_inverter_added:
-            res -= 1
-        return res
+            return self.cut_only(to_prune) - 1
 
     def debug_print(self):
         print("-----   DEBUG PRINTING GRAPH   -----")
@@ -306,4 +269,4 @@ class Graph:
         return pool.v_to_id(input)
 
     def what_output_var(self, output, pool):
-        return pool.v_to_id(output)
+        return pool.v_to_id(self.output_name_to_node_name[output])
