@@ -30,7 +30,6 @@ class TGraph:
                 i, b, c = key['ids']
                 result = variable > 0
                 node_truthtables_2[i][b][c] = result
-                node_truthtables_2[i][0][0] = False
                 if pretty_print:
                     print("Vertex", i, "produces from", b, c,
                           "value", result)
