@@ -1,14 +1,22 @@
 import pysat
-import graph as G
+import time
 
 from pysat.solvers import Minisat22
 import aiger
 from aiger_cnf import aig2cnf
 
+import matplotlib.pyplot as plt
+import numpy as np
+import json
+
 import helpers as H
+import graph as G
+
+instances = []
 
 
 def try_prune_all_pairs(g, formula, pool, last_min):
+    global instances
     removed_set = set()
     with Minisat22(bootstrap_with=formula.clauses) as solver:
         for i in range(last_min, len(g.node_names)):
@@ -33,8 +41,11 @@ def try_prune_all_pairs(g, formula, pool, last_min):
                         var_j = pool.v_to_id(name_2)
                         var_i *= bit_i
                         var_j *= bit_j
+                        t1 = time.time()
                         results.append(solver.solve(
                             assumptions=[var_i, var_j]))
+                        t2 = time.time()
+                        instances.append(t2 - t1)
 
                 if results == [True, False, False, True]:
                     assert name_2 not in removed_set
@@ -102,27 +113,58 @@ def validate_against_aig(g, aig):
             print("Your schema is non-equivalent to the source schema :(")
 
 
+def cumulative_instances_plot(instances):
+    manager = plt.get_current_fig_manager()
+    manager.resize(*manager.window.maxsize())
+
+    x_data = []
+    y_data = []
+    for i in range(0, len(instances)):
+        x_data.append(i)
+        y_data.append(instances[i])
+
+    plt.plot(x_data, y_data, "-r")
+    plt.savefig("./tmp.png")
+    plt.show()
+
+    # instances
+    # instances.sort()
+    # print(instances[0:100])
+    # print(instances[-100:])
+    # with open("instances_solving_times.txt", "w+") as f:
+    #     f.write(str(instances))
+
+
 def main():
+    with open("./aligned_instances_2.txt") as f:
+        instances = list(map(float, f.readlines()))
+        cumulative_instances_plot(instances)
+    
     # test_path = "./sorts/BubbleSort_7_4.aig"
-    test_path = "./small-manual-graph.aag"
-    aig_instance = aiger.load(test_path)
+    # # test_path = "./small-manual-graph.aag"
+    # aig_instance = aiger.load(test_path)
 
-    pool = H.TPoolHolder()
-    g = G.Graph()
-    g.from_file(test_path)
+    # pool = H.TPoolHolder()
+    # g = G.Graph()
+    # g.from_aig(aig_instance)
 
-    total_pruned = 0
-    last_min = 0
-    while True:
-        formula = H.make_formula_from_my_graph(g, pool)
-        g, was_pruned, last_min, pruned_this_time = try_prune_all_pairs(
-            g, formula, pool, last_min)
-        total_pruned += pruned_this_time
-        if not was_pruned:
-            break
-    print(total_pruned)
+    # t1 = time.time()
+    # total_pruned = 0
+    # last_min = 0
+    # while True:
+    #     formula = H.make_formula_from_my_graph(g, pool)
+    #     g, was_pruned, last_min, pruned_this_time = try_prune_all_pairs(
+    #         g, formula, pool, last_min)
+    #     total_pruned += pruned_this_time
+    #     if not was_pruned:
+    #         break
 
-    validate_against_aig(g, aig_instance)
+    # print(total_pruned)
+    # t2 = time.time()
+    # print(t2 - t1)
+    # cumulative_instances_plot()
+
+    # # validate_against_aig(g, aig_instance)
 
 
 if __name__ == "__main__":

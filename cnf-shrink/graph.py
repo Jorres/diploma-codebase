@@ -99,9 +99,9 @@ class Graph:
             self.node_to_name[i] = name
             self.node_names.append(name)
 
-        assert last_and == self.last_a_gate
-        assert last_inv == self.last_i_gate
-        assert len(self.node_names) == len(order)
+        # assert last_and == self.last_a_gate
+        # assert last_inv == self.last_i_gate
+        # assert len(self.node_names) == len(order)
 
     def parse_top_order_from_lines(self, n_inputs, n_outputs, n_ands, lines):
         order = []

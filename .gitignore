@@ -7,3 +7,8 @@ __pycache__
 .todo
 
 papers
+
+py-aiger
+
+# Large files (logs or experiment results)
+*large*
