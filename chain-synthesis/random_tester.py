@@ -3,13 +3,12 @@ import validator as V
 import helpers as H
 
 
-def run_random(max_n, max_m, amount, max_size, mode):
+def run_random(n, m, amount, max_size, mode):
     schema_generator = S.TSchemaPipeline(should_pretty_print=False, mode=mode)
     for num in range(0, amount):
-        n, m, f_truthtables = H.make_random_test(max_n, max_m)
+        n, m, f_truthtables = H.make_precise_test(n, m)
 
         gr = schema_generator.generate_schema(n, m, f_truthtables, max_size)
-
         V.validate(gr, f_truthtables, n, m)
 
 

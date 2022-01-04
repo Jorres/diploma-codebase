@@ -54,18 +54,6 @@ class TFenceEnumerator:
             else:
                 return None
 
-    def tmptest(self):
-        while True:
-            self.next_partition()
-            if self.part is not None:
-                while True:
-                    self.next_permutation()
-                    if self.perm is None:
-                        break
-                    print(self.perm)
-            else:
-                return None
-
 
 def main():
     fg = TFenceEnumerator(10)

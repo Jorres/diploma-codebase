@@ -14,6 +14,9 @@ class TFenceGenerator:
     def refresh(self):
         self.pool = H.TPoolHolder()
 
+    def clean_formulas(self):
+        pass
+
     def launch_solver(self, cur_size, formula, prop_limit):
         with Minisat22(bootstrap_with=formula.clauses, use_timer=True) as solver:
             solver.prop_budget(prop_limit)

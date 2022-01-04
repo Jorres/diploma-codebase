@@ -8,16 +8,25 @@ from pysat.solvers import Minisat22
 class TBruteGenerator:
     def __init__(self, pipeline):
         self.pipeline = pipeline
+        self.formulas = []
 
     def refresh(self):
         self.pool = H.TPoolHolder()
 
+    def clean_formulas(self):
+        self.formulas = []
+
     def try_solve(self, f_truthtables, n, m, cur_size):
         formula = self.construct_formula(
             f_truthtables, n, m, cur_size)
+        self.formulas.append(formula)
         t1 = time.time()
         solved, model = self.launch_solver(cur_size, formula)
         t2 = time.time()
+        if t2 - t1 > 10:
+            for i, f in enumerate(self.formulas):
+                f.to_file("sample_2/difficult_cnf_" + str(i) + ".txt")
+            exit(0)
         return solved, model, t2 - t1
 
     def not_equal(self, char, ids, bit):
