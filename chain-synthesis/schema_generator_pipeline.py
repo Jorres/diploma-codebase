@@ -19,7 +19,6 @@ class TSchemaPipeline():
     def generate_schema(self, n, m, f_truthtables, schema_size):
         self.acc_time = 0
         self.time_per_topology = []
-        self.generator.clean_formulas()
         for cur_size in range(1, int(schema_size)):
             solved, gr = self.generate_fixed_size_schema(n, m, f_truthtables, cur_size)
             if solved:
