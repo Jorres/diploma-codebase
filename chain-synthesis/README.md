@@ -10,20 +10,5 @@ and keeping a log of what optimizations where done and their usefulness.
 
 ## Usage
 
-Run `python app.py --help`.
-You can also run `--help` on subcommands.
-
-
-## Random notes go brr
-
-Kulikov's presentation + lecture.
-What else could DAGs bring except for bottom-to-top minimizations?
-
-Local optimization of:
-single pieces (when schema is already complex and no small part is optimal)
-OR 
-pairs of pieces (5-adder from two 3-adders).
-
-Matching results from DAG paper is no longer a goal in itself.
-
-
+Running `python app.py --help` will list subcommands of the application.
+Run `--help` on subcommands (e.g. `python app.py run_random --help`) to see what each subcommand does.

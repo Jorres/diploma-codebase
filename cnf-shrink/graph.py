@@ -14,10 +14,11 @@ class Graph:
         self.parents[child].append(parent)
 
     def init_datafields(self):
-        self.last_new_inv = 0
         self.children = defaultdict(list)
         self.parents = defaultdict(list)
         self.output_name_to_node_name = dict()
+
+        self.last_new_inv = 0
 
         self.node_names = []
         self.node_to_name = dict()
@@ -25,6 +26,7 @@ class Graph:
         self.last_i_gate = 0
         self.last_v_gate = 0
         self.last_a_gate = 0
+        self.inputs = 0
 
         # this is a small custom dict, it has all the node ids
         # and their mapping to names. For example,
@@ -81,6 +83,7 @@ class Graph:
             # Zero children mean simple input
             if le == 0:
                 name = i.name
+                self.inputs += 1 
             # One child means inverter gate
             if le == 1:
                 name = 'i' + str(last_inv)
@@ -270,3 +273,22 @@ class Graph:
 
     def what_output_var(self, output, pool):
         return pool.v_to_id(self.output_name_to_node_name[output])
+
+    def calculate_schema_on_inputs(self, inputs):
+        result = dict()  # map from node_name to node value on these inputs
+        for i, input_val in enumerate(inputs):
+            name = 'v' + str(i)
+            result[name] = inputs[i]
+
+        for name in self.node_names:
+            if name.startswith('i'):
+                child = self.children[name][0]
+                assert child in result
+                result[name] = not result[child]
+            elif name.startswith('a'):
+                child_left = self.children[name][0]
+                child_right = self.children[name][1]
+                assert child_left in result
+                assert child_right in result
+                result[name] = result[child_left] and result[child_right]
+        return result

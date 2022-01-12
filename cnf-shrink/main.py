@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 
-import helpers as H
+import formula_builder as FB
 import graph as G
 
 instances = []
@@ -71,8 +71,8 @@ def validate_against_aig(g, aig):
         for var in clause:
             shift = max(shift, var)
 
-    pool = H.TPoolHolder(start_from=shift + 1)
-    my_cnf = H.make_formula_from_my_graph(g, pool)
+    pool = FB.TPoolHolder(start_from=shift + 1)
+    my_cnf = FB.make_formula_from_my_graph(g, pool)
     final_cnf = my_cnf.clauses
     for clause in start_cnf.clauses:
         if len(clause) == 1:
@@ -144,7 +144,7 @@ def main():
     # # test_path = "./small-manual-graph.aag"
     # aig_instance = aiger.load(test_path)
 
-    # pool = H.TPoolHolder()
+    # pool = FB.TPoolHolder()
     # g = G.Graph()
     # g.from_aig(aig_instance)
 
@@ -152,7 +152,7 @@ def main():
     # total_pruned = 0
     # last_min = 0
     # while True:
-    #     formula = H.make_formula_from_my_graph(g, pool)
+    #     formula = FB.make_formula_from_my_graph(g, pool)
     #     g, was_pruned, last_min, pruned_this_time = try_prune_all_pairs(
     #         g, formula, pool, last_min)
     #     total_pruned += pruned_this_time
