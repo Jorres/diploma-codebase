@@ -26,6 +26,7 @@ class Graph:
         self.last_i_gate = 0
         self.last_v_gate = 0
         self.last_a_gate = 0
+
         self.inputs = 0
 
         # this is a small custom dict, it has all the node ids

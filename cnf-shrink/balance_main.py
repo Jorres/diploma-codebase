@@ -15,7 +15,7 @@ from pysat.solvers import Minisat22
 from aiger_cnf import aig2cnf
 
 # algorithm hyperparameters
-UNBALANCEDNESS_THRESHOLD = 0.03
+DISBALANCE_THRESHOLD = 0.03
 CHUNK_SIZE = 10
 MAX_CARTESIAN_PRODUCT_SIZE = 100000
 
@@ -28,23 +28,24 @@ def find_unbalanced(g):
 
     print("Random sampling unbalanced nodes, {} samples".format(random_sample_size))
     had_true_on_node = defaultdict(int)
+
     percentage = 0
     for i, input in enumerate(random_sample):
         percentage_step = 0.05
         if (percentage + percentage_step) * random_sample_size < i:
             percentage += percentage_step
             U.stdout_sticky_line("\rRandom sampling unbalanced nodes: {}% done".format(round(percentage * 100)))
-
         data = g.calculate_schema_on_inputs(input)
         for name, value in data.items():
             if value:
                 had_true_on_node[name] += 1
 
+    # list(saturation, var_name)
     fractions = list(map(lambda name_cnt: (name_cnt[1] / random_sample_size, name_cnt[0]),
                          had_true_on_node.items()))
 
     thresholded_unbalanced = list(filter(
-        lambda p: p[0] < UNBALANCEDNESS_THRESHOLD or p[0] > (1 - UNBALANCEDNESS_THRESHOLD), fractions))
+        lambda p: p[0] < DISBALANCE_THRESHOLD or p[0] > (1 - DISBALANCE_THRESHOLD), fractions))
 
     unbalanced_nodes = list(map(lambda p: p[1], thresholded_unbalanced))
     return unbalanced_nodes
@@ -150,7 +151,7 @@ def check_for_equivalence(g1, g2, domains_info):
                         modifier = 1
                     else:
                         modifier = -1
-                    assumptions.append(modifier * pool2.v_to_id(gate))
+                    assumptions.append(modifier * pool1.v_to_id(gate))
             result = solver.solve(assumptions=assumptions)
             if result:
                 print("\nSchemas are not equivalent, SAT on miter scheme has been found")
@@ -264,6 +265,44 @@ def domain_eqivalence_check(test_path_left, test_path_right):
     print("Running", test_path_left, "against", test_path_right, "took", str(t2 - t1), "seconds")
 
 
+def get_outputs_on(g, inputs):
+    raw_outputs = g.calculate_schema_on_inputs(inputs)
+    named_outputs = []
+    for i in range(28):
+        named_outputs.append(raw_outputs[g.output_name_to_node_name['o' + str(i)]])
+    return named_outputs
+
+def validate_graph_building():
+    left_schema = aiger.load("./sorts/PancakeSort_7_4.aig")
+    right_schema = aiger.load("./sorts/BubbleSort_7_4.aig")
+
+    g1 = G.Graph()
+    g1.from_aig(left_schema)
+    g2 = G.Graph()
+    g2.from_aig(right_schema)
+
+    inputs = [0 for i in range(28)]
+    for i in range(4):
+        inputs[i * 8] = 1
+    inputs[0] = 1
+    print(g1.outputs)
+    print(g2.outputs)
+    outputs_left = get_outputs_on(g1, inputs)
+    outputs_right = get_outputs_on(g2, inputs)
+    print(outputs_left)
+    print(outputs_right)
+
+# def aiger_insert_proof_incorrect():
+#     insert_aig = aiger.load("./sorts/InsertSort_7_4.aig")
+#     dict_init = dict()
+#     dict_run = dict()
+#     for i in range(28):
+#         dict_init['o' + str(i)] = True
+#         dict_run['o' + str(i)] = 0
+#     insert_aig(inputs=dict_init)
+#     sim = insert_aig.simulate([dict_run])
+#     print(sim)
+
 if __name__ == "__main__":
     # naive_equivalence_check("./sorts/PancakeSort_10_8.aig")
     # naive_equivalence_check("./sorts/InsertSort_10_8.aig")
@@ -271,5 +310,6 @@ if __name__ == "__main__":
     # naive_equivalence_check("./sorts/PancakeSort_7_4.aig")
     # naive_equivalence_check("./sorts/InsertSort_7_4.aig")
     # naive_equivalence_check("./sorts/BubbleSort_7_4.aig")
-    domain_eqivalence_check("./sorts/InsertSort_7_4.aig", "./sorts/BubbleSort_7_4.aig")
+    domain_eqivalence_check("./sorts/BubbleSort_7_4.aig", "./sorts/BubbleSortFaulty_7_4.aig")
+    # validate_graph_building()
 
