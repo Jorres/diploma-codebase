@@ -1,8 +1,8 @@
 import aiger
 import formula_builder as FB
 import graph as G
+import utils as U
 
-import pysat
 import time
 import random
 import sys
@@ -14,13 +14,10 @@ from collections import defaultdict
 from pysat.solvers import Minisat22
 from aiger_cnf import aig2cnf
 
-logging_enabled = True
-
-
-def mylog(*args):
-    global logging_enabled
-    if logging_enabled:
-        print(*args)
+# algorithm hyperparameters
+UNBALANCEDNESS_THRESHOLD = 0.03
+CHUNK_SIZE = 10
+MAX_CARTESIAN_PRODUCT_SIZE = 100000
 
 
 def find_unbalanced(g):
@@ -29,15 +26,14 @@ def find_unbalanced(g):
     random_sample = [[random.choice([True, False])for t in range(
         g.inputs)] for i in range(random_sample_size)]
 
-    mylog("Random sampling unbalanced nodes, {} samples".format(random_sample_size))
+    print("Random sampling unbalanced nodes, {} samples".format(random_sample_size))
     had_true_on_node = defaultdict(int)
     percentage = 0
     for i, input in enumerate(random_sample):
         percentage_step = 0.05
         if (percentage + percentage_step) * random_sample_size < i:
             percentage += percentage_step
-            sys.stdout.write("\rRandom sampling unbalanced nodes: {}% done".format(round(percentage * 100)))
-            sys.stdout.flush()
+            U.stdout_sticky_line("\rRandom sampling unbalanced nodes: {}% done".format(round(percentage * 100)))
 
         data = g.calculate_schema_on_inputs(input)
         for name, value in data.items():
@@ -47,22 +43,18 @@ def find_unbalanced(g):
     fractions = list(map(lambda name_cnt: (name_cnt[1] / random_sample_size, name_cnt[0]),
                          had_true_on_node.items()))
 
-    unbalancedness_threshold = 0.03
     thresholded_unbalanced = list(filter(
-        lambda p: p[0] < unbalancedness_threshold or p[0] > (1 - unbalancedness_threshold), fractions))
-
-    # random.shuffle(thresholded_unbalanced)
+        lambda p: p[0] < UNBALANCEDNESS_THRESHOLD or p[0] > (1 - UNBALANCEDNESS_THRESHOLD), fractions))
 
     unbalanced_nodes = list(map(lambda p: p[1], thresholded_unbalanced))
     return unbalanced_nodes
 
 
 def calculate_domains(g, unbalanced_nodes):
-    mylog("Total unbalanced nodes selected: ", len(unbalanced_nodes))
-    chunk_size = 10
-    chunks = [unbalanced_nodes[x:x+chunk_size]
-              for x in range(0, len(unbalanced_nodes), chunk_size)]
-    mylog("Total domains to be built with size {}: {}".format(chunk_size, len(chunks)))
+    print("Total unbalanced nodes selected: ", len(unbalanced_nodes))
+    chunks = [unbalanced_nodes[x:x+CHUNK_SIZE]
+              for x in range(0, len(unbalanced_nodes), CHUNK_SIZE)]
+    print("Total domains to be built with size {}: {}".format(CHUNK_SIZE, len(chunks)))
     domains = list()
 
     pool = FB.TPoolHolder()
@@ -73,14 +65,13 @@ def calculate_domains(g, unbalanced_nodes):
             percentage_step = 0.01
             if (percentage + percentage_step) * len(chunks) < chunk_id:
                 percentage += percentage_step
-                sys.stdout.write("\rProcessing chunks: {}%".format(round(percentage * 100)))
-                sys.stdout.flush()
+                U.stdout_sticky_line("\rProcessing chunks: {}%".format(round(percentage * 100)))
             domain = list()
 
-            cur_chunk_size = len(chunk)
-            for i in range(0, 2 ** cur_chunk_size):
+            cur_CHUNK_SIZE = len(chunk)
+            for i in range(0, 2 ** cur_CHUNK_SIZE):
                 assumptions = list()
-                for unit_id in range(0, cur_chunk_size):
+                for unit_id in range(0, cur_CHUNK_SIZE):
                     if (i & (1 << unit_id)) > 0:
                         modifier = 1
                     else:
@@ -97,24 +88,19 @@ def calculate_domains(g, unbalanced_nodes):
                                              p[0], p[1]), domains)
     best_domains = sorted(list(domains_with_saturation))
 
-    mylog("Ten first domains:")
+    print("Ten first domains:")
     for i, (saturation, gate_names, domain) in enumerate(best_domains[:10]):
-        mylog("Domain {}, domain size {}, saturation {} / 1".format(i,
+        print("Domain {}, domain size {}, saturation {} / 1".format(i,
               len(domain), len(domain) / (2 ** len(gate_names))))
 
     cartesian_size = 1
     limited_domains = list()
     i = 0
-    while i < len(best_domains) and cartesian_size * len(best_domains[i][2]) < 100000:
+    while i < len(best_domains) and cartesian_size * len(best_domains[i][2]) < MAX_CARTESIAN_PRODUCT_SIZE:
         limited_domains.append(best_domains[i])
         cartesian_size *= len(best_domains[i][2])
         i += 1
     return limited_domains
-
-# ideas
-# there may be massive gains from optimizing hyperparameters (how 'empty' the domains
-# should be, the length of a chunk (tradeoff between calculating domains and actually
-# solving SAT instances))
 
 
 def check_for_equivalence(g1, g2, domains_info):
@@ -124,7 +110,7 @@ def check_for_equivalence(g1, g2, domains_info):
     total_combs = 1
     for v in map(lambda x: len(x), domains_only):
         total_combs *= v
-    mylog("Total size of cartesian product of the domains:", total_combs)
+    print("Total size of cartesian product of the domains:", total_combs)
 
     pool1 = FB.TPoolHolder()
     f1 = FB.make_formula_from_my_graph(g1, pool1)
@@ -133,7 +119,8 @@ def check_for_equivalence(g1, g2, domains_info):
     # Therefore, 'v123' in the first pool will have a different id
     # then a 'v123' in the second. It would be better to handle collisions
     # on 'Graph' class level, for instance by generating some prefix to all names,
-    # but that would require some significant refactoring. TODO later.
+    # but that would require some significant refactoring. Therefore I just use 
+    # two pool instances. TODO later.
     shift = -1
     for clause in f1.clauses:
         for var in clause:
@@ -143,19 +130,19 @@ def check_for_equivalence(g1, g2, domains_info):
     shared_cnf = f1.clauses + f2.clauses
 
     final_cnf = generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2)
-    mylog("Miter schema generated. Iterating over cartesian product now")
+    print("Miter schema generated. Iterating over cartesian product now")
 
     with Minisat22(bootstrap_with=final_cnf) as solver:
         percentage = 0
         comb_id = 0
         for combination in combinations:
-            sys.stdout.write("\rProcessing cartesian product element number %i" % comb_id)
-            sys.stdout.flush()
             comb_id += 1
             percentage_step = 0.01
+
             if (percentage + percentage_step) * total_combs < comb_id:
                 percentage += percentage_step
-                mylog("Combinations: {}%".format(round(percentage * 100)))
+                U.stdout_sticky_line("\rCombinations processed: {}%".format(round(100 * percentage)))
+
             assumptions = list()
             for domain_id, domain_value in enumerate(combination):
                 for unit_id, gate in enumerate(domains_info[domain_id][1]):
@@ -166,7 +153,7 @@ def check_for_equivalence(g1, g2, domains_info):
                     assumptions.append(modifier * pool2.v_to_id(gate))
             result = solver.solve(assumptions=assumptions)
             if result:
-                print("Schemas are not equivalent, SAT on miter scheme has been found")
+                print("\nSchemas are not equivalent, SAT on miter scheme has been found")
                 return
     print("Schemas are equivalent, UNSAT has been achieved on every element from cartesian join")
 
@@ -199,8 +186,6 @@ def generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2):
     shared_cnf.append(lst)
     return shared_cnf
 
-
-# TODO finally, launch measurement. On BubbleSort, for starters.
 
 def validate_against_aig(g, aig):
     start_cnf = aig2cnf(aig.aig)
@@ -251,7 +236,7 @@ def validate_against_aig(g, aig):
             print("Your schema is non-equivalent to the source schema :(")
 
 
-def run_test_for(test_path):
+def naive_equivalence_check(test_path):
     aig_instance = aiger.load(test_path)
 
     g1 = G.Graph()
@@ -262,49 +247,29 @@ def run_test_for(test_path):
     print("Running", test_path, "took", str(t2 - t1))
 
 
-if __name__ == "__main__":
-    # run_test_for("./sorts/PancakeSort_10_8.aig")
-    # run_test_for("./sorts/InsertSort_10_8.aig")
-    # run_test_for("./sorts/BubbleSort_10_8.aig")
-    # run_test_for("./sorts/PancakeSort_7_4.aig")
-    # run_test_for("./sorts/InsertSort_7_4.aig")
-    # run_test_for("./sorts/BubbleSort_7_4.aig")
-
-    test_path = "./sorts/BubbleSort_7_4.aig"
-    aig_instance = aiger.load(test_path)
+def domain_eqivalence_check(test_path_left, test_path_right):
+    left_schema = aiger.load(test_path_left)
+    right_schema = aiger.load(test_path_right)
     g1 = G.Graph()
-    g1.from_aig(aig_instance)
+    g1.from_aig(left_schema)
     g2 = G.Graph()
-    g2.from_aig(aig_instance)
+    g2.from_aig(right_schema)
     t1 = time.time()
-    mylog("Graph built")
-    mylog("Looking for unbalanced nodes")
+    print("Graph built, looking for unbalanced nodes")
     unbalanced_nodes = find_unbalanced(g1)
-    mylog("Unbalanced nodes found")
-    # for i in range(0, 3):
-    #     random.shuffle(unbalanced_nodes)
+    print("Unbalanced nodes found")
     best_domains = calculate_domains(g1, unbalanced_nodes)
     check_for_equivalence(g1, g2, best_domains)
     t2 = time.time()
-    print("Running", test_path, "took", str(t2 - t1))
+    print("Running", test_path_left, "against", test_path_right, "took", str(t2 - t1), "seconds")
 
 
-# I also should notice that decreasing random sample size
-# could provide more than twice the speedup.
+if __name__ == "__main__":
+    # naive_equivalence_check("./sorts/PancakeSort_10_8.aig")
+    # naive_equivalence_check("./sorts/InsertSort_10_8.aig")
+    # naive_equivalence_check("./sorts/BubbleSort_10_8.aig")
+    # naive_equivalence_check("./sorts/PancakeSort_7_4.aig")
+    # naive_equivalence_check("./sorts/InsertSort_7_4.aig")
+    # naive_equivalence_check("./sorts/BubbleSort_7_4.aig")
+    domain_eqivalence_check("./sorts/InsertSort_7_4.aig", "./sorts/BubbleSort_7_4.aig")
 
-# chunk size 12 is somewhat difficult already, and the slowdown
-# is quite steep
-
-# All times in seconds unless specified otherwise.
-#
-# Sorting | size  | graph-size | naive-time | domain-time
-# Insert  | large | 6997       | N/A        | estimated 2 days
-# Insert  | small | 1522       | 13         | 10
-# Bubble  | large | ~8200      | 1940       | 180
-# Bubble  | small | 1694       | 37         | 12
-# Pancake | large | ~31000     | > 14h, N/A | 1440
-# Pancake | small | 5054       | 553        | 52
-#
-# N/A == did not finish, aborted
-# Large means 10 * 8 = 80 inputs
-# Small means 7  * 4 = 28 inputs
