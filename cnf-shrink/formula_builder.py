@@ -4,15 +4,17 @@ from pysat.solvers import Minisat22
 
 class TPoolHolder():
     def __init__(self, start_from=1):
-        self.vpool = pysat.formula.IDPool(start_from=start_from)
+        self.id_pool = pysat.formula.IDPool(start_from=start_from)
 
     def v_to_id(self, name):
-        return self.vpool.id(name)
+        return self.id_pool.id(name)
 
     def id_to_v(self, id):
-        return self.vpool.obj(id)
+        return self.id_pool.obj(id)
 
 
+# Just a simple Tseytin encoding of a schema
+# where only AND's and NOT's are present.
 def make_formula_from_my_graph(g, pool):
     formula = pysat.formula.CNF()
 

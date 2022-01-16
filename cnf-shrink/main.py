@@ -10,20 +10,23 @@ from aiger_cnf import aig2cnf
 import formula_builder as FB
 import graph as G
 
-# algorithm hyperparameters
+# Algorithm hyperparameters:
+
+# How disbalanced a gate is allowed to be to enter any of the bucket
 DISBALANCE_THRESHOLD = 0.03
-BUCKET_SIZE = 10
-MAX_CARTESIAN_PRODUCT_SIZE = 100000
+
+# This one is best left between 10 and 15, 2 ^ BUCKET_SIZE tasks are solved
+BUCKET_SIZE = 13
+
+# Ideally, for every test there exists a perfect moment where we can stop
+# adding domains into the cartesian product. But this is some reasonable
+# threshold based on sorting tests
+MAX_CARTESIAN_PRODUCT_SIZE = 50000000
+
 RANDOM_SAMPLE_SIZE = 10000
 
 
-def get_from_cnf(cnf, var):
-    if var in cnf:
-        return 1
-    assert -1 * var in cnf
-    return 0
-
-
+# Returns names of nodes that are unbalanced enough, based on DISBALANCE_THRESHOLD.
 def find_unbalanced_gates(g):
     random_sample = [[random.choice([True, False]) for t in range(
         g.n_inputs)] for i in range(RANDOM_SAMPLE_SIZE)]
@@ -34,7 +37,7 @@ def find_unbalanced_gates(g):
     percentage = 0
     for i, input in enumerate(random_sample):
         percentage_step = 0.05
-        if (percentage + percentage_step) * RANDOM_SAMPLE_SIZE < i:
+        while (percentage + percentage_step) * RANDOM_SAMPLE_SIZE < i:
             percentage += percentage_step
             print("Random sampling unbalanced nodes: {}% done".format(
                 round(percentage * 100)))
@@ -43,57 +46,51 @@ def find_unbalanced_gates(g):
             if value:
                 had_true_on_node[name] += 1
 
-    # list(saturation, node_name)
+    # map each gate to its saturation
     fractions = list(map(lambda name_cnt: (name_cnt[1] / RANDOM_SAMPLE_SIZE, name_cnt[0]),
                          had_true_on_node.items()))
 
-    # list(saturation, node_name)
+    # filter the gates that are unbalanced enough
     thresholded_unbalanced = list(filter(
         lambda p: p[0] < DISBALANCE_THRESHOLD or p[0] > (1 - DISBALANCE_THRESHOLD), fractions))
 
-    # list(node_name)
+    # leave only gate names
     unbalanced_nodes = list(map(lambda p: p[1], thresholded_unbalanced))
     return unbalanced_nodes
 
 
-def run_checkup_calculation(g, domains_info):
-    inputs = [0 for i in range(28)]
-    inputs[0] = 1
-    results = g.calculate_schema_on_inputs(inputs)
-
-    long_checkup_domain = list()
-    for (saturation, bucket, domain) in domains_info:
-        cur_domain_value = 0
-        for gate_id, gate_name in enumerate(bucket):
-            elem = 0
-            if results[gate_name]:
-                elem = 1
-            cur_domain_value += elem * (2 ** gate_id)
-        long_checkup_domain.append(cur_domain_value)
-        assert cur_domain_value in domain
-    return long_checkup_domain
-
-
-def calculate_domain_saturations(g, unbalanced_nodes):
+# Calculates a list of tuples:
+# (saturation, bucket, domain, tag)
+# saturation - value (0-1]
+# bucket - list of node names, of which the bucket consists
+# domain - list of positive ints, every int is a bitvector of length len(bucket)
+# tag - either L or R for the left or right half of a miter schema, accordingly
+def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
     print("Total unbalanced nodes selected: ", len(unbalanced_nodes))
-
     buckets = [unbalanced_nodes[x:x+BUCKET_SIZE]
                for x in range(0, len(unbalanced_nodes), BUCKET_SIZE)]
-    print("Total domains to be built with size {}: {}".format(
+    print("Total buckets to be built with size {}: {}".format(
         BUCKET_SIZE, len(buckets)))
 
     domains = list()
 
-    pool = FB.TPoolHolder()
+    pool = FB.TPoolHolder(start_from=start_from)
     formula = FB.make_formula_from_my_graph(g, pool)
+
+    shift = -1
+    for clause in formula.clauses:
+        for var in clause:
+            shift = max(shift, abs(var))
 
     with Minisat22(bootstrap_with=formula.clauses) as solver:
         percentage = 0
         for bucket_id, bucket in enumerate(buckets):
             percentage_step = 0.01
             if (percentage + percentage_step) * len(buckets) < bucket_id:
-                percentage += percentage_step
-                print("Processing buckets: {}%".format(round(percentage * 100)))
+                while (percentage + percentage_step) * len(buckets) < bucket_id:
+                    percentage += percentage_step
+                print("Calculating domain saturation: {}%".format(
+                    round(percentage * 100)))
             domain = list()
 
             cur_bucket_size = len(bucket)
@@ -111,137 +108,86 @@ def calculate_domain_saturations(g, unbalanced_nodes):
                     domain.append(i)
 
             domains.append((bucket, domain))
-    # domains: list(bucket (list of gates), domain (list of possible values))
 
-    # list(saturation, bucket, domain)
-    domains_with_saturation = map(lambda p: (len(p[1]) / (2 ** len(p[0])),
-                                             p[0], p[1]), domains)
-    sorted_domains = sorted(list(domains_with_saturation))
+    # calculate saturation for each domain
+    domains_with_saturation = list(map(lambda p: (len(p[1]) / (2 ** len(p[0])),
+                                                  p[0], p[1], tag), domains))
 
-    print("Ten first domains:")
-    for i, (saturation, bucket, domain) in enumerate(sorted_domains[:10]):
-        print("Domain {}, domain size {}, saturation {} / 1".format(i,
-              len(domain), len(domain) / (2 ** len(bucket))))
+    return domains_with_saturation, shift
+
+
+# Calculates a cartesian product, encodes a miter schema, 
+# then iterates over the product to make sure there is UNSAT on every possible
+# combination of domain values.
+def check_for_equivalence(g1, g2, domains_info_left, domains_info_right):
+    shared_domain_info = sorted(domains_info_left + domains_info_right)
 
     cartesian_size = 1
     best_domains = list()
-    i = 0
-    while i < len(sorted_domains) and cartesian_size * len(sorted_domains[i][2]) < MAX_CARTESIAN_PRODUCT_SIZE:
-        best_domains.append(sorted_domains[i])
-        cartesian_size *= len(sorted_domains[i][2])
-        i += 1
-    return best_domains
+    for (saturation, bucket, domain, tag) in shared_domain_info:
+        if cartesian_size * len(domain) > MAX_CARTESIAN_PRODUCT_SIZE:
+            break
+        best_domains.append(domain)
+        cartesian_size *= len(domain)
 
+    # construct the cartesian product of selected domains:
+    combinations = itertools.product(*best_domains)
 
-def compare(lst, tup):
-    return tuple(lst) == tup
+    print("Total size of cartesian product of the domains:", cartesian_size)
 
-
-def check_for_equivalence(g1, g2, domains_info):
-    domains_only = list(map(lambda d: d[2], domains_info))
-    combinations = itertools.product(*domains_only)
-
-    total_combs = 1
-    for v in map(lambda x: len(x), domains_only):
-        total_combs *= v
-    print("Total size of cartesian product of the domains:", total_combs)
-
-    pool1 = FB.TPoolHolder()
-    f1 = FB.make_formula_from_my_graph(g1, pool1)
+    pool_left = FB.TPoolHolder()
+    f_left = FB.make_formula_from_my_graph(g1, pool_left)
 
     # Here we solve the problem of clashing names by separating pools.
     # Therefore, 'v123' in the first pool will have a different id
     # then a 'v123' in the second. It would be better to handle collisions
     # on 'Graph' class level, for instance by generating some prefix to all names,
     # but that would require some significant refactoring. Therefore I just use
-    # two pool instances. TODO later.
+    # two pool instances. TODO refactor later.
     shift = -1
-    for clause in f1.clauses:
+    for clause in f_left.clauses:
         for var in clause:
             shift = max(shift, abs(var))
 
-    pool2 = FB.TPoolHolder(start_from=shift + 1)
-    f2 = FB.make_formula_from_my_graph(g2, pool2)
-    shared_cnf = f1.clauses + f2.clauses
+    pool_right = FB.TPoolHolder(start_from=shift + 1)
+    f_right = FB.make_formula_from_my_graph(g2, pool_right)
+    shared_cnf = f_left.clauses + f_right.clauses
 
-    checkup_value = run_checkup_calculation(g1, domains_info)
-
-    final_cnf = generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2)
+    final_cnf = generate_miter_scheme(
+        shared_cnf, pool_left, pool_right, g1, g2)
     print("Miter schema generated. Iterating over cartesian product now")
 
     with Minisat22(bootstrap_with=final_cnf) as solver:
         percentage = 0
-        comb_id = 0
-        for combination in combinations:
-            if compare(checkup_value, combination):
-                print(checkup_value, combination)
-            comb_id += 1
+        for comb_id, combination in enumerate(combinations):
             percentage_step = 0.01
 
-            if (percentage + percentage_step) * total_combs < comb_id:
+            if (percentage + percentage_step) * cartesian_size < comb_id:
                 percentage += percentage_step
                 print("Combinations processed: {}%".format(
                     round(100 * percentage)))
 
-            # list(saturation, bucket, domain)
             assumptions = list()
             for domain_id, domain_value in enumerate(combination):
-                for unit_id, gate in enumerate(domains_info[domain_id][1]):
+                saturation, bucket, domain, tag = shared_domain_info[domain_id]
+                for unit_id, gate in enumerate(bucket):
                     if (domain_value & (1 << unit_id)) > 0:
                         modifier = 1
                     else:
                         modifier = -1
-                    assumptions.append(modifier * pool1.v_to_id(gate))
+                    if tag == "L":
+                        assumptions.append(modifier * pool_left.v_to_id(gate))
+                    elif tag == "R":
+                        assumptions.append(modifier * pool_right.v_to_id(gate))
+                    else:
+                        assert False
+
             result = solver.solve(assumptions=assumptions)
-
-            if compare(checkup_value, combination):
-                investigate_this_shit(g2, shift, assumptions, final_cnf, pool1)
-
-            # g1 and g2 on some fixed input really give different answers.
-            # now to figuring out, why miter schema is unsat.
 
             if result:
                 print("Schemas are not equivalent, SAT on miter schema has been found")
                 return
     print("Schemas are equivalent, UNSAT has been achieved on every element from cartesian join")
-
-def investigate_this_shit(g, shift, assumptions, final_cnf, final_pool):
-    pool = FB.TPoolHolder()
-    formula = FB.make_formula_from_my_graph(g, pool)
-    exec_1 = None
-
-    inputs = [0 for i in range(28)]
-    inputs[0] = 1
-    results = g.calculate_schema_on_inputs(inputs)
-    new_assumptions = list()
-    for i in range(28):
-        iname = 'v' + str(i)
-        modifier = -1
-        if inputs[i]:
-            modifier = 1
-        new_assumptions.append(modifier * final_pool.v_to_id(iname))
-
-    with Minisat22(bootstrap_with=formula) as solver:
-        for execution in solver.enum_models(assumptions=new_assumptions):
-            exec_1 = execution
-
-    for i in range(28):
-        o_name = 'o' + str(i)
-        var_name = g.output_name_to_node_name[o_name]
-        cnf_name = g.output_var_to_cnf_var(o_name, pool)
-        # print(cnf_name)
-
-        print("Graph: {}, CNF: {}".format(
-            results[var_name], get_from_cnf(exec_1, cnf_name)))
-
-    print("Trying to solve miter with assumptions on inputs")
-    with Minisat22(bootstrap_with=final_cnf) as solver_final:
-        res = solver_final.solve(assumptions=new_assumptions)
-        if res:
-            print("Yes, I've broken this Miter scheme")
-        else:
-            print("Nah. Miter scheme still gives UNSAT")
-
 
 
 def generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2):
@@ -252,6 +198,7 @@ def generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2):
         input_g1_var = g1.input_var_to_cnf_var(input_name, pool1)
         input_g2_var = g2.input_var_to_cnf_var(input_name, pool2)
 
+        # NOT Tseyting encoding
         shared_cnf.append([-1 * input_g1_var, input_g2_var])
         shared_cnf.append([input_g1_var, -1 * input_g2_var])
 
@@ -284,17 +231,23 @@ def domain_equivalence_check(test_path_left, test_path_right):
     g2 = G.Graph()
     g2.from_aig(right_schema)
     t1 = time.time()
-    print("Graph built, looking for unbalanced nodes")
-    unbalanced_nodes = find_unbalanced_gates(g1)
-    print("Unbalanced nodes found")
-    best_domains = calculate_domain_saturations(g1, unbalanced_nodes)
-    check_for_equivalence(g1, g2, best_domains)
+    print("Schemas initialized, looking for unbalanced nodes in the left schema")
+    unbalanced_nodes_left = find_unbalanced_gates(g1)
+    print("Looking for unbalanced nodes in the right schema")
+    unbalanced_nodes_right = find_unbalanced_gates(g2)
+    print("Unbalanced nodes found, proceeding to building domains")
+    best_domains_left, shift = calculate_domain_saturations(
+        g1, unbalanced_nodes_left, tag="L", start_from=1)
+    best_domains_right, _ = calculate_domain_saturations(
+        g2, unbalanced_nodes_right, tag="R", start_from=shift + 1)
+    check_for_equivalence(g1, g2, best_domains_left, best_domains_right)
     t2 = time.time()
-    print("Running", test_path_left, "against",
-          test_path_right, "took", str(t2 - t1), "seconds")
+
+    print("Running {} against {} took {} seconds".format(
+        test_path_left, test_path_right, str(t2 - t1)))
 
 
-def validate_against_aig(g, aig):
+def validate_against_aig_naively(g, aig):
     start_cnf = aig2cnf(aig.aig)
     shift = -1
     for clause in start_cnf.clauses:
@@ -333,14 +286,14 @@ def validate_against_aig(g, aig):
         lst.append(pool.v_to_id("xor_" + str(i)))
     final_cnf.append(lst)
 
-    # Finally, check the formula for SAT\UNSAT
+    # Finally, check the miter schema for UNSAT
     with Minisat22(bootstrap_with=final_cnf) as solver:
         print("Running SAT-solver to determine scheme equivalency")
         result = solver.solve()
         if not result:
-            print("Hoorah, UNSAT means schemes are equivalent")
+            print("Hoorah, UNSAT on miter means schemas are equivalent")
         if result:
-            print("Your schema is non-equivalent to the source schema :(")
+            print("Your schema is non-equivalent to the original schema :(")
 
 
 def naive_equivalence_check(test_path_left, test_path_right):
@@ -350,40 +303,18 @@ def naive_equivalence_check(test_path_left, test_path_right):
     g1 = G.Graph()
     g1.from_aig(aig_instance_left)
     t1 = time.time()
-    validate_against_aig(g1, aig_instance_right)
+    validate_against_aig_naively(g1, aig_instance_right)
     t2 = time.time()
-    print("Running", test_path_left, test_path_right, "took", str(t2 - t1))
-
-
-def get_outputs_on(g, inputs):
-    raw_outputs = g.calculate_schema_on_inputs(inputs)
-    named_outputs = []
-    for i in range(28):
-        named_outputs.append(
-            raw_outputs[g.output_name_to_node_name['o' + str(i)]])
-    return named_outputs
-
-
-# Launch this function to make sure the schemas really differ on some very simple input.
-def manual_nonequivalence_example():
-    left_schema = aiger.load("./sorts/BubbleSortFaulty_7_4.aig")
-    right_schema = aiger.load("./sorts/BubbleSort_7_4.aig")
-
-    g1 = G.Graph()
-    g1.from_aig(left_schema)
-    g2 = G.Graph()
-    g2.from_aig(right_schema)
-
-    inputs = [0 for i in range(28)]
-    inputs[0] = 1
-
-    outputs_left = get_outputs_on(g1, inputs)
-    outputs_right = get_outputs_on(g2, inputs)
-    print(outputs_left)
-    print(outputs_right)
+    print("Running {} against {} naively took {}".format(
+        test_path_left, test_path_right, str(t2 - t1)))
 
 
 if __name__ == "__main__":
-    # manual_nonequivalence_example()
-    # domain_equivalence_check("./sorts/BubbleSort_7_4.aig", "./sorts/BubbleSortFaulty_7_4.aig")
-    naive_equivalence_check("./sorts/BubbleSortFaulty_7_4.aig", "./sorts/BubbleSort_7_4.aig")
+    # call one of two following functions with arguments of 
+    # different sorting files from `sorts` folder.
+
+    # Examples:
+    # domain_equivalence_check("./sorts/BubbleSort_10_8.aig",
+    #                          "./sorts/BubbleSort_10_8.aig")
+    # naive_equivalence_check("./sorts/BubbleSort_7_4.aig",
+    #                         "./sorts/BubbleSort_7_4.aig")

@@ -1,6 +1,6 @@
 import aiger
+
 from collections import defaultdict
-import inspect
 
 
 class Node:
@@ -60,7 +60,6 @@ class Graph:
         self.init_datafields()
 
         # Gives topological sorting of the graph
-
         order = aiger.common.eval_order(aig)
         print("Total vertices in graph:", len(order))
 
