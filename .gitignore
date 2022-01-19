@@ -5,11 +5,13 @@ conspects
 __pycache__
 
 # Various todo notes in any format
-*todo*
+**todo**
 
 papers
 
 py-aiger
 
 # Large files (logs or experiment results)
-*large*
+**large**
+
+**curcuits-benchmark-tests**

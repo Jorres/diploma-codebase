@@ -113,40 +113,54 @@ def validate_against_aig(g, aig):
             print("Your schema is non-equivalent to the source schema :(")
 
 
-def cumulative_instances_plot(instances):
-    manager = plt.get_current_fig_manager()
-    manager.resize(*manager.window.maxsize())
-
-    x_data = []
-    y_data = []
-    for i in range(0, len(instances)):
-        x_data.append(i)
-        y_data.append(instances[i])
-
-    plt.plot(x_data, y_data, "-r")
-    plt.savefig("./tmp.png")
-    plt.show()
-
-    # instances
-    # instances.sort()
-    # print(instances[0:100])
-    # print(instances[-100:])
-    # with open("instances_solving_times.txt", "w+") as f:
-    #     f.write(str(instances))
-
-
 def main():
-    with open("./aligned_instances_2.txt") as f:
-        instances = list(map(float, f.readlines()))
-        cumulative_instances_plot(instances)
-    
-    # test_path = "./sorts/BubbleSort_7_4.aig"
-    # # test_path = "./small-manual-graph.aag"
-    # aig_instance = aiger.load(test_path)
+    test_path = "./sorts/BubbleSort_7_4.aig"
+    aig_instance = aiger.load(test_path)
 
     # pool = FB.TPoolHolder()
-    # g = G.Graph()
-    # g.from_aig(aig_instance)
+    g1 = G.Graph()
+    g2 = G.Graph()
+    g1.from_file(test_path)
+    g2.from_aig(aig_instance)
+    # validate_against_aig(g, aig_instance)
+
+
+    inputs_len = 28
+    outputs_len = 28
+    for input_as_int in range(2 ** inputs_len):
+        inputs = [(input_as_int & (1 << i)) > 0 for i in range(inputs_len)]
+        outputs_file = g1.calculate_schema_on_inputs(inputs)
+        outputs_aig = g2.calculate_schema_on_inputs(inputs)
+        true_left = 0
+        true_right = 0
+        for output_id in range(outputs_len):
+            output_name = 'o' + str(output_id)
+            output_node_file = g1.output_name_to_node_name[output_name]
+            output_node_aig = g2.output_name_to_node_name[output_name]
+            if outputs_file[output_node_file]:
+                true_left += 1
+            if outputs_aig[output_node_aig]:
+                true_right += 1
+        print(input_as_int)
+        assert true_left == true_right
+
+
+    # for bit in range(28):
+    #     inputs = [False for i in range(28)]
+    #     inputs[bit] = True
+    #     outputs_file = g1.calculate_schema_on_inputs(inputs)
+    #     outputs_aig = g2.calculate_schema_on_inputs(inputs)
+    #     left_end_pos = -1
+    #     right_end_pos = -1
+    #     for output_id in range(outputs_len):
+    #         output_name = 'o' + str(output_id)
+    #         output_node_file = g1.output_name_to_node_name[output_name]
+    #         output_node_aig = g2.output_name_to_node_name[output_name]
+    #         if (outputs_file[output_node_file]):
+    #             left_end_pos = output_id
+    #         if (outputs_aig[output_node_aig]):
+    #             right_end_pos = output_id
+    #     print(bit, left_end_pos, right_end_pos)
 
     # t1 = time.time()
     # total_pruned = 0
@@ -162,9 +176,7 @@ def main():
     # print(total_pruned)
     # t2 = time.time()
     # print(t2 - t1)
-    # cumulative_instances_plot()
 
-    # # validate_against_aig(g, aig_instance)
 
 
 if __name__ == "__main__":

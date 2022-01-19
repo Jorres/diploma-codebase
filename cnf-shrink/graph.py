@@ -108,15 +108,15 @@ class Graph:
         # assert len(self.node_names) == len(order)
 
     def parse_top_order_from_lines(self, n_inputs, n_outputs, n_ands, lines):
-        order = []
+        order = [] 
         # Populating order by entities that have only `children []` and `names`
-        for i in range(0, n_inputs):
+        for i in range(n_inputs):
             vnode = self.make_empty_node("v")
             input_literal = int(lines[i + 1])
             assert input_literal % 2 == 0, "Even input literal assumption failed"
             self.put_into_order(order, input_literal, vnode)
 
-        for i in range(0, n_ands):
+        for i in range(n_ands):
             a, b, c = map(int, lines[i + n_inputs + n_outputs + 1].split(" "))
             anode = self.make_empty_node("a")
             assert a > b and a > c, "Input file is not topsorted"
@@ -125,7 +125,7 @@ class Graph:
             assert len(anode.children) == 2, "And gate doesn't have 2 children"
             self.put_into_order(order, a, anode)
 
-        for i in range(0, n_outputs):
+        for i in range(n_outputs):
             output_literal = int(lines[i + 1 + n_inputs])
             if output_literal % 2 == 1:
                 assert output_literal not in self.literal_to_node, 'The same output meets twice'
