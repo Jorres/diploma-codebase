@@ -9,7 +9,13 @@ __pycache__
 
 papers
 
+# Helper repositories
 py-aiger
+satencodings
 
 # Large files (logs or experiment results)
-*large*
+**large**
+
+**curcuits-benchmark-tests**
+
+Transalg.exe
