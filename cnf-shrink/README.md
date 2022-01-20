@@ -22,6 +22,11 @@ Represents a boolean schema. Can be
 
 A simple Tseytin encoder of an AIG-based graph into a CNF
 
+### generate_aigs.sh and generate_labels_for_aig.py
+
+A script that generates AIG encodings for sorting algorithms 
+using Transalg.
+
 ## Tests
 
 1. We have three sorting algorithms. If a test has the word `Faulty` in it, 
