@@ -4,8 +4,12 @@ import random
 import itertools
 import json
 import statistics
+import pysat
+import sys
 
 from collections import defaultdict
+from threading import Timer
+from tqdm import tqdm
 
 from pysat.solvers import Minisat22
 from pysat.solvers import Glucose4
@@ -31,22 +35,30 @@ MAX_CARTESIAN_PRODUCT_SIZE = 5000000
 
 RANDOM_SAMPLE_SIZE = 10000
 
+CARTESIAN_SIZE_TO_INTEGRATE = 10
+
+# MODELS_ENUMERATION_ENABLED = False
+SECONDS_BEFORE_MODELS_ENUMERATION = 10
+MAX_ENUMMED_MODELS_SIZE = 10000
+
 
 # Returns names of nodes that are unbalanced enough, based on DISBALANCE_THRESHOLD.
 def find_unbalanced_gates(g):
-    random_sample = [[random.choice([True, False]) for t in range(
-        g.n_inputs)] for i in range(RANDOM_SAMPLE_SIZE)]
-
     print("Random sampling unbalanced nodes, {} samples".format(RANDOM_SAMPLE_SIZE))
+
+    random_sample = [random.randint(0, 2 ** g.n_inputs - 1)
+                     for i in range(RANDOM_SAMPLE_SIZE)]
+
     had_true_on_node = defaultdict(int)
 
-    for i, input in enumerate(random_sample):
+    for i, input in enumerate(tqdm(random_sample)):
         gate_values_on_input = g.calculate_schema_on_inputs(input)
         for name, value in gate_values_on_input.items():
             if value:
                 had_true_on_node[name] += 1
 
     # map each gate to its saturation
+    # fractions : [(disbalance, gate_name)]
     fractions = list(map(lambda name_cnt: (name_cnt[1] / RANDOM_SAMPLE_SIZE, name_cnt[0]),
                          had_true_on_node.items()))
 
@@ -68,8 +80,10 @@ def find_unbalanced_gates(g):
 def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
     print("Total unbalanced nodes selected for {} schema: {}".format(
         tag, len(unbalanced_nodes)))
+
     buckets = [unbalanced_nodes[x:x+BUCKET_SIZE]
                for x in range(0, len(unbalanced_nodes), BUCKET_SIZE)]
+
     print("Total buckets to be built with size {}: {}".format(
         BUCKET_SIZE, len(buckets)))
 
@@ -83,18 +97,24 @@ def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
         for var in clause:
             shift = max(shift, abs(var))
 
+    # pool.v_to_id = None
+
+    # bucket : [gate_name]
+    # domains : [(bucket, [bit_vector])]
     with Glucose4(bootstrap_with=formula.clauses) as solver:
-        for bucket_id, bucket in enumerate(buckets):
+        for bucket_id, bucket in enumerate(tqdm(buckets)):
             domain = list()
 
             cur_bucket_size = len(bucket)
             for i in range(0, 2 ** cur_bucket_size):
                 assumptions = list()
                 for gate_in_bucket_id, gate_name in enumerate(bucket):
+
                     if (i & (1 << gate_in_bucket_id)) > 0:
                         modifier = 1
                     else:
                         modifier = -1
+
                     assumptions.append(
                         modifier * pool.v_to_id(gate_name))
 
@@ -104,29 +124,128 @@ def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
             domains.append((bucket, domain))
 
     # calculate saturation for each domain
+    # domains : [(saturation, bucket, [bit_vector], tag)]
     domains_with_saturation = list(map(lambda p: (len(p[1]) / (2 ** len(p[0])),
                                                   p[0], p[1], tag), domains))
-
     return domains_with_saturation, shift
+
+
+def append_small_domains(cnf, integrated_domains, domain_info, pool_left, pool_right):
+    # n_domains = len(integrated_domains)
+
+    integrated_combinations = itertools.product(*integrated_domains)
+
+    print("int_domains: {}, domain_info: {}".format(
+        len(integrated_domains), len(domain_info)))
+    int_domains_lengths = map(lambda x: len(x), integrated_domains)
+    print(list(int_domains_lengths))
+
+    for comb_id, combination in enumerate(integrated_combinations):
+        additional_disjunct = list()
+        for domain_id, domain_value in enumerate(combination):
+            saturation, bucket, domain, tag = domain_info[domain_id]
+            for unit_id, gate_name in enumerate(bucket):
+                if (domain_value & (1 << unit_id)) > 0:
+                    modifier = 1
+                else:
+                    modifier = -1
+
+                if tag == "L":
+                    additional_disjunct.append(
+                        modifier * pool_left.v_to_id(gate_name))
+                elif tag == "R":
+                    additional_disjunct.append(
+                        modifier * pool_right.v_to_id(gate_name))
+                else:
+                    assert False
+        cnf.append(additional_disjunct)
+
+
+def get_possible_inputs(g, assumptions, cnf, pool):
+    inputs = set()
+    with Glucose4(bootstrap_with=cnf) as solver:
+        for id, model in enumerate(tqdm(solver.enum_models(assumptions=assumptions), leave=False, desc='Enumerating models:')):
+            input = 0
+            fast_model = dict()
+            for val in model:
+                literal = abs(val)
+                fast_model[literal] = val > 0
+
+            for input_id in range(g.n_inputs):
+                input_code_name = 'v' + str(input_id)
+                input_literal = g.input_var_to_cnf_var(input_code_name, pool)
+                assert input_literal in fast_model
+                if fast_model[input_literal]:
+                    input += 2 ** input_id
+            inputs.add(input)
+            # if len(inputs) > MAX_ENUMMED_MODELS_SIZE:
+            #     return False, inputs
+            if id > MAX_ENUMMED_MODELS_SIZE:
+                return False, inputs
+    return True, inputs
+
+
+def try_check_for_satisfying_sets_naively(g1, g2, left_assumptions, right_assumptions, pool1, pool2, cnf1, cnf2):
+    status_left, left_possible_inputs = get_possible_inputs(
+        g1, left_assumptions, cnf1, pool1)
+    status_right, right_possible_inputs = get_possible_inputs(
+        g2, right_assumptions, cnf2, pool2)
+
+    if not status_left and not status_right:
+        tqdm.write('Too many models to enumerate for this graph, aborting. Solving directly again.')
+        return None
+
+    if status_left:
+        inputs = left_possible_inputs
+    else:
+        inputs = right_possible_inputs
+
+    for input in inputs:
+        left_outputs = g1.calculate_schema_on_inputs(input)
+        right_outputs = g2.calculate_schema_on_inputs(input)
+        for output_id in range(len(g1.outputs)):
+            output_code_name = 'o' + str(output_id)
+            left_output_name = g1.output_var_to_cnf_var(
+                output_code_name, pool1)
+            right_output_name = g2.output_var_to_cnf_var(
+                output_code_name, pool2)
+            if left_outputs[left_output_name] != right_outputs[right_output_name]:
+                return True
+    return False
 
 
 # Calculates a cartesian product, encodes a miter schema,
 # then iterates over the product to make sure there is UNSAT on every possible
 # combination of domain values.
-def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainfo_dict):
+def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainfo_dict, settings):
     shared_domain_info = sorted(domains_info_left + domains_info_right)
 
     cartesian_size = 1
+    # integrated_cartesian_size = 1
     best_domains = list()
+    # integrated_domains = list()
+    # collecting_integrated = True
     for (saturation, bucket, domain, tag) in shared_domain_info:
+        # if collecting_integrated:
+        #     if integrated_cartesian_size * len(domain) > CARTESIAN_SIZE_TO_INTEGRATE:
+        #         collecting_integrated = False
+        #     else:
+        #         integrated_domains.append(domain)
+        #         integrated_cartesian_size *= len(domain)
+
+        # if not collecting_integrated:
+        #     if cartesian_size * len(domain) > MAX_CARTESIAN_PRODUCT_SIZE:
+        #         break
+        #     best_domains.append(domain)
+        #     cartesian_size *= len(domain)
+
         if cartesian_size * len(domain) > MAX_CARTESIAN_PRODUCT_SIZE:
             break
         best_domains.append(domain)
         cartesian_size *= len(domain)
-    metainfo_dict['actual_cartesian_size'] = cartesian_size
 
-    if len(best_domains) == 0:
-        return True, -1
+    metainfo_dict['actual_cartesian_size'] = cartesian_size
+    # metainfo_dict['integrated_cartesian_size'] = integrated_cartesian_size
 
     # construct the cartesian product of selected domains:
     combinations = itertools.product(*best_domains)
@@ -147,9 +266,20 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
         for var in clause:
             shift = max(shift, abs(var))
 
+    # TODO make equivalent assertions
+    # pool_left.v_to_id = None
+
     pool_right = FB.TPoolHolder(start_from=shift + 1)
     f_right = FB.make_formula_from_my_graph(g2, pool_right)
+
     shared_cnf = f_left.clauses + f_right.clauses
+    # append_small_domains(shared_cnf, integrated_domains,
+    #                      shared_domain_info, pool_left, pool_right)
+
+    # This keeps in sync the ordering of domains inside the cartesian product iteration
+    # and inside `shared_domain_info`, algorithm relies on them being in sync:
+
+    # shared_domain_info = shared_domain_info[len(integrated_domains):]
 
     final_cnf = generate_miter_scheme(
         shared_cnf, pool_left, pool_right, g1, g2)
@@ -157,49 +287,93 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
 
     runtimes = []
     equivalent = True
+
+    metainfo_dict['MODELS_ENUMERATION_ENABLED'] = settings['model_enumeration_enabled']
+    metainfo_dict['enum_solved_cnfs'] = list()
+
     with Glucose4(bootstrap_with=final_cnf, use_timer=True) as solver:
-        for comb_id, combination in enumerate(combinations):
-            assumptions = list()
+        for comb_id, combination in enumerate(tqdm(combinations)):
+        # for comb_id, combination in enumerate(combinations):
+            # combination = [domain]
+            left_assumptions = list()
+            right_assumptions = list()
+
             for domain_id, domain_value in enumerate(combination):
                 saturation, bucket, domain, tag = shared_domain_info[domain_id]
-                for unit_id, gate in enumerate(bucket):
+                assert domain_value in domain
+                for unit_id, gate_name in enumerate(bucket):
+
                     if (domain_value & (1 << unit_id)) > 0:
                         modifier = 1
                     else:
                         modifier = -1
+
                     if tag == "L":
-                        assumptions.append(modifier * pool_left.v_to_id(gate))
+                        left_assumptions.append(
+                            modifier * pool_left.v_to_id(gate_name))
                     elif tag == "R":
-                        assumptions.append(modifier * pool_right.v_to_id(gate))
+                        right_assumptions.append(
+                            modifier * pool_right.v_to_id(gate_name))
                     else:
                         assert False
 
-            result = solver.solve(assumptions=assumptions)
-            runtimes.append(solver.time())
-            if result:
-                print("Schemas are not equivalent, SAT on miter schema has been found")
+            total_assumptions = left_assumptions + right_assumptions
+
+            sat_on_miter = None
+
+            if settings['model_enumeration_enabled']:
+                timer = Timer(SECONDS_BEFORE_MODELS_ENUMERATION,
+                              U.interrupt, [solver])
+                timer.start()
+                sat_on_miter = solver.solve_limited(assumptions=total_assumptions)
+                if sat_on_miter is None:
+                    tqdm.write('Difficult task encountered')
+                    solver.clear_interrupt()
+                    t1 = time.time()
+                    sat_on_miter = try_check_for_satisfying_sets_naively(
+                        g1, g2, left_assumptions, right_assumptions, pool_left, pool_right, f_left, f_right)
+                    t2 = time.time()
+                    runtimes.append(t2 - t1)
+                    metainfo_dict['enum_solved_cnfs'].append(t2 - t1)
+                else:
+                    timer.cancel()
+                    runtimes.append(solver.time())
+
+            if sat_on_miter is None:
+                sat_on_miter = solver.solve(assumptions=total_assumptions)
+                runtimes.append(solver.time())
+
+            if sat_on_miter:
                 equivalent = False
                 break
 
-    print("Schemas are equivalent, UNSAT has been achieved on every element from cartesian join")
+    if not equivalent:
+        print("Schemas are not equivalent, SAT on miter schema has been found")
+    else:
+        print("Schemas are equivalent, UNSAT has been achieved on every element from cartesian join")
 
     runtimes = sorted(runtimes)
-    metainfo_dict['quantiles'] = statistics.quantiles(runtimes, n=10)
     if len(runtimes) > 2:
-        metainfo_dict['top_three'] = [runtimes[-3], runtimes[-2], runtimes[-1]]
+        metainfo_dict['quantiles'] = statistics.quantiles(runtimes, n=10)
+    metainfo_dict['some_biggest_runtimes'] = []
+    for i in range(1, 4):
+        if len(runtimes) >= i:
+            metainfo_dict['some_biggest_runtimes'].append(runtimes[-i])
 
     return equivalent
 
 
 def generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2):
     assert g1.n_inputs == g2.n_inputs
+
+    # TODO re-use input variables instead of adding clauses on inputs equality
     for input_id in range(0, g1.n_inputs):
         input_name = 'v' + str(input_id)
         # Add clauses for input equality
         input_g1_var = g1.input_var_to_cnf_var(input_name, pool1)
         input_g2_var = g2.input_var_to_cnf_var(input_name, pool2)
 
-        # NOT Tseyting encoding
+        # EQ Tseyting encoding
         shared_cnf.append([-1 * input_g1_var, input_g2_var])
         shared_cnf.append([input_g1_var, -1 * input_g2_var])
 
@@ -211,6 +385,7 @@ def generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2):
         right_output = g2.output_var_to_cnf_var(output_code_name, pool2)
 
         # XOR Tseytin encoding
+        # xorgate <=> left xor right
         shared_cnf.append([-1 * left_output, -1 * right_output, -1 * xor_gate])
         shared_cnf.append([left_output, right_output, -1 * xor_gate])
         shared_cnf.append([left_output, -1 * right_output, xor_gate])
@@ -221,7 +396,34 @@ def generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2):
     for output_id in range(len(g1.outputs)):
         lst.append(pool2.v_to_id("xor_" + str(output_id)))
     shared_cnf.append(lst)
+
+    # Konstantin asked me to prepare a miter sample, maybe later I'll need some more
+    # formula = pysat.formula.CNF(from_clauses=shared_cnf)
+    # formula.to_file("miter_sample.cnf")
+    # sys.exit(0)
+
     return shared_cnf
+
+
+def post_sampling_calculations(g1, g2, test_path_left, test_path_right, res, unbalanced_nodes_left, unbalanced_nodes_right, t_start, settings):
+    best_domains_left, shift = calculate_domain_saturations(
+        g1, unbalanced_nodes_left, tag="L", start_from=1)
+    best_domains_right, _ = calculate_domain_saturations(
+        g2, unbalanced_nodes_right, tag="R", start_from=shift + 1)
+    result = check_for_equivalence(
+        g1, g2, best_domains_left, best_domains_right, res, settings)
+    t_finish = time.time()
+
+    time_elapsed = str(t_finish - t_start)
+    res_string = "Running {} against {} took {} seconds".format(
+        test_path_left, test_path_right, time_elapsed)
+    res['left_schema'] = test_path_left
+    res['right_schema'] = test_path_right
+    res['time'] = time_elapsed
+    res['outcome'] = result
+    U.print_to_file(res_filename, json.dumps(res, indent=4))
+    print(res_string)
+    return result
 
 
 def domain_equivalence_check(test_path_left, test_path_right, res_filename):
@@ -232,7 +434,7 @@ def domain_equivalence_check(test_path_left, test_path_right, res_filename):
     g2 = G.Graph()
     g2.from_aig(right_schema)
 
-    t1 = time.time()
+    t_start = time.time()
     res = dict()
     res['max_cartesian_size'] = MAX_CARTESIAN_PRODUCT_SIZE
     res['disbalance_threshold'] = DISBALANCE_THRESHOLD
@@ -241,23 +443,20 @@ def domain_equivalence_check(test_path_left, test_path_right, res_filename):
     print("Looking for unbalanced nodes in the right schema")
     unbalanced_nodes_right = find_unbalanced_gates(g2)
     print("Unbalanced nodes found, proceeding to building domains")
-    best_domains_left, shift = calculate_domain_saturations(
-        g1, unbalanced_nodes_left, tag="L", start_from=1)
-    best_domains_right, _ = calculate_domain_saturations(
-        g2, unbalanced_nodes_right, tag="R", start_from=shift + 1)
-    result = check_for_equivalence(
-        g1, g2, best_domains_left, best_domains_right, res)
-    t2 = time.time()
 
-    res_string = "Running {} against {} took {} seconds".format(
-        test_path_left, test_path_right, str(t2 - t1))
-    res['left_schema'] = test_path_left
-    res['right_schema'] = test_path_right
-    res['time'] = str(t2 - t1)
-    res['outcome'] = result
-    U.print_to_file(res_filename, json.dumps(res, indent=4))
-    print(res_string)
-    return result
+    print("Solving with models enumeration enabled")
+    settings = dict()
+    settings['model_enumeration_enabled'] = True
+    result_1 = post_sampling_calculations(
+        g1, g2, test_path_left, test_path_right, res, unbalanced_nodes_left, unbalanced_nodes_right, t_start, settings)
+
+    print("Solving with models enumeration disabled")
+    settings['model_enumeration_enabled'] = False
+    result_2 = post_sampling_calculations(
+        g1, g2, test_path_left, test_path_right, res, unbalanced_nodes_left, unbalanced_nodes_right, t_start, settings)
+
+    assert result_1 == result_2
+    return result_1
 
 
 def validate_against_aig_naively(g, aig):
@@ -331,22 +530,26 @@ def naive_equivalence_check(test_path_left, test_path_right, res_filename):
 
 if __name__ == "__main__":
     experiments = [
-        ("./new_sorts/BubbleSort_4_3.aig",
-         "./new_sorts/PancakeSort_4_3.aig",
-         "./results/4_3.txt"
-         ),
-        ("./new_sorts/BubbleSort_6_4.aig",
-         "./new_sorts/PancakeSort_6_4.aig",
-         "./results/6_4.txt"
-         ),
+        # ("./new_sorts/BubbleSort_4_3.aig",
+        #  "./new_sorts/PancakeSort_4_3.aig",
+        #  "./results/4_3.txt"
+        #  ),
+        # ("./sorts/BubbleSort_7_4.aig",
+        #  "./sorts/BubbleSortFaulty_7_4.aig",
+        #  "./results/7_4_faulty.txt"
+        #  ),
+        # ("./new_sorts/BubbleSort_6_4.aig",
+        #  "./new_sorts/PancakeSort_6_4.aig",
+        #  "./results/6_4.txt"
+        #  ),
         ("./new_sorts/BubbleSort_7_4.aig",
          "./new_sorts/PancakeSort_7_4.aig",
          "./results/7_4.txt"
          ),
-        ("./new_sorts/BubbleSort_8_4.aig",
-         "./new_sorts/PancakeSort_8_4.aig",
-         "./results/8_4.txt"
-         ),
+        # ("./new_sorts/BubbleSort_8_4.aig",
+        #  "./new_sorts/PancakeSort_8_4.aig",
+        #  "./results/8_4.txt"
+        #  ),
         # ("./new_sorts/BubbleSort_8_5.aig",
         #  "./new_sorts/PancakeSort_8_5.aig",
         #  "./results/8_5.txt"
@@ -369,12 +572,15 @@ if __name__ == "__main__":
         #  ),
     ]
 
-    max_cartesian_sizes = [10, 100, 1000, 10000, 100000, 1000000, 10000000]
-    unbalanced_thresholds = [0.02, 0.03, 0.05]
+    # max_cartesian_sizes = [10, 1000, 100000, 10000000]
+    # unbalanced_thresholds = [0.02, 0.03]
+
+    max_cartesian_sizes = [100000]
+    unbalanced_thresholds = [0.03]
 
     for (left_schema_filename, right_schema_filename, res_filename) in experiments:
-        naive_equivalence_check(left_schema_filename,
-                                right_schema_filename, res_filename)
+        # naive_equivalence_check(left_schema_filename,
+        #                         right_schema_filename, res_filename)
         for max_cartesian_size in max_cartesian_sizes:
             for unbalanced_threshold in unbalanced_thresholds:
                 MAX_CARTESIAN_PRODUCT_SIZE = max_cartesian_size

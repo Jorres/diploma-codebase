@@ -91,25 +91,29 @@ class Graph:
     def output_var_to_cnf_var(self, output, pool):
         return pool.v_to_id(self.output_name_to_node_name[output])
 
+    # assumes `inputs` is an int, bits of this int correspond to input variables
+    # in the schema
     def calculate_schema_on_inputs(self, inputs):
         result = dict()  # map from node_name to node value on these inputs
-        for i, input_val in enumerate(inputs):
+        assert inputs < 2 ** self.n_inputs
+        for i in range(self.n_inputs):
+            ith_input_var = (inputs & (1 << i)) > 0
             name = 'v' + str(i)
-            result[name] = inputs[i]
+            result[name] = ith_input_var
 
         for name in self.node_names:
             if name.startswith('i'):
                 child = self.children[name][0]
-                assert child in result
+                # assert child in result
                 result[name] = not result[child]
             elif name.startswith('a'):
                 child_left = self.children[name][0]
                 child_right = self.children[name][1]
-                assert child_left in result
-                assert child_right in result
+                # assert child_left in result
+                # assert child_right in result
                 result[name] = result[child_left] and result[child_right]
 
-        for name in self.node_names:
-            assert name in result
+        # for name in self.node_names:
+        #     assert name in result
 
         return result
