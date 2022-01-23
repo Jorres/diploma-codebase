@@ -6,9 +6,9 @@ import json
 import statistics
 import pysat
 import sys
+import copy
 
 from collections import defaultdict
-from threading import Timer
 from tqdm import tqdm
 
 from pysat.solvers import Minisat22
@@ -23,10 +23,10 @@ import utils as U
 # Algorithm hyperparameters:
 
 # How disbalanced a gate is allowed to be to enter any of the bucket
-DISBALANCE_THRESHOLD = 0.03
+DISBALANCE_THRESHOLD = 0.1
 
 # This one is best left between 10 and 15, 2 ^ BUCKET_SIZE tasks are solved
-BUCKET_SIZE = 14
+BUCKET_SIZE = 15
 
 # Ideally, for every test there exists a perfect moment where we can stop
 # adding domains into the cartesian product. But this is some reasonable
@@ -37,21 +37,23 @@ RANDOM_SAMPLE_SIZE = 10000
 
 CARTESIAN_SIZE_TO_INTEGRATE = 10
 
-# MODELS_ENUMERATION_ENABLED = False
-SECONDS_BEFORE_MODELS_ENUMERATION = 10
-MAX_ENUMMED_MODELS_SIZE = 10000
+SECONDS_BEFORE_MODELS_ENUMERATION = 20
+MAX_ENUMMED_MODELS_SIZE = 50000
+
+SECONDS_SOLVING_NO_OPTIMIZATION = 3
+SECONDS_ON_ONE_DOMAIN_ITERATION = 5
 
 
 # Returns names of nodes that are unbalanced enough, based on DISBALANCE_THRESHOLD.
 def find_unbalanced_gates(g):
     print("Random sampling unbalanced nodes, {} samples".format(RANDOM_SAMPLE_SIZE))
 
-    random_sample = [random.randint(0, 2 ** g.n_inputs - 1)
-                     for i in range(RANDOM_SAMPLE_SIZE)]
+    random.seed(42)
+    random_sample = random.sample(range(2 ** g.n_inputs), RANDOM_SAMPLE_SIZE)
 
     had_true_on_node = defaultdict(int)
 
-    for i, input in enumerate(tqdm(random_sample)):
+    for i, input in enumerate(tqdm(random_sample, desc="Random sampling unbalanced nodes")):
         gate_values_on_input = g.calculate_schema_on_inputs(input)
         for name, value in gate_values_on_input.items():
             if value:
@@ -102,7 +104,7 @@ def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
     # bucket : [gate_name]
     # domains : [(bucket, [bit_vector])]
     with Glucose4(bootstrap_with=formula.clauses) as solver:
-        for bucket_id, bucket in enumerate(tqdm(buckets)):
+        for bucket_id, bucket in enumerate(tqdm(buckets, desc="Calculating saturation for bucket")):
             domain = list()
 
             cur_bucket_size = len(bucket)
@@ -161,12 +163,17 @@ def append_small_domains(cnf, integrated_domains, domain_info, pool_left, pool_r
         cnf.append(additional_disjunct)
 
 
-def get_possible_inputs(g, assumptions, cnf, pool):
+def get_possible_inputs(g, cnf, assumptions, pool):
     inputs = set()
     with Glucose4(bootstrap_with=cnf) as solver:
-        for id, model in enumerate(tqdm(solver.enum_models(assumptions=assumptions), leave=False, desc='Enumerating models:')):
+        for id, model in enumerate(tqdm(solver.enum_models(assumptions=assumptions, desc="Enumerating models"))):
+            input_clause = list()
+
             input = 0
+
+            # Construct a helper structure for easier lookup
             fast_model = dict()
+
             for val in model:
                 literal = abs(val)
                 fast_model[literal] = val > 0
@@ -177,38 +184,55 @@ def get_possible_inputs(g, assumptions, cnf, pool):
                 assert input_literal in fast_model
                 if fast_model[input_literal]:
                     input += 2 ** input_id
+
+                # Construct a prohibition clause for current input
+                modifier = 1
+                if not fast_model[input_literal]:
+                    modifier = -1
+                # We're prohibiting this clause, therefore we need to take
+                # every input bit with a reverse modifier:
+                # not (a1 && a2 ... an) == (not a1 || not a2 ... not an)
+                modifier *= -1
+                input_clause.append(modifier * input_literal)
+
+            assert len(inputs) == id
+
             inputs.add(input)
-            # if len(inputs) > MAX_ENUMMED_MODELS_SIZE:
-            #     return False, inputs
-            if id > MAX_ENUMMED_MODELS_SIZE:
+            solver.add_clause(input_clause)
+
+            if len(inputs) > MAX_ENUMMED_MODELS_SIZE:
                 return False, inputs
     return True, inputs
 
 
 def try_check_for_satisfying_sets_naively(g1, g2, left_assumptions, right_assumptions, pool1, pool2, cnf1, cnf2):
     status_left, left_possible_inputs = get_possible_inputs(
-        g1, left_assumptions, cnf1, pool1)
+        g1, cnf1, left_assumptions, pool1)
     status_right, right_possible_inputs = get_possible_inputs(
-        g2, right_assumptions, cnf2, pool2)
+        g2, cnf2, right_assumptions, pool2)
 
     if not status_left and not status_right:
-        tqdm.write('Too many models to enumerate for this graph, aborting. Solving directly again.')
+        tqdm.write(
+            'Too many models to enumerate for this graph, aborting. Solving directly again.')
         return None
 
     if status_left:
         inputs = left_possible_inputs
-    else:
+    if status_right and len(right_possible_inputs) < len(left_possible_inputs):
         inputs = right_possible_inputs
+
+    tqdm.write("{} {}".format(
+        len(left_possible_inputs), len(right_possible_inputs)))
 
     for input in inputs:
         left_outputs = g1.calculate_schema_on_inputs(input)
         right_outputs = g2.calculate_schema_on_inputs(input)
         for output_id in range(len(g1.outputs)):
             output_code_name = 'o' + str(output_id)
-            left_output_name = g1.output_var_to_cnf_var(
-                output_code_name, pool1)
-            right_output_name = g2.output_var_to_cnf_var(
-                output_code_name, pool2)
+            left_output_name = g1.output_name_to_node_name[
+                output_code_name]
+            right_output_name = g2.output_name_to_node_name[
+                output_code_name]
             if left_outputs[left_output_name] != right_outputs[right_output_name]:
                 return True
     return False
@@ -292,8 +316,7 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
     metainfo_dict['enum_solved_cnfs'] = list()
 
     with Glucose4(bootstrap_with=final_cnf, use_timer=True) as solver:
-        for comb_id, combination in enumerate(tqdm(combinations)):
-        # for comb_id, combination in enumerate(combinations):
+        for comb_id, combination in enumerate(tqdm(combinations, desc="Processing cartesian combination")):
             # combination = [domain]
             left_assumptions = list()
             right_assumptions = list()
@@ -322,13 +345,10 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
             sat_on_miter = None
 
             if settings['model_enumeration_enabled']:
-                timer = Timer(SECONDS_BEFORE_MODELS_ENUMERATION,
-                              U.interrupt, [solver])
-                timer.start()
-                sat_on_miter = solver.solve_limited(assumptions=total_assumptions)
+                sat_on_miter = U.solve_with_timeout(
+                    solver, total_assumptions, SECONDS_BEFORE_MODELS_ENUMERATION)
                 if sat_on_miter is None:
                     tqdm.write('Difficult task encountered')
-                    solver.clear_interrupt()
                     t1 = time.time()
                     sat_on_miter = try_check_for_satisfying_sets_naively(
                         g1, g2, left_assumptions, right_assumptions, pool_left, pool_right, f_left, f_right)
@@ -336,9 +356,39 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
                     runtimes.append(t2 - t1)
                     metainfo_dict['enum_solved_cnfs'].append(t2 - t1)
                 else:
-                    timer.cancel()
                     runtimes.append(solver.time())
 
+            # Trying to solve for a while, before we decide it is time for another 
+            # optimization
+            if sat_on_miter is None:
+                sat_on_miter = U.solve_with_timeout(solver, total_assumptions, SECONDS_SOLVING_NO_OPTIMIZATION)
+                if sat_on_miter:
+                    runtimes.append(solver.time())
+
+            # Optimization with feeding assumption sets one by one
+            if sat_on_miter is None:
+                bucketed_assumptions = [total_assumptions[x:x+BUCKET_SIZE]
+                                        for x in range(0, len(total_assumptions), BUCKET_SIZE)]
+
+                # solving with all buckets is equivalent to solving with total_assumptions, we
+                # do that later anyway
+                bucketed_assumptions.pop()
+
+                current_assumptions = bucketed_assumptions[0] + bucketed_assumptions[1]
+
+                next_bucket = 2
+                for _ in tqdm(U.while_true_generator(), desc="Appending domains one by one"):
+                    sat_on_miter = U.solve_with_timeout(
+                        solver, current_assumptions, SECONDS_ON_ONE_DOMAIN_ITERATION)
+                    if sat_on_miter is not None:
+                        runtimes.append(solver.time())
+                        break
+                    if next_bucket == len(bucketed_assumptions):
+                        break
+                    current_assumptions = current_assumptions + bucketed_assumptions[next_bucket]
+                    next_bucket += 1
+
+            # Finally, solving task without time limit, tried all optimizations without success
             if sat_on_miter is None:
                 sat_on_miter = solver.solve(assumptions=total_assumptions)
                 runtimes.append(solver.time())
@@ -347,10 +397,10 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
                 equivalent = False
                 break
 
-    if not equivalent:
-        print("Schemas are not equivalent, SAT on miter schema has been found")
-    else:
+    if equivalent:
         print("Schemas are equivalent, UNSAT has been achieved on every element from cartesian join")
+    else:
+        print("Schemas are not equivalent, SAT on miter schema has been found")
 
     runtimes = sorted(runtimes)
     if len(runtimes) > 2:
@@ -444,19 +494,12 @@ def domain_equivalence_check(test_path_left, test_path_right, res_filename):
     unbalanced_nodes_right = find_unbalanced_gates(g2)
     print("Unbalanced nodes found, proceeding to building domains")
 
-    print("Solving with models enumeration enabled")
     settings = dict()
-    settings['model_enumeration_enabled'] = True
-    result_1 = post_sampling_calculations(
-        g1, g2, test_path_left, test_path_right, res, unbalanced_nodes_left, unbalanced_nodes_right, t_start, settings)
-
-    print("Solving with models enumeration disabled")
     settings['model_enumeration_enabled'] = False
-    result_2 = post_sampling_calculations(
+    result = post_sampling_calculations(
         g1, g2, test_path_left, test_path_right, res, unbalanced_nodes_left, unbalanced_nodes_right, t_start, settings)
 
-    assert result_1 == result_2
-    return result_1
+    return result
 
 
 def validate_against_aig_naively(g, aig):
