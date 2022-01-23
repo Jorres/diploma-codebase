@@ -6,7 +6,6 @@ import json
 import statistics
 import pysat
 import sys
-import copy
 
 from collections import defaultdict
 from tqdm import tqdm
@@ -34,8 +33,6 @@ BUCKET_SIZE = 15
 MAX_CARTESIAN_PRODUCT_SIZE = 5000000
 
 RANDOM_SAMPLE_SIZE = 10000
-
-CARTESIAN_SIZE_TO_INTEGRATE = 10
 
 SECONDS_BEFORE_MODELS_ENUMERATION = 20
 MAX_ENUMMED_MODELS_SIZE = 50000
@@ -132,37 +129,6 @@ def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
     return domains_with_saturation, shift
 
 
-def append_small_domains(cnf, integrated_domains, domain_info, pool_left, pool_right):
-    # n_domains = len(integrated_domains)
-
-    integrated_combinations = itertools.product(*integrated_domains)
-
-    print("int_domains: {}, domain_info: {}".format(
-        len(integrated_domains), len(domain_info)))
-    int_domains_lengths = map(lambda x: len(x), integrated_domains)
-    print(list(int_domains_lengths))
-
-    for comb_id, combination in enumerate(integrated_combinations):
-        additional_disjunct = list()
-        for domain_id, domain_value in enumerate(combination):
-            saturation, bucket, domain, tag = domain_info[domain_id]
-            for unit_id, gate_name in enumerate(bucket):
-                if (domain_value & (1 << unit_id)) > 0:
-                    modifier = 1
-                else:
-                    modifier = -1
-
-                if tag == "L":
-                    additional_disjunct.append(
-                        modifier * pool_left.v_to_id(gate_name))
-                elif tag == "R":
-                    additional_disjunct.append(
-                        modifier * pool_right.v_to_id(gate_name))
-                else:
-                    assert False
-        cnf.append(additional_disjunct)
-
-
 def get_possible_inputs(g, cnf, assumptions, pool):
     inputs = set()
     with Glucose4(bootstrap_with=cnf) as solver:
@@ -245,31 +211,14 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
     shared_domain_info = sorted(domains_info_left + domains_info_right)
 
     cartesian_size = 1
-    # integrated_cartesian_size = 1
     best_domains = list()
-    # integrated_domains = list()
-    # collecting_integrated = True
     for (saturation, bucket, domain, tag) in shared_domain_info:
-        # if collecting_integrated:
-        #     if integrated_cartesian_size * len(domain) > CARTESIAN_SIZE_TO_INTEGRATE:
-        #         collecting_integrated = False
-        #     else:
-        #         integrated_domains.append(domain)
-        #         integrated_cartesian_size *= len(domain)
-
-        # if not collecting_integrated:
-        #     if cartesian_size * len(domain) > MAX_CARTESIAN_PRODUCT_SIZE:
-        #         break
-        #     best_domains.append(domain)
-        #     cartesian_size *= len(domain)
-
         if cartesian_size * len(domain) > MAX_CARTESIAN_PRODUCT_SIZE:
             break
         best_domains.append(domain)
         cartesian_size *= len(domain)
 
     metainfo_dict['actual_cartesian_size'] = cartesian_size
-    # metainfo_dict['integrated_cartesian_size'] = integrated_cartesian_size
 
     # construct the cartesian product of selected domains:
     combinations = itertools.product(*best_domains)
@@ -297,13 +246,6 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
     f_right = FB.make_formula_from_my_graph(g2, pool_right)
 
     shared_cnf = f_left.clauses + f_right.clauses
-    # append_small_domains(shared_cnf, integrated_domains,
-    #                      shared_domain_info, pool_left, pool_right)
-
-    # This keeps in sync the ordering of domains inside the cartesian product iteration
-    # and inside `shared_domain_info`, algorithm relies on them being in sync:
-
-    # shared_domain_info = shared_domain_info[len(integrated_domains):]
 
     final_cnf = generate_miter_scheme(
         shared_cnf, pool_left, pool_right, g1, g2)
