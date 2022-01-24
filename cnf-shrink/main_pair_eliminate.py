@@ -603,14 +603,3 @@ if __name__ == "__main__":
                 domain_equivalence_check(left_schema_filename,
                                          right_schema_filename, res_filename)
 
-    # g1 = G.Graph("./new_sorts/PancakeSort_10_4.aig")
-    # g1.relabel_graph_in_top_to_bottom_fashion()
-    # pool = FB.TPoolHolder()
-    # cnf = FB.make_formula_from_my_graph(g1, pool)
-    # cnf.to_file("topsorted_cnf_P_10_4.cnf")
-
-    # g2 = G.Graph("./new_sorts/PancakeSort_10_4.aig")
-
-    # pool_2 = FB.TPoolHolder()
-    # cnf = FB.make_formula_from_my_graph(g2, pool_2)
-    # cnf.to_file("old_cnf_P_10_4.cnf")
