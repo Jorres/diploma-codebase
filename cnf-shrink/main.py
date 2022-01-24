@@ -207,11 +207,63 @@ def try_check_for_satisfying_sets_naively(g1, g2, left_assumptions, right_assump
     return False
 
 
+def prepare_shared_cnf_from_two_graphs(g1, g2):
+    pool_left = FB.TPoolHolder()
+    f_left = FB.make_formula_from_my_graph(g1, pool_left)
+    # Here we solve the problem of clashing names by separating pools.
+    # Therefore, 'v123' in the first pool will have a different id
+    # then a 'v123' in the second. It would be better to handle collisions
+    # on 'Graph' class level, for instance by generating some prefix to all names,
+    # but that would require some significant refactoring. Therefore I just use
+    # two pool instances. TODO refactor later.
+    shift = -1
+    for clause in f_left.clauses:
+        for var in clause:
+            shift = max(shift, abs(var))
+
+    pool_right = FB.TPoolHolder(start_from=shift + 1)
+    f_right = FB.make_formula_from_my_graph(g2, pool_right)
+
+    shared_cnf = f_left.clauses + f_right.clauses
+
+    return shared_cnf, pool_left, pool_right
+
+
 # Calculates a cartesian product, encodes a miter schema,
 # then iterates over the product to make sure there is UNSAT on every possible
 # combination of domain values.
 def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainfo_dict, settings):
     shared_domain_info = sorted(domains_info_left + domains_info_right)
+    # print("Distribution: {}, total domains: {}".format(
+    #     list(map(lambda x: len(x[2]), shared_domain_info)), len(shared_domain_info)))
+
+    shared_cnf, pool_left, pool_right = prepare_shared_cnf_from_two_graphs(
+        g1, g2)
+    one_saturated_domains = 0
+
+    for saturation, bucket, domain, tag in shared_domain_info:
+        if len(domain) == 1:
+            one_saturated_domains += 1
+            for unit_id, gate_name in enumerate(bucket):
+                domain_value = domain[0]
+                if tag == "L":
+                    if (domain_value & (1 << unit_id)) > 0:
+                        modifier = 1
+                    else:
+                        modifier = -1
+                    shared_cnf.append(
+                        [modifier * pool_left.v_to_id(gate_name)])
+                elif tag == "R":
+                    if (domain_value & (1 << unit_id)) > 0:
+                        modifier = 1
+                    else:
+                        modifier = -1
+                    shared_cnf.append(
+                        [modifier * pool_right.v_to_id(gate_name)])
+        else:
+            break
+
+    shared_domain_info = shared_domain_info[one_saturated_domains:]
 
     cartesian_size = 1
     best_domains = list()
@@ -227,10 +279,11 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
     combinations = itertools.product(*best_domains)
 
     print("Total size of cartesian product of the domains:", cartesian_size)
+    print("Distribution: {}, total domains: {}".format(
+        list(map(lambda x: len(x), best_domains)), len(best_domains)))
 
     pool_left = FB.TPoolHolder()
     f_left = FB.make_formula_from_my_graph(g1, pool_left)
-
     # Here we solve the problem of clashing names by separating pools.
     # Therefore, 'v123' in the first pool will have a different id
     # then a 'v123' in the second. It would be better to handle collisions
@@ -241,9 +294,6 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
     for clause in f_left.clauses:
         for var in clause:
             shift = max(shift, abs(var))
-
-    # TODO make equivalent assertions
-    # pool_left.v_to_id = None
 
     pool_right = FB.TPoolHolder(start_from=shift + 1)
     f_right = FB.make_formula_from_my_graph(g2, pool_right)
@@ -428,6 +478,9 @@ def domain_equivalence_check(test_path_left, test_path_right, res_filename):
     g1 = G.Graph(test_path_left)
     g2 = G.Graph(test_path_right)
 
+    g1.relabel_graph_in_top_to_bottom_fashion()
+    g2.relabel_graph_in_top_to_bottom_fashion()
+
     t_start = time.time()
     res = dict()
     res['max_cartesian_size'] = MAX_CARTESIAN_PRODUCT_SIZE
@@ -549,3 +602,15 @@ if __name__ == "__main__":
                 DISBALANCE_THRESHOLD = unbalanced_threshold
                 domain_equivalence_check(left_schema_filename,
                                          right_schema_filename, res_filename)
+
+    # g1 = G.Graph("./new_sorts/PancakeSort_10_4.aig")
+    # g1.relabel_graph_in_top_to_bottom_fashion()
+    # pool = FB.TPoolHolder()
+    # cnf = FB.make_formula_from_my_graph(g1, pool)
+    # cnf.to_file("topsorted_cnf_P_10_4.cnf")
+
+    # g2 = G.Graph("./new_sorts/PancakeSort_10_4.aig")
+
+    # pool_2 = FB.TPoolHolder()
+    # cnf = FB.make_formula_from_my_graph(g2, pool_2)
+    # cnf.to_file("old_cnf_P_10_4.cnf")
