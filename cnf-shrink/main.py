@@ -46,7 +46,8 @@ def find_unbalanced_gates(g):
     random.seed(42)
 
     complete_input_size = range(2 ** g.n_inputs)
-    random_sample = random.sample(complete_input_size, min(len(complete_input_size), RANDOM_SAMPLE_SIZE))
+    random_sample = random.sample(complete_input_size, min(
+        len(complete_input_size), RANDOM_SAMPLE_SIZE))
 
     had_true_on_node = defaultdict(int)
 
@@ -61,9 +62,11 @@ def find_unbalanced_gates(g):
     fractions = list(map(lambda name_cnt: (name_cnt[1] / RANDOM_SAMPLE_SIZE, name_cnt[0]),
                          had_true_on_node.items()))
 
+    only_and_fractions = filter(lambda a: not a[1].startswith('i'), fractions)
+
     # filter the gates that are unbalanced enough
     thresholded_unbalanced = list(filter(
-        lambda p: p[0] < DISBALANCE_THRESHOLD or p[0] > (1 - DISBALANCE_THRESHOLD), fractions))
+        lambda p: p[0] < DISBALANCE_THRESHOLD or p[0] > (1 - DISBALANCE_THRESHOLD), only_and_fractions))
 
     # leave only gate names
     unbalanced_nodes = list(map(lambda p: p[1], thresholded_unbalanced))
