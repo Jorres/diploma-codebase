@@ -5,7 +5,7 @@ conspects
 __pycache__
 
 # Various todo notes in any format
-**todo**
+*todo*
 
 papers
 
@@ -19,3 +19,12 @@ satencodings
 **curcuits-benchmark-tests**
 
 Transalg.exe
+
+new_sorts
+sorts
+cnf-shrink/results
+
+minisat
+cryptominisat
+transalg
+victor-data

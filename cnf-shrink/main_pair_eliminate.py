@@ -124,44 +124,6 @@ def main():
     g2.from_aig(aig_instance)
     # validate_against_aig(g, aig_instance)
 
-
-    inputs_len = 28
-    outputs_len = 28
-    for input_as_int in range(2 ** inputs_len):
-        inputs = [(input_as_int & (1 << i)) > 0 for i in range(inputs_len)]
-        outputs_file = g1.calculate_schema_on_inputs(inputs)
-        outputs_aig = g2.calculate_schema_on_inputs(inputs)
-        true_left = 0
-        true_right = 0
-        for output_id in range(outputs_len):
-            output_name = 'o' + str(output_id)
-            output_node_file = g1.output_name_to_node_name[output_name]
-            output_node_aig = g2.output_name_to_node_name[output_name]
-            if outputs_file[output_node_file]:
-                true_left += 1
-            if outputs_aig[output_node_aig]:
-                true_right += 1
-        print(input_as_int)
-        assert true_left == true_right
-
-
-    # for bit in range(28):
-    #     inputs = [False for i in range(28)]
-    #     inputs[bit] = True
-    #     outputs_file = g1.calculate_schema_on_inputs(inputs)
-    #     outputs_aig = g2.calculate_schema_on_inputs(inputs)
-    #     left_end_pos = -1
-    #     right_end_pos = -1
-    #     for output_id in range(outputs_len):
-    #         output_name = 'o' + str(output_id)
-    #         output_node_file = g1.output_name_to_node_name[output_name]
-    #         output_node_aig = g2.output_name_to_node_name[output_name]
-    #         if (outputs_file[output_node_file]):
-    #             left_end_pos = output_id
-    #         if (outputs_aig[output_node_aig]):
-    #             right_end_pos = output_id
-    #     print(bit, left_end_pos, right_end_pos)
-
     # t1 = time.time()
     # total_pruned = 0
     # last_min = 0
