@@ -1,5 +1,4 @@
 import aiger
-import funcy
 
 from collections import defaultdict
 
