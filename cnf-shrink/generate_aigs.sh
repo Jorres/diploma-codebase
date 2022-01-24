@@ -2,8 +2,6 @@
 
 for i in "8 4" "9 4" "10 4" "8 5" "8 6" "8 7" "7 4" "6 4" "4 3"; do 
     a=( $i )
-    # echo "${a[1]}"
-    # echo "${a[0]}"
 
     sed -i "s/define k K/define k ${a[0]}/" sort_algs/BubbleSort.alg
     sed -i "s/define n N/define n ${a[1]}/" sort_algs/BubbleSort.alg

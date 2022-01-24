@@ -10,10 +10,8 @@ import sys
 from collections import defaultdict
 from tqdm import tqdm
 
-from pysat.solvers import Minisat22
-from pysat.solvers import Glucose4
-
-from aiger_cnf import aig2cnf
+# Minisat22, Glucose4
+from pysat.solvers import Maplesat as Solver
 
 import formula_builder as FB
 import graph as G
@@ -37,7 +35,7 @@ RANDOM_SAMPLE_SIZE = 10000
 SECONDS_BEFORE_MODELS_ENUMERATION = 20
 MAX_ENUMMED_MODELS_SIZE = 50000
 
-SECONDS_SOLVING_NO_OPTIMIZATION = 3
+SECONDS_SOLVING_NO_OPTIMIZATION = 15
 SECONDS_ON_ONE_DOMAIN_ITERATION = 5
 
 
@@ -46,7 +44,9 @@ def find_unbalanced_gates(g):
     print("Random sampling unbalanced nodes, {} samples".format(RANDOM_SAMPLE_SIZE))
 
     random.seed(42)
-    random_sample = random.sample(range(2 ** g.n_inputs), RANDOM_SAMPLE_SIZE)
+
+    complete_input_size = range(2 ** g.n_inputs)
+    random_sample = random.sample(complete_input_size, min(len(complete_input_size), RANDOM_SAMPLE_SIZE))
 
     had_true_on_node = defaultdict(int)
 
@@ -100,7 +100,7 @@ def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
 
     # bucket : [gate_name]
     # domains : [(bucket, [bit_vector])]
-    with Glucose4(bootstrap_with=formula.clauses) as solver:
+    with Solver(bootstrap_with=formula.clauses) as solver:
         for bucket_id, bucket in enumerate(tqdm(buckets, desc="Calculating saturation for bucket")):
             domain = list()
 
@@ -131,7 +131,7 @@ def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
 
 def get_possible_inputs(g, cnf, assumptions, pool):
     inputs = set()
-    with Glucose4(bootstrap_with=cnf) as solver:
+    with Solver(bootstrap_with=cnf) as solver:
         for id, model in enumerate(tqdm(solver.enum_models(assumptions=assumptions, desc="Enumerating models"))):
             input_clause = list()
 
@@ -257,8 +257,8 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
     metainfo_dict['MODELS_ENUMERATION_ENABLED'] = settings['model_enumeration_enabled']
     metainfo_dict['enum_solved_cnfs'] = list()
 
-    with Glucose4(bootstrap_with=final_cnf, use_timer=True) as solver:
-        for comb_id, combination in enumerate(tqdm(combinations, desc="Processing cartesian combination")):
+    with Solver(bootstrap_with=final_cnf, use_timer=True) as solver:
+        for comb_id, combination in enumerate(tqdm(combinations, desc="Processing cartesian combination", total=cartesian_size)):
             # combination = [domain]
             left_assumptions = list()
             right_assumptions = list()
@@ -300,15 +300,16 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
                 else:
                     runtimes.append(solver.time())
 
-            # Trying to solve for a while, before we decide it is time for another 
+            # Trying to solve for a while, before we decide it is time for another
             # optimization
             if sat_on_miter is None:
-                sat_on_miter = U.solve_with_timeout(solver, total_assumptions, SECONDS_SOLVING_NO_OPTIMIZATION)
+                sat_on_miter = U.solve_with_timeout(
+                    solver, total_assumptions, SECONDS_SOLVING_NO_OPTIMIZATION)
                 if sat_on_miter:
                     runtimes.append(solver.time())
 
             # Optimization with feeding assumption sets one by one
-            if sat_on_miter is None:
+            if sat_on_miter is None and settings['domain_one_by_one_consumption']:
                 bucketed_assumptions = [total_assumptions[x:x+BUCKET_SIZE]
                                         for x in range(0, len(total_assumptions), BUCKET_SIZE)]
 
@@ -316,7 +317,8 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
                 # do that later anyway
                 bucketed_assumptions.pop()
 
-                current_assumptions = bucketed_assumptions[0] + bucketed_assumptions[1]
+                current_assumptions = bucketed_assumptions[0] + \
+                    bucketed_assumptions[1]
 
                 next_bucket = 2
                 for _ in tqdm(U.while_true_generator(), desc="Appending domains one by one"):
@@ -327,7 +329,8 @@ def check_for_equivalence(g1, g2, domains_info_left, domains_info_right, metainf
                         break
                     if next_bucket == len(bucketed_assumptions):
                         break
-                    current_assumptions = current_assumptions + bucketed_assumptions[next_bucket]
+                    current_assumptions = current_assumptions + \
+                        bucketed_assumptions[next_bucket]
                     next_bucket += 1
 
             # Finally, solving task without time limit, tried all optimizations without success
@@ -438,52 +441,29 @@ def domain_equivalence_check(test_path_left, test_path_right, res_filename):
 
     settings = dict()
     settings['model_enumeration_enabled'] = False
+    settings['domain_one_by_one_consumption'] = False
     result = post_sampling_calculations(
         g1, g2, test_path_left, test_path_right, res, unbalanced_nodes_left, unbalanced_nodes_right, t_start, settings)
 
     return result
 
 
-def validate_against_aig_naively(g, aig):
-    start_cnf = aig2cnf(aig.aig)
+def validate_naively(g1, g2):
+    pool_left = FB.TPoolHolder()
+    f_left = FB.make_formula_from_my_graph(g1, pool_left)
+
     shift = -1
-    for clause in start_cnf.clauses:
+    for clause in f_left.clauses:
         for var in clause:
             shift = max(shift, var)
 
-    pool = FB.TPoolHolder(start_from=shift + 1)
-    my_cnf = FB.make_formula_from_my_graph(g, pool)
-    final_cnf = my_cnf.clauses
-    for clause in start_cnf.clauses:
-        if len(clause) == 1:
-            continue
-        final_cnf.append(list(clause))
+    pool_right = FB.TPoolHolder(start_from=shift + 1)
+    f_right = FB.make_formula_from_my_graph(g2, pool_right)
 
-    for input in aig.inputs:
-        # Add clauses for input equality
-        input_aig_var = start_cnf.input2lit[input]
-        input_graph_var = g.input_var_to_cnf_var(input, pool)
+    final_cnf = generate_miter_scheme(
+        f_left.clauses + f_right.clauses, pool_left, pool_right, g1, g2)
 
-        final_cnf.append([-1 * input_aig_var, input_graph_var])
-        final_cnf.append([input_aig_var, -1 * input_graph_var])
-
-    for i, output in enumerate(aig.outputs):
-        # Add clause for every output xor gate
-        c = pool.v_to_id("xor_" + str(i))
-        a = start_cnf.output2lit[output]
-        b = g.output_var_to_cnf_var(output, pool)
-        final_cnf.append([-1 * a, -1 * b, -1 * c])
-        final_cnf.append([a, b, -1 * c])
-        final_cnf.append([a, -1 * b, c])
-        final_cnf.append([-1 * a, b, c])
-
-    # OR together all new xor_ variables
-    lst = []
-    for i in range(len(aig.outputs)):
-        lst.append(pool.v_to_id("xor_" + str(i)))
-    final_cnf.append(lst)
-
-    with Glucose4(bootstrap_with=final_cnf) as solver:
+    with Solver(bootstrap_with=final_cnf) as solver:
         print("Running SAT-solver to determine scheme equivalency")
         result = solver.solve()
         if not result:
@@ -499,8 +479,11 @@ def naive_equivalence_check(test_path_left, test_path_right, res_filename):
 
     g1 = G.Graph()
     g1.from_aig(aig_instance_left)
+    g2 = G.Graph()
+    g2.from_aig(aig_instance_right)
+
     t1 = time.time()
-    result = validate_against_aig_naively(g1, aig_instance_right)
+    result = validate_naively(g1, g2)
     t2 = time.time()
     res = dict()
     res_string = "Running {} against {} naively took {}".format(
@@ -523,14 +506,14 @@ if __name__ == "__main__":
         #  "./sorts/BubbleSortFaulty_7_4.aig",
         #  "./results/7_4_faulty.txt"
         #  ),
-        # ("./new_sorts/BubbleSort_6_4.aig",
-        #  "./new_sorts/PancakeSort_6_4.aig",
-        #  "./results/6_4.txt"
-        #  ),
-        ("./new_sorts/BubbleSort_7_4.aig",
-         "./new_sorts/PancakeSort_7_4.aig",
-         "./results/7_4.txt"
+        ("./new_sorts/BubbleSort_6_4.aig",
+         "./new_sorts/PancakeSort_6_4.aig",
+         "./results/6_4.txt"
          ),
+        # ("./new_sorts/BubbleSort_7_4.aig",
+        #  "./new_sorts/PancakeSort_7_4.aig",
+        #  "./results/7_4.txt"
+        #  ),
         # ("./new_sorts/BubbleSort_8_4.aig",
         #  "./new_sorts/PancakeSort_8_4.aig",
         #  "./results/8_4.txt"
