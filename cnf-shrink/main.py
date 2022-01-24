@@ -422,12 +422,8 @@ def post_sampling_calculations(g1, g2, test_path_left, test_path_right, res, unb
 
 
 def domain_equivalence_check(test_path_left, test_path_right, res_filename):
-    left_schema = aiger.load(test_path_left)
-    right_schema = aiger.load(test_path_right)
-    g1 = G.Graph()
-    g1.from_aig(left_schema)
-    g2 = G.Graph()
-    g2.from_aig(right_schema)
+    g1 = G.Graph(test_path_left)
+    g2 = G.Graph(test_path_right)
 
     t_start = time.time()
     res = dict()
@@ -474,13 +470,8 @@ def validate_naively(g1, g2):
 
 
 def naive_equivalence_check(test_path_left, test_path_right, res_filename):
-    aig_instance_left = aiger.load(test_path_left)
-    aig_instance_right = aiger.load(test_path_right)
-
-    g1 = G.Graph()
-    g1.from_aig(aig_instance_left)
-    g2 = G.Graph()
-    g2.from_aig(aig_instance_right)
+    g1 = G.Graph(test_path_left)
+    g2 = G.Graph(test_path_right)
 
     t1 = time.time()
     result = validate_naively(g1, g2)

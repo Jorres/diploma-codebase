@@ -9,6 +9,10 @@ class Node:
 
 
 class Graph:
+    def __init__(self, filename):
+        aig = aiger.load(filename)
+        self.from_aig(aig)
+        
     def add_edge(self, child, parent):
         self.children[parent].append(child)
 
