@@ -99,6 +99,88 @@ class Graph:
                 print()
         print("----- END DEBUG PRINTING GRAPH -----")
 
+    def replace_in_list(self, where, what, with_what):
+        for i in range(0, len(where)):
+            if where[i] == what:
+                where[i] = with_what
+                return
+        assert False
+
+    def cut_only(self, v):
+        ans = 0
+        for child in self.children[v]:
+            self.parents[child].remove(v)
+            if len(self.parents[child]) == 0 and child not in self.outputs:
+                ans += self.cut_only(child)
+
+        # Clean the node from all the structures in the graph
+        ans += 1
+        print("Pruning ", v)
+        self.children.pop(v)
+        self.parents.pop(v)
+
+        self.node_names.remove(v)
+
+        # try:
+        #     self.node_names.remove(v)
+        # except ValueError:
+        #     # Sometimes we replace deleted node name earlier
+        #     # in the pruning process to keep topological order
+        #     pass
+
+        return ans
+
+    def prune_pair(self, to_prune, to_leave, are_equivalent):
+        assert to_prune != to_leave
+        if to_prune in self.outputs and to_leave in self.outputs:
+            assert False, "Pruning outputs is unsupported yet"
+
+        # Just to make sure that `to_prune` is topologically later than `to_leave`.
+        # TODO this could be optimized, just precalculate topological number once.
+        for v in self.node_names:
+            if v == to_prune:
+                tmp = to_prune
+                to_prune = to_leave
+                to_leave = tmp
+                break
+            if v == to_leave:
+                break
+
+        if are_equivalent:
+            for parent in self.parents[to_prune]:
+                self.replace_in_list(self.children[parent], to_prune, to_leave)
+                self.parents[to_leave].append(parent)
+
+            if to_prune in self.outputs:
+                for output_name in self.output_name_to_node_name:
+                    if self.output_name_to_node_name[output_name] == to_prune:
+                        self.output_name_to_node_name[output_name] == to_leave
+                self.outputs.remove(to_prune)
+                self.outputs.add(to_leave)
+
+            return self.cut_only(to_prune)
+        else:
+            assert False, "Pruning neg-equivalent is unsupported yet"
+            # new_inv_name = 'i_new' + str(self.last_new_inv)
+            # print("Inserting new inverter node", new_inv_name)
+            # self.last_new_inv += 1
+
+            # self.parents[to_leave].append(new_inv_name)
+            # self.children[new_inv_name].append(to_leave)
+
+            # for parent in self.parents[to_prune]:
+            #     self.replace_in_list(
+            #         self.children[parent], to_prune, new_inv_name)
+            #     self.parents[new_inv_name].append(parent)
+
+            # if to_prune in self.outputs:
+            #     self.outputs.remove(to_prune)
+            #     self.outputs.add(new_inv_name)
+
+            # # TODO 'cut' vs 'copy' replace problem
+            # self.replace_in_list(self.node_names, to_prune, new_inv_name)
+            # return self.cut_only(to_prune) - 1
+
     def input_var_to_cnf_var(self, input, pool):
         return pool.v_to_id(input)
 
@@ -116,18 +198,15 @@ class Graph:
             ith_input_var = (inputs & (1 << i)) > 0
             name = 'v' + str(i)
             result[name] = ith_input_var
-            print(name)
 
         for name in self.node_names:
             if name.startswith('i'):
                 child = self.children[name][0]
-                print(name, child)
                 assert child in result
                 result[name] = not result[child]
             elif name.startswith('a'):
                 child_left = self.children[name][0]
                 child_right = self.children[name][1]
-                print(name, child_left, child_right)
                 assert child_left in result
                 assert child_right in result
                 result[name] = result[child_left] and result[child_right]
@@ -189,5 +268,3 @@ class Graph:
             output_name = 'o' + str(output_id)
             old = self.output_name_to_node_name[output_name]
             self.output_name_to_node_name[output_name] = relabeling[old]
-
-

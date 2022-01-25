@@ -1,96 +1,101 @@
-import pysat
 import time
-
-from pysat.solvers import Maplesat as Solver
-
-import aiger
-from aiger_cnf import aig2cnf
-
-import matplotlib.pyplot as plt
-import numpy as np
 import json
+from tqdm import tqdm
 
 import formula_builder as FB
 import graph as G
 
 import main_equivalence as EQ
-
-instances = []
-
-def try_prune_all_pairs(g, formula, pool, last_min):
-    global instances
-
-    removed_set = set()
-    with Solver(bootstrap_with=formula.clauses) as solver:
-        for i in range(last_min, len(g.node_names)):
-            name_1 = g.node_names[i]
-            if name_1.startswith("v"):
-                continue
-
-            print(name_1)
-            for j in range(i + 1, len(g.node_names)):
-                name_2 = g.node_names[j]
-                if name_2.startswith("v"):
-                    continue
-
-                # TODO this is temporary hack, because I forgot
-                # to cut and replace, refer to another todo
-                if name_1 == name_2:
-                    continue
-
-                results = []
-                for modifier_i in [-1, 1]:
-                    for modifier_j in [-1, 1]:
-                        var_i = modifier_i * pool.v_to_id(name_1)
-                        var_j = modifier_j * pool.v_to_id(name_2)
-                        t1 = time.time()
-                        results.append(solver.solve(
-                            assumptions=[var_i, var_j]))
-                        t2 = time.time()
-                        instances.append(t2 - t1)
-
-                if results == [True, False, False, True]:
-                    assert name_2 not in removed_set
-                    removed_set.add(name_2)
-                    print("Found equivalent pair", name_1, name_2)
-                    last_min = i
-                    pruned = g.prune(name_1, name_2, True)
-                    return g, True, last_min, pruned
-
-                if results == [False, True, True, False] and not (name_1.startswith("i")) and not (name_2.startswith("i")):
-                    assert name_2 not in removed_set
-                    removed_set.add(name_2)
-                    print("Found neg-equivalent pair", name_1, name_2)
-                    last_min = i
-                    pruned = g.prune(name_1, name_2, False)
-                    return g, True, last_min, pruned
-
-        return g, False, last_min, 0
+import pair_eliminator as PE
 
 
 def main():
-    test_path_left = "./new_sorts/BubbleSort_4_3.aig"
-    test_path_right = "./new_sorts/PancakeSort_4_3.aig"
+    experiments = [
+        "Sort_4_3.aig",
+        "Sort_6_4.aig",
+        "Sort_6_4.aig",
+        "Sort_7_4.aig",
+        "Sort_8_4.aig",
+        "Sort_8_5.aig",
+        "Sort_8_6.aig",
+        "Sort_8_7.aig",
+        "Sort_9_4.aig",
+        "Sort_10_4.aig"
+    ]
 
-    g1 = G.Graph(test_path_left)
-    g2 = G.Graph(test_path_right)
-     
-    EQ.validate_naively(g1, g2)
+    complex_experiments = [
+        "multiplier.aag",
+        "tresh.aag",
+        "A5_1.aag"
+    ]
 
-    # t1 = time.time()
-    # total_pruned = 0
-    # last_min = 0
-    # while True:
-    #     formula = FB.make_formula_from_my_graph(g, pool)
-    #     g, was_pruned, last_min, pruned_this_time = try_prune_all_pairs(
-    #         g, formula, pool, last_min)
-    #     total_pruned += pruned_this_time
-    #     if not was_pruned:
-    #         break
+    # for test_suff in experiments:
+    #     for kind in ["Pancake", "Bubble"]:
+    #         test_path = "./new_sorts/{}{}".format(kind, test_suff)
+    #         g1 = G.Graph(test_path)
+    #         g2 = G.Graph(test_path)
 
-    # print(total_pruned)
-    # t2 = time.time()
-    # print(t2 - t1)
+    #         pair_elim = PE.PairEliminator()
+    #         t1 = time.time()
+    #         g1_pruned, total_pruned = pair_elim.try_prune_all_pairs(g1)
+    #         t2 = time.time()
+
+    #         assert len(g1_pruned.outputs) == len(g2.outputs)
+    #         assert g1_pruned.n_inputs == g2.n_inputs
+    #         assert len(g1_pruned.node_names) == len(g2.node_names) - total_pruned
+
+    #         if 2 ** g2.n_inputs < 10 ** 6:
+    #             for i in tqdm(range(2 ** g2.n_inputs), leave=False):
+    #                 outputs_left = g1_pruned.calculate_schema_on_inputs(i)
+    #                 outputs_right = g2.calculate_schema_on_inputs(i)
+    #                 for output_id in range(len(g2.outputs)):
+    #                     output_name = 'o' + str(output_id)
+    #                     value_left = outputs_left[g1_pruned.output_name_to_node_name[output_name]]
+    #                     value_right = outputs_right[g2.output_name_to_node_name[output_name]]
+    #                     assert value_left == value_right
+
+    #         cur_result = dict()
+    #         cur_result['name'] = test_path
+    #         cur_result['pruned'] = total_pruned
+    #         cur_result['graph_size'] = len(g1.node_names)
+    #         cur_result['validated'] = EQ.validate_naively(g1_pruned, g2)
+    #         cur_result['time_elapsed'] = str(t2 - t1)
+
+    #         with open("./elim_results/results.txt", "a") as f:
+    #             f.write(json.dumps(cur_result, indent=4) + "\n")
+    for test_suff in complex_experiments:
+        test_path = "./complex_examples/{}".format(test_suff)
+        g1 = G.Graph(test_path)
+        g2 = G.Graph(test_path)
+
+        pair_elim = PE.PairEliminator()
+        t1 = time.time()
+        g1_pruned, total_pruned = pair_elim.try_prune_all_pairs(g1)
+        t2 = time.time()
+
+        assert len(g1_pruned.outputs) == len(g2.outputs)
+        assert g1_pruned.n_inputs == g2.n_inputs
+        assert len(g1_pruned.node_names) == len(g2.node_names) - total_pruned
+
+        if 2 ** g2.n_inputs < 10 ** 6:
+            for i in tqdm(range(2 ** g2.n_inputs), leave=False):
+                outputs_left = g1_pruned.calculate_schema_on_inputs(i)
+                outputs_right = g2.calculate_schema_on_inputs(i)
+                for output_id in range(len(g2.outputs)):
+                    output_name = 'o' + str(output_id)
+                    value_left = outputs_left[g1_pruned.output_name_to_node_name[output_name]]
+                    value_right = outputs_right[g2.output_name_to_node_name[output_name]]
+                    assert value_left == value_right
+
+        cur_result = dict()
+        cur_result['name'] = test_path
+        cur_result['pruned'] = total_pruned
+        cur_result['graph_size'] = len(g1.node_names)
+        cur_result['validated'] = EQ.validate_naively(g1_pruned, g2)
+        cur_result['time_elapsed'] = str(t2 - t1)
+
+        with open("./elim_results/special_results.txt", "a") as f:
+            f.write(json.dumps(cur_result, indent=4) + "\n")
 
 
 if __name__ == "__main__":
