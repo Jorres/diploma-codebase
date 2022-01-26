@@ -77,8 +77,8 @@ def run_on_iscas():
 def run_on_sorts():
     experiments = [
         "Sort_4_3.aig",
-        "Sort_6_4.aig",
-        "Sort_7_4.aig",
+        # "Sort_6_4.aig",
+        # "Sort_7_4.aig",
         # "Sort_8_4.aig",
         # "Sort_8_5.aig",
         # "Sort_8_6.aig",

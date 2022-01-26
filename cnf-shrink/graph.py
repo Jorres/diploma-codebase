@@ -254,7 +254,14 @@ class Graph:
                 assert len(self.children[node_name]) == 1
                 child = self.children[node_name][0]
                 child_literal = name_to_literal[child]
-                name_to_literal[node_name] = (child_literal + 1) % 2
+                # A situation where two not gates follow each other. 
+                # It could happen after simplification, but is not supported 
+                # by an aiger format, therefore we remove it.
+                if child_literal % 2 == 0:
+                    name_to_literal[node_name] = (child_literal + 1)
+                else:
+                    name_to_literal[node_name] = (child_literal - 1)
+
             if node_name.startswith('a'):
                 assert len(self.children[node_name]) == 2
                 left_child, right_child = self.children[node_name]
@@ -266,11 +273,12 @@ class Graph:
 
         output_lines = list()
         for output_name in self.outputs:
+            print(output_name)
             current_output_literal = name_to_literal[output_name]
             output_lines.append(f"{current_output_literal}\n")
 
         # assert max_variable_index == first_unoccupied_literal / 2 
-        print(max_variable_index, first_unoccupied_literal / 2)
+        # print(max_variable_index, first_unoccupied_literal / 2)
 
         with open(filename, "w+") as f:
             f.write(header)
