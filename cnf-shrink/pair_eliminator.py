@@ -4,6 +4,8 @@ import time
 from pysat.solvers import Minisat22
 
 import formula_builder as FB
+import utils as U
+
 
 class PairEliminator():
     def __init__(self):
@@ -33,8 +35,8 @@ class PairEliminator():
                     assert gate_type_1 in ['v', 'i', 'a']
                     assert gate_type_2 in ['v', 'i', 'a']
 
-                    if gate_type_1 != gate_type_2:
-                        continue
+                    # if gate_type_1 != gate_type_2:
+                    #     continue
 
                     results = []
                     for bit_i in [-1, 1]:
@@ -64,18 +66,21 @@ class PairEliminator():
                     #     last_pruned_id = i
                     #     pruned = g.prune_pair(name_1, name_2, False)
                     #     return g, True, last_pruned_id, pruned
-            return g, False, last_pruned_id, 0
 
+            return g, False, last_pruned_id, None
 
     def try_prune_all_pairs(self, g):
-        total_pruned = 0
+        pruned_gates = U.PrunedGates(0, 0)
         last_pruned_id = 0
         pool = FB.TPoolHolder()
         while True:
             formula = FB.make_formula_from_my_graph(g, pool)
-            g, was_pruned, last_pruned_id, pruned_this_time = self.prune_from_checkpoint(
+            g, was_pruned, last_pruned_id, pruned_gates_this_time = self.prune_from_checkpoint(
                 g, formula, pool, last_pruned_id)
             if not was_pruned:
                 break
-            total_pruned += pruned_this_time
-        return g, total_pruned
+
+            pruned_gates.ands += pruned_gates_this_time.ands
+            pruned_gates.nots += pruned_gates_this_time.nots
+
+        return g, pruned_gates

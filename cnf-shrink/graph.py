@@ -1,6 +1,7 @@
 import aiger
 
 from collections import defaultdict
+import utils as U
 
 
 class Node:
@@ -11,6 +12,15 @@ class Node:
 class Graph:
     def __init__(self, filename):
         aig = aiger.load(filename)
+
+        with open(filename, "r") as f:
+            header = f.readline().strip().split(" ")
+            if len(header) != 6:
+                raise ValueError
+            _, max_id, inputs, latches, outputs, ands = header
+            if int(latches) > 0:
+                raise ValueError
+
         self.from_aig(aig)
 
     def add_edge(self, child, parent):
@@ -107,14 +117,22 @@ class Graph:
         assert False
 
     def cut_only(self, v):
-        ans = 0
+        pruned_gates = U.PrunedGates(ands=0, nots=0)
+
         for child in self.children[v]:
             self.parents[child].remove(v)
             if len(self.parents[child]) == 0 and child not in self.outputs:
-                ans += self.cut_only(child)
+                pruned_at_child = self.cut_only(child)
+                pruned_gates.ands += pruned_at_child.ands
+                pruned_gates.nots += pruned_at_child.nots
 
         # Clean the node from all the structures in the graph
-        ans += 1
+        if v.startswith("a"):
+            pruned_gates.ands += 1
+        else:
+            assert v.startswith("i")
+            pruned_gates.nots += 1
+
         print("Pruning ", v)
         self.children.pop(v)
         self.parents.pop(v)
@@ -128,7 +146,7 @@ class Graph:
         #     # in the pruning process to keep topological order
         #     pass
 
-        return ans
+        return pruned_gates
 
     def prune_pair(self, to_prune, to_leave, are_equivalent):
         assert to_prune != to_leave
@@ -215,6 +233,55 @@ class Graph:
             assert name in result
 
         return result
+
+    def to_file(self, filename):
+        n_and_gates = len(
+            list(filter(lambda name: name.startswith('a'), self.node_names)))
+        name_to_literal = dict()
+        first_unoccupied_literal = 2 * self.n_inputs + 2
+
+        max_variable_index = self.n_inputs + n_and_gates
+        header = f"aag {max_variable_index} {self.n_inputs} 0 {len(self.outputs)} {n_and_gates}\n"
+
+        input_lines = list()
+        for input_id in range(self.n_inputs):
+            name_to_literal['v' + str(input_id)] = 2 * input_id
+            input_lines.append(f"{2 * input_id + 2}\n")
+
+        and_lines = list()
+        for node_name in self.node_names:
+            if node_name.startswith('i'):
+                assert len(self.children[node_name]) == 1
+                child = self.children[node_name][0]
+                child_literal = name_to_literal[child]
+                name_to_literal[node_name] = (child_literal + 1) % 2
+            if node_name.startswith('a'):
+                assert len(self.children[node_name]) == 2
+                left_child, right_child = self.children[node_name]
+                left_literal = name_to_literal[left_child]
+                right_literal = name_to_literal[right_child]
+                name_to_literal[node_name] = first_unoccupied_literal
+                first_unoccupied_literal += 2
+                and_lines.append(f"{name_to_literal[node_name]} {left_literal} {right_literal}\n")
+
+        output_lines = list()
+        for output_name in self.outputs:
+            current_output_literal = name_to_literal[output_name]
+            output_lines.append(f"{current_output_literal}\n")
+
+        # assert max_variable_index == first_unoccupied_literal / 2 
+        print(max_variable_index, first_unoccupied_literal / 2)
+
+        with open(filename, "w+") as f:
+            f.write(header)
+            f.writelines(input_lines)
+            f.writelines(output_lines)
+            f.writelines(and_lines)
+
+            for i in range(0, self.n_inputs):
+                f.write("i{} v{}\n".format(i, i))
+            for i in range(0, len(self.outputs)):
+                f.write("o{} o{}\n".format(i, i))
 
     def relabel_graph_in_top_to_bottom_fashion(self):
         relabeling = dict()

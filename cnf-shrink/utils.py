@@ -1,4 +1,5 @@
 from threading import Timer
+from collections import namedtuple
 
 
 def print_to_file(filename, data):
@@ -28,3 +29,9 @@ def solve_with_timeout(solver, assumptions, timeout):
         timer.cancel()
 
     return result
+
+
+class PrunedGates:
+    def __init__(self, ands, nots):
+        self.ands = ands
+        self.nots = nots
