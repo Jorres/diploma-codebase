@@ -31,6 +31,12 @@ def solve_with_timeout(solver, assumptions, timeout):
     return result
 
 
+def solve_with_conflict_limit(solver, assumptions, limit):
+    solver.conf_budget(limit)
+    result = solver.solve_limited(assumptions=assumptions)
+    return result
+
+
 class PrunedGates:
     def __init__(self, ands, nots):
         self.ands = ands

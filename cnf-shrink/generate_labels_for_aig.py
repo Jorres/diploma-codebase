@@ -1,9 +1,9 @@
 import os
 
-dir_name = "./iscas_aags"
+dir_name = "./new_sorts"
 for dirpath, dnames, fnames in os.walk(dir_name):
     for filename in fnames:
-        if not filename.endswith("aag"):
+        if not filename.endswith("g"):
             continue
         n_outputs = -1
         full_filename = "{}/{}".format(dir_name, filename)
@@ -23,10 +23,11 @@ for dirpath, dnames, fnames in os.walk(dir_name):
                 first_meta_line = id
                 break
 
-        # assert first_meta_line != -1
+        if first_meta_line != -1:
+            lines = lines[:first_meta_line]
 
         with open(full_filename, "w") as f:
-            for line in lines[:first_meta_line]:
+            for line in lines:
                 f.write(line)
             for i in range(0, n_inputs):
                 f.write("i{} v{}\n".format(i, i))

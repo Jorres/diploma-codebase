@@ -9,6 +9,7 @@ import graph as G
 
 import main_equivalence as EQ
 import pair_eliminator as PE
+import utils as U
 
 
 def optimize_graph(test_folder, test_name, result_folder, result_file):
@@ -20,6 +21,8 @@ def optimize_graph(test_folder, test_name, result_folder, result_file):
     pair_elim = PE.PairEliminator()
     t1 = time.time()
     g1_pruned, pruned_gates = pair_elim.try_prune_all_pairs(g1)
+    # g1_pruned = g1
+    # pruned_gates = U.PrunedGates(0, 0)
     total_pruned = pruned_gates.ands + pruned_gates.nots
     t2 = time.time()
 
@@ -76,10 +79,10 @@ def run_on_iscas():
 
 def run_on_sorts():
     experiments = [
-        "Sort_4_3.aig",
+        # "Sort_4_3.aig",
         # "Sort_6_4.aig",
         # "Sort_7_4.aig",
-        # "Sort_8_4.aig",
+        "Sort_8_4.aig",
         # "Sort_8_5.aig",
         # "Sort_8_6.aig",
         # "Sort_8_7.aig",

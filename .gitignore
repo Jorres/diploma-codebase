@@ -20,10 +20,6 @@ satencodings
 
 Transalg.exe
 
-new_sorts
-sorts
-cnf-shrink/results
-
 minisat
 cryptominisat
 transalg

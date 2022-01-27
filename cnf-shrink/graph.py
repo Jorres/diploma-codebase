@@ -89,12 +89,18 @@ class Graph:
 
         node_to_name = self.graph_edges_from_topsort(order, aig)
 
-        self.outputs = set()
+        labeled_outputs = list()
         for output in aig.outputs:
             assert output in aig.node_map
             output_node_name = node_to_name[aig.node_map[output]]
             self.output_name_to_node_name[output] = output_node_name
-            self.outputs.add(output_node_name)
+            labeled_outputs.append((int(output[1:]), output_node_name))
+
+        # Storing outputs in the SAME ORDER AS IN AIG FILE
+        labeled_outputs = sorted(labeled_outputs)
+        self.outputs = list()
+        for output_codename, output_nodename in labeled_outputs:
+            self.outputs.append(output_nodename)
 
     def debug_print(self):
         print("-----   DEBUG PRINTING GRAPH   -----")
@@ -173,8 +179,10 @@ class Graph:
                 for output_name in self.output_name_to_node_name:
                     if self.output_name_to_node_name[output_name] == to_prune:
                         self.output_name_to_node_name[output_name] == to_leave
-                self.outputs.remove(to_prune)
-                self.outputs.add(to_leave)
+                for output_id in range(len(self.outputs)):
+                    if self.outputs[output_id] == to_prune:
+                        self.outputs[output_id] = to_leave
+                        break
 
             return self.cut_only(to_prune)
         else:
@@ -237,18 +245,19 @@ class Graph:
     def to_file(self, filename):
         n_and_gates = len(
             list(filter(lambda name: name.startswith('a'), self.node_names)))
+
         name_to_literal = dict()
-        first_unoccupied_literal = 2 * self.n_inputs + 2
 
         max_variable_index = self.n_inputs + n_and_gates
         header = f"aag {max_variable_index} {self.n_inputs} 0 {len(self.outputs)} {n_and_gates}\n"
 
         input_lines = list()
         for input_id in range(self.n_inputs):
-            name_to_literal['v' + str(input_id)] = 2 * input_id
+            name_to_literal['v' + str(input_id)] = 2 * input_id + 2
             input_lines.append(f"{2 * input_id + 2}\n")
 
         and_lines = list()
+        first_unoccupied_literal = 2 * self.n_inputs + 2
         for node_name in self.node_names:
             if node_name.startswith('i'):
                 assert len(self.children[node_name]) == 1
@@ -261,8 +270,7 @@ class Graph:
                     name_to_literal[node_name] = (child_literal + 1)
                 else:
                     name_to_literal[node_name] = (child_literal - 1)
-
-            if node_name.startswith('a'):
+            elif node_name.startswith('a'):
                 assert len(self.children[node_name]) == 2
                 left_child, right_child = self.children[node_name]
                 left_literal = name_to_literal[left_child]
@@ -270,15 +278,29 @@ class Graph:
                 name_to_literal[node_name] = first_unoccupied_literal
                 first_unoccupied_literal += 2
                 and_lines.append(f"{name_to_literal[node_name]} {left_literal} {right_literal}\n")
+            else:
+                assert node_name.startswith("v")
+                pass
 
         output_lines = list()
+        # tmp = list()
+        # tmp2 = list()
         for output_name in self.outputs:
             print(output_name)
             current_output_literal = name_to_literal[output_name]
+            # tmp.append(current_output_literal)
             output_lines.append(f"{current_output_literal}\n")
 
-        # assert max_variable_index == first_unoccupied_literal / 2 
-        # print(max_variable_index, first_unoccupied_literal / 2)
+        # for output_id in range(len(self.outputs)):
+        #     output_name = self.output_name_to_node_name['o' + str(output_id)]
+        #     current_output_literal = name_to_literal[output_name]
+        #     tmp2.append(current_output_literal)
+
+        # assert len(tmp) == len(tmp2)
+        # for id in range(len(tmp)):
+        #     assert tmp[id] != tmp2[id]
+
+        assert max_variable_index == first_unoccupied_literal / 2 - 1
 
         with open(filename, "w+") as f:
             f.write(header)
