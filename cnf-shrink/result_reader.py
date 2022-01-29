@@ -1,15 +1,22 @@
 import json
 
 lines = list()
-with open("./friday_results/results.txt", "r") as f:
+with open("./results/10_4.txt", "r") as f:
     result = json.load(f)
-    lines.append("Test_name Size_before Size_after Time")
+    lines.append("Left Right Cartesian_size Gates_substituted Skipped Solved Inferred Time\n")
     for experiment in result:
-        name = experiment['name'].split('/')[-1][:-4]
-        graph_size = experiment['graph_size']
-        after_pruning = graph_size - experiment['total_pruned']
-        time = experiment['time_elapsed']
-        lines.append(f"{name} {graph_size} {after_pruning} {time}\n")
+        left = experiment['left_schema'].split('/')[-1][:-4]
+        right = experiment['right_schema'].split('/')[-1][:-4]
+        cartesian_size = experiment['cartesian_size']
+        one_defined = experiment['one_defined']
+        skipped = experiment['skipped']
+        solved = experiment['solved']
+        time = experiment['time']
+        total_vars_substituted = experiment['one_defined'] + \
+            experiment['total_vars_in_decomp']
 
-with open("./friday_results/parsed_results.txt", "w") as f:
+        lines.append(
+            f"{left} {right} {cartesian_size} {total_vars_substituted} {skipped} {solved} {one_defined} {time}\n")
+
+with open("./friday_results/equivalence_results.txt", "w") as f:
     f.writelines(lines)

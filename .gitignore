@@ -1,26 +1,23 @@
+# Python runtime magic
 **/env
-
-conspects
-
 __pycache__
 
 # Various todo notes in any format
 *todo*
 
+# Custom notes
 papers
+conspects
 
-# Helper repositories
+# Tooling repositories
 py-aiger
 satencodings
-
-# Large files (logs or experiment results)
-**large**
-
-**curcuits-benchmark-tests**
-
-Transalg.exe
-
 minisat
 cryptominisat
 transalg
 victor-data
+abc
+aiger
+
+Transalg.exe
+
