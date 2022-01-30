@@ -19,15 +19,14 @@
         114,
         157
     ],
-    "enum_solved_cnfs": [],
     "some_biggest_runtimes": [
-        0.03523638299999998,
-        0.00508508299999999,
-        0.0046273409999999515
+        0.041842241000000335,
+        0.006299256000000142,
+        0.0037228739999997096
     ],
-    "sat_calls_only_runtimes": 0.4389652779999982,
+    "sat_calls_only_runtimes": 0.45245069299994833,
     "left_schema": "./hard-instances/BubbleSort_4_3.aag",
     "right_schema": "./hard-instances/PancakeSort_4_3.aag",
-    "time": "4.252044916152954",
+    "time": "4.265660047531128",
     "outcome": true
 }

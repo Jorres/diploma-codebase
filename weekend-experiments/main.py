@@ -7,7 +7,8 @@ import pysat
 from collections import defaultdict
 from tqdm import tqdm
 
-from pysat.solvers import Maplesat as Solver
+from pysat.solvers import Maplesat as PysatSolver
+from pycryptosat import Solver
 
 import formula_builder as FB
 import graph as G
@@ -109,7 +110,7 @@ def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
 
     # bucket : [gate_name]
     # domains : [(bucket, [bit_vector])]
-    with Solver(bootstrap_with=formula.clauses) as solver:
+    with PysatSolver(bootstrap_with=formula.clauses) as solver:
         for bucket_id, bucket in enumerate(
             tqdm(buckets, desc="Calculating saturation for bucket")
         ):
@@ -240,51 +241,57 @@ def check_for_equivalence(
 
     final_cnf = generate_miter_scheme(shared_cnf, pool_left, pool_right, g1, g2)
 
+    final_cnf_as_formula = pysat.formula.CNF(from_clauses=final_cnf)
+    final_cnf_as_formula.to_file(cnf_file)
+
     runtimes = []
     equivalent = True
-
     tasks = list()
+    solver = Solver()
+    solver.add_clauses(final_cnf.clauses)
+    # with Solver(bootstrap_with=final_cnf) as solver:
 
-    with Solver(bootstrap_with=final_cnf, use_timer=True) as solver:
-        for comb_id, combination in enumerate(
-            tqdm(
-                combinations,
-                desc="Processing cartesian combination",
-                total=cartesian_size,
-            )
-        ):
-            # combination = [domain]
-            left_assumptions = list()
-            right_assumptions = list()
+    for comb_id, combination in enumerate(
+        tqdm(
+            combinations,
+            desc="Processing cartesian combination",
+            total=cartesian_size,
+        )
+    ):
+        # combination = [domain]
+        left_assumptions = list()
+        right_assumptions = list()
 
-            for domain_id, domain_value in enumerate(combination):
-                saturation, bucket, domain, tag = shared_domain_info[domain_id]
-                assert domain_value in domain
-                for unit_id, gate_name in enumerate(bucket):
+        for domain_id, domain_value in enumerate(combination):
+            saturation, bucket, domain, tag = shared_domain_info[domain_id]
+            assert domain_value in domain
+            for unit_id, gate_name in enumerate(bucket):
 
-                    if (domain_value & (1 << unit_id)) > 0:
-                        modifier = 1
-                    else:
-                        modifier = -1
+                if (domain_value & (1 << unit_id)) > 0:
+                    modifier = 1
+                else:
+                    modifier = -1
 
-                    if tag == "L":
-                        left_assumptions.append(modifier * pool_left.v_to_id(gate_name))
-                    elif tag == "R":
-                        right_assumptions.append(
-                            modifier * pool_right.v_to_id(gate_name)
-                        )
-                    else:
-                        assert False
+                if tag == "L":
+                    left_assumptions.append(modifier * pool_left.v_to_id(gate_name))
+                elif tag == "R":
+                    right_assumptions.append(
+                        modifier * pool_right.v_to_id(gate_name)
+                    )
+                else:
+                    assert False
 
-            total_assumptions = left_assumptions + right_assumptions
+        total_assumptions = left_assumptions + right_assumptions
 
-            sat_on_miter = solver.solve(assumptions=total_assumptions)
-            runtimes.append(solver.time())
-            tasks.append((solver.time(), comb_id, total_assumptions))
+        t1 = time.time()
+        sat_on_miter = solver.solve(assumptions=total_assumptions)
+        t2 = time.time()
+        runtimes.append(t2 - t1)
+        tasks.append((t2 - t1, comb_id, total_assumptions))
 
-            if sat_on_miter:
-                equivalent = False
-                break
+        if sat_on_miter:
+            equivalent = False
+            break
 
     runtimes = sorted(runtimes)
     metainfo["some_biggest_runtimes"] = []
@@ -293,9 +300,6 @@ def check_for_equivalence(
     for i in range(1, 4):
         if len(runtimes) >= i:
             metainfo["some_biggest_runtimes"].append(runtimes[-i])
-
-    final_cnf_as_formula = pysat.formula.CNF(from_clauses=final_cnf)
-    final_cnf_as_formula.to_file(cnf_file)
 
     with open(tasks_dump_file, "w+") as f:
         pretty_tasks = dict()
@@ -444,10 +448,15 @@ def validate_naively(g1, g2, metainfo, cnf_file):
 
     pysat.formula.CNF(from_clauses=final_cnf).to_file(cnf_file)
 
-    with Solver(bootstrap_with=final_cnf, use_timer=True) as solver:
-        result = solver.solve()
-        metainfo["solver_only_time_no_preparation"] = solver.time()
-        return not result
+    solver = Solver()
+    solver.add_clauses(final_cnf)
+
+    t1 = time.time()
+    result = solver.solve()
+    t2 = time.time()
+
+    metainfo["solver_only_time_no_preparation"] = t2 - t1
+    return not result
 
 
 def naive_equivalence_check(test_path_left, test_path_right, metainfo_file, cnf_file):
@@ -469,9 +478,9 @@ def naive_equivalence_check(test_path_left, test_path_right, metainfo_file, cnf_
 if __name__ == "__main__":
     experiments = [
         # "4_3",
-        "6_4",
+        # "6_4",
         "7_4",
-        "8_4"
+        # "8_4"
     ]
 
     max_cartesian_sizes = [100000]
@@ -490,9 +499,9 @@ if __name__ == "__main__":
         metainfo_file = f"./hard-instances/metainfo/{test_shortname}.txt"
         tasks_dump_file = f"./hard-instances/assumptions/{test_shortname}.txt"
 
-        naive_equivalence_check(
-            left_schema_file, right_schema_file, metainfo_file, cnf_naive_file
-        )
+        # naive_equivalence_check(
+        #     left_schema_file, right_schema_file, metainfo_file, cnf_naive_file
+        # )
 
         for max_cartesian_size in max_cartesian_sizes:
             for unbalanced_threshold in unbalanced_thresholds:

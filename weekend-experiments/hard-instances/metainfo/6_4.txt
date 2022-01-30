@@ -19,15 +19,14 @@
         2,
         266
     ],
-    "enum_solved_cnfs": [],
     "some_biggest_runtimes": [
-        63.28244118700002,
-        7.944683790999989,
-        7.89417461299999
+        64.228659679,
+        9.164937969000022,
+        8.063432040999999
     ],
-    "sat_calls_only_runtimes": 135.0240803199999,
+    "sat_calls_only_runtimes": 137.16486135599973,
     "left_schema": "./hard-instances/BubbleSort_6_4.aag",
     "right_schema": "./hard-instances/PancakeSort_6_4.aag",
-    "time": "158.13835501670837",
+    "time": "160.7521207332611",
     "outcome": true
 }
