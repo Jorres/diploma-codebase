@@ -17,17 +17,19 @@ def launch_comparison(tasks_file, cnf_file):
     with open(tasks_file, "r") as f:
         tasks = json.load(f)['tasks']
 
-    s = Solver()
-    s.add_clauses(cnf.clauses)
     results = list()
     for (task_time, task_id, assumptions) in tasks:
+        s = Solver()
+        s.add_clauses(cnf.clauses)
+        for assumption in assumptions:
+            s.add_clause([assumption])
         t_st = time.time()
-        s.solve(assumptions=assumptions)
+        s.solve()
         t_fn = time.time()
         results.append((task_time, t_fn - t_st))
 
     for (task_time, crypto_time) in list(reversed(sorted(results)))[:3]:
-        print(f"My time: {task_time}, crypto assumption time: {crypto_time}")
+        print(f"My time: {task_time}, crypto clause time: {crypto_time}")
 
 
 def main():

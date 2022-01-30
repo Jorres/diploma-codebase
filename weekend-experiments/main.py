@@ -3,6 +3,7 @@ import random
 import itertools
 import json
 import pysat
+import math
 
 from collections import defaultdict
 from tqdm import tqdm
@@ -64,16 +65,38 @@ def find_unbalanced_gates(g, should_include_nots):
         fractions = filter(lambda a: not a[1].startswith("i"), fractions)
 
     # filter the gates that are unbalanced enough
-    thresholded_unbalanced = list(
+    unbalanced_to_zero = list(
         filter(
-            lambda p: p[0] < DISBALANCE_THRESHOLD or p[0] > (1 - DISBALANCE_THRESHOLD),
+            lambda p: p[0] < DISBALANCE_THRESHOLD,
             fractions,
         )
     )
 
-    # leave only gate names
-    unbalanced_nodes = list(map(lambda p: p[1], thresholded_unbalanced))
-    return unbalanced_nodes
+    unbalanced_to_one = list(
+        filter(
+            lambda p: p[0] > (1 - DISBALANCE_THRESHOLD),
+            fractions,
+        )
+    )
+
+    print(f"Unbalanced to zero: {len(unbalanced_to_zero)}")
+    print(f"Unbalanced to one: {len(unbalanced_to_one)}")
+
+    n_buckets = (
+        math.floor((len(unbalanced_to_zero) + len(unbalanced_to_one)) / BUCKET_SIZE) + 1
+    )
+    buckets = [list() for i in range(n_buckets)]
+
+    last_bucket = 0
+    for _, gate_name in unbalanced_to_zero:
+        buckets[last_bucket].append(gate_name)
+        last_bucket = (last_bucket + 1) % n_buckets
+
+    for _, gate_name in unbalanced_to_one:
+        buckets[last_bucket].append(gate_name)
+        last_bucket = (last_bucket + 1) % n_buckets
+
+    return buckets
 
 
 # Calculates a list of tuples:
@@ -82,21 +105,8 @@ def find_unbalanced_gates(g, should_include_nots):
 # bucket - list of node names, of which the bucket consists
 # domain - list of positive ints, every int is a bitvector of length len(bucket)
 # tag - either L or R for the left or right half of a miter schema, accordingly
-def calculate_domain_saturations(g, unbalanced_nodes, tag, start_from):
-    print(
-        "Total unbalanced nodes selected for {} schema: {}".format(
-            tag, len(unbalanced_nodes)
-        )
-    )
-
-    buckets = [
-        unbalanced_nodes[x : x + BUCKET_SIZE]
-        for x in range(0, len(unbalanced_nodes), BUCKET_SIZE)
-    ]
-
-    print(
-        "Total buckets to be built with size {}: {}".format(BUCKET_SIZE, len(buckets))
-    )
+def calculate_domain_saturations(g, buckets, tag, start_from):
+    print("Total buckets selected for {} schema: {}".format(tag, len(buckets)))
 
     domains = list()
 
@@ -184,8 +194,6 @@ def check_for_equivalence(
     one_saturated_domains = 0
     one_defined = 0
 
-    shared_cnf_len_at_start = len(shared_cnf)
-
     for saturation, bucket, domain, tag in shared_domain_info:
         if len(domain) == 1:
             one_saturated_domains += 1
@@ -208,8 +216,6 @@ def check_for_equivalence(
                 one_defined += 1
         else:
             break
-
-    assert len(shared_cnf) == shared_cnf_len_at_start + one_defined
 
     metainfo["one_defined"] = one_defined
     metainfo["one_saturated_domains"] = one_saturated_domains
@@ -247,9 +253,9 @@ def check_for_equivalence(
     runtimes = []
     equivalent = True
     tasks = list()
+
     solver = Solver()
-    solver.add_clauses(final_cnf.clauses)
-    # with Solver(bootstrap_with=final_cnf) as solver:
+    solver.add_clauses(final_cnf)
 
     for comb_id, combination in enumerate(
         tqdm(
@@ -275,16 +281,14 @@ def check_for_equivalence(
                 if tag == "L":
                     left_assumptions.append(modifier * pool_left.v_to_id(gate_name))
                 elif tag == "R":
-                    right_assumptions.append(
-                        modifier * pool_right.v_to_id(gate_name)
-                    )
+                    right_assumptions.append(modifier * pool_right.v_to_id(gate_name))
                 else:
                     assert False
 
         total_assumptions = left_assumptions + right_assumptions
 
         t1 = time.time()
-        sat_on_miter = solver.solve(assumptions=total_assumptions)
+        sat_on_miter, solution = solver.solve(assumptions=total_assumptions)
         t2 = time.time()
         runtimes.append(t2 - t1)
         tasks.append((t2 - t1, comb_id, total_assumptions))
@@ -352,18 +356,18 @@ def post_sampling_calculations(
     test_path_left,
     test_path_right,
     metainfo,
-    unbalanced_nodes_left,
-    unbalanced_nodes_right,
+    buckets_left,
+    buckets_right,
     t_start,
     settings,
     tasks_dump_file,
     cnf_file,
 ):
     best_domains_left, shift = calculate_domain_saturations(
-        g1, unbalanced_nodes_left, tag="L", start_from=1
+        g1, buckets_left, tag="L", start_from=1
     )
     best_domains_right, _ = calculate_domain_saturations(
-        g2, unbalanced_nodes_right, tag="R", start_from=shift + 1
+        g2, buckets_right, tag="R", start_from=shift + 1
     )
     result = check_for_equivalence(
         g1,
@@ -404,9 +408,9 @@ def domain_equivalence_check(
     metainfo["disbalance_threshold"] = DISBALANCE_THRESHOLD
 
     print("Schemas initialized, looking for unbalanced nodes in the left schema")
-    unbalanced_nodes_left = find_unbalanced_gates(g1, should_include_nots)
+    buckets_left = find_unbalanced_gates(g1, should_include_nots)
     print("Looking for unbalanced nodes in the right schema")
-    unbalanced_nodes_right = find_unbalanced_gates(g2, should_include_nots)
+    buckets_right = find_unbalanced_gates(g2, should_include_nots)
     print("Unbalanced nodes found, proceeding to building domains")
 
     settings = dict()
@@ -419,8 +423,8 @@ def domain_equivalence_check(
         test_path_left,
         test_path_right,
         metainfo,
-        unbalanced_nodes_left,
-        unbalanced_nodes_right,
+        buckets_left,
+        buckets_right,
         t_start,
         settings,
         tasks_dump_file,
@@ -452,7 +456,7 @@ def validate_naively(g1, g2, metainfo, cnf_file):
     solver.add_clauses(final_cnf)
 
     t1 = time.time()
-    result = solver.solve()
+    result, solution = solver.solve()
     t2 = time.time()
 
     metainfo["solver_only_time_no_preparation"] = t2 - t1
@@ -483,8 +487,8 @@ if __name__ == "__main__":
         # "8_4"
     ]
 
-    max_cartesian_sizes = [100000]
-    unbalanced_thresholds = [0.03]
+    max_cartesian_sizes = [10000000]
+    unbalanced_thresholds = [0.02]
 
     for test_shortname in experiments:
         left_schema_name = f"BubbleSort_{test_shortname}"

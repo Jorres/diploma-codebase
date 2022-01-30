@@ -1,12 +1,4 @@
 {
-    "left_schema": "./hard-instances/BubbleSort_4_3.aag",
-    "right_schema": "./hard-instances/PancakeSort_4_3.aag",
-    "type": "naive",
-    "solver_only_time_no_preparation": 0.193640684,
-    "time": "0.2110598087310791",
-    "outcome": true
-}
-{
     "max_cartesian_size": 100000,
     "disbalance_threshold": 0.03,
     "should_include_nots": false,
@@ -20,13 +12,13 @@
         157
     ],
     "some_biggest_runtimes": [
-        0.041842241000000335,
-        0.006299256000000142,
-        0.0037228739999997096
+        0.026044845581054688,
+        0.00296783447265625,
+        0.002811908721923828
     ],
-    "sat_calls_only_runtimes": 0.45245069299994833,
+    "sat_calls_only_runtimes": 0.5417535305023193,
     "left_schema": "./hard-instances/BubbleSort_4_3.aag",
     "right_schema": "./hard-instances/PancakeSort_4_3.aag",
-    "time": "4.265660047531128",
+    "time": "4.282931327819824",
     "outcome": true
 }
