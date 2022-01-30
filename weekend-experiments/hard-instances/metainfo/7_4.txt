@@ -1,0 +1,34 @@
+{
+    "left_schema": "./hard-instances/BubbleSort_7_4.aag",
+    "right_schema": "./hard-instances/PancakeSort_7_4.aag",
+    "type": "naive",
+    "solver_only_time_no_preparation": 1597.682221374,
+    "time": "1593.4704117774963",
+    "outcome": true
+}
+{
+    "max_cartesian_size": 100000,
+    "disbalance_threshold": 0.03,
+    "should_include_nots": false,
+    "type": "domain",
+    "one_defined": 105,
+    "one_saturated_domains": 7,
+    "actual_cartesian_size": 11856,
+    "total_vars_in_decomp": 44,
+    "distribution": [
+        2,
+        78,
+        76
+    ],
+    "enum_solved_cnfs": [],
+    "some_biggest_runtimes": [
+        26079.206486236,
+        1983.7025703800027,
+        1700.9476514000016
+    ],
+    "sat_calls_only_runtimes": 34141.298204222214,
+    "left_schema": "./hard-instances/BubbleSort_7_4.aag",
+    "right_schema": "./hard-instances/PancakeSort_7_4.aag",
+    "time": "34084.70530343056",
+    "outcome": true
+}
