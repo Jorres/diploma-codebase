@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# for i in "8 4" "9 4" "10 4" "8 5" "8 6" "8 7" "7 4" "6 4" "4 3" "10 5"; do 
-FOLDER="aiger-abc-dump"
-for i in "5 4"; do
+FOLDER="hard-instances"
+for i in "6 4" "4 3" "7 4" "8 4"; do
     a=( $i )
 
     sed -i "s/define k K/define k ${a[0]}/" "${FOLDER}"/BubbleSort.alg
@@ -21,6 +20,5 @@ for i in "5 4"; do
 done
 
 python generate_labels_for_aig.py "${FOLDER}"
-python main.py
 
-./aag_to_aig.sh "${FOLDER}" 
+# python main.py
