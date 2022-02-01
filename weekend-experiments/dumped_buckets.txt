@@ -1,0 +1,620 @@
+{
+    "0": {
+        "bucket_literals": [
+            2128,
+            1945,
+            2004,
+            1851,
+            2138,
+            1955,
+            1865,
+            2152,
+            1969,
+            2306,
+            2410,
+            2316,
+            2420
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "1": {
+        "bucket_literals": [
+            996,
+            1124,
+            1598,
+            1228,
+            1411,
+            1134,
+            1608,
+            1238,
+            1421,
+            1148,
+            1622,
+            1252,
+            1435
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "2": {
+        "bucket_literals": [
+            2330,
+            2434,
+            2463,
+            2476,
+            2500,
+            2505,
+            2538,
+            2548,
+            2562,
+            2577,
+            211,
+            451,
+            878
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "3": {
+        "bucket_literals": [
+            359,
+            546,
+            817,
+            86,
+            190,
+            373,
+            560,
+            831,
+            447,
+            488,
+            954,
+            969,
+            993
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "4": {
+        "bucket_literals": [
+            631,
+            699,
+            709,
+            738,
+            748,
+            62,
+            166,
+            349,
+            536,
+            635,
+            807,
+            72,
+            176
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "5": {
+        "bucket_literals": [
+            299,
+            832,
+            659,
+            329,
+            726,
+            795,
+            847,
+            836,
+            780,
+            725,
+            247,
+            835
+        ],
+        "graph_name": "./hard-instances/BubbleSort_6_4.aag"
+    },
+    "6": {
+        "bucket_literals": [
+            315,
+            189,
+            192,
+            370,
+            562,
+            691,
+            727,
+            782,
+            799,
+            801,
+            837,
+            150,
+            205
+        ],
+        "graph_name": "./hard-instances/BubbleSort_6_4.aag"
+    },
+    "7": {
+        "bucket_literals": [
+            1550,
+            1754,
+            1046,
+            1509,
+            1038,
+            409,
+            2231,
+            2255,
+            263,
+            674,
+            715,
+            1058,
+            445
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "8": {
+        "bucket_literals": [
+            2461,
+            507,
+            1085,
+            2205,
+            2474,
+            2503,
+            2587,
+            1082,
+            1778,
+            2267,
+            2576,
+            2475,
+            754
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "9": {
+        "bucket_literals": [
+            1181,
+            1360,
+            597,
+            1116,
+            40,
+            1715,
+            1689,
+            321,
+            1273,
+            149,
+            153,
+            1473,
+            1512
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "10": {
+        "bucket_literals": [
+            769,
+            824,
+            829,
+            50,
+            54,
+            535,
+            467,
+            710,
+            714,
+            728,
+            740,
+            137,
+            525
+        ],
+        "graph_name": "./hard-instances/BubbleSort_6_4.aag"
+    },
+    "11": {
+        "bucket_literals": [
+            1513,
+            1659,
+            1668,
+            1671,
+            1683,
+            2026,
+            2063,
+            1884,
+            1894,
+            1918,
+            1928,
+            2000,
+            1841
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "12": {
+        "bucket_literals": [
+            1287,
+            1757,
+            1787,
+            1775,
+            1932,
+            294,
+            479,
+            298,
+            1541,
+            1545,
+            115,
+            119,
+            1802
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "13": {
+        "bucket_literals": [
+            435,
+            604,
+            800,
+            826,
+            844,
+            700,
+            439,
+            109,
+            545,
+            549,
+            494,
+            615,
+            244
+        ],
+        "graph_name": "./hard-instances/BubbleSort_6_4.aag"
+    },
+    "14": {
+        "bucket_literals": [
+            1177,
+            1648,
+            1990,
+            1201,
+            1211,
+            1399,
+            1697,
+            1706,
+            1718,
+            1709,
+            1721,
+            1724,
+            1736
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "15": {
+        "bucket_literals": [
+            887,
+            1674,
+            1680,
+            2458,
+            2217,
+            2472,
+            2496,
+            881,
+            899,
+            331,
+            335,
+            337,
+            931
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "16": {
+        "bucket_literals": [
+            1769,
+            1793,
+            139,
+            1712,
+            1727,
+            1730,
+            670,
+            861,
+            1493,
+            247,
+            257,
+            978,
+            1008
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "17": {
+        "bucket_literals": [
+            791,
+            1503,
+            1393,
+            1507,
+            1397,
+            1694,
+            1700,
+            2530,
+            957,
+            1002,
+            999,
+            1686,
+            2397
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "18": {
+        "bucket_literals": [
+            2100,
+            2110,
+            2116,
+            2234,
+            2237,
+            2240,
+            2246,
+            1319,
+            1471,
+            1323,
+            2298,
+            2363,
+            485
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "19": {
+        "bucket_literals": [
+            1833,
+            987,
+            1011,
+            1733,
+            469,
+            975,
+            1362,
+            1739,
+            1283,
+            1383,
+            858,
+            1531,
+            1215
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "20": {
+        "bucket_literals": [
+            551,
+            731,
+            341,
+            270,
+            274,
+            561,
+            685,
+            716,
+            722,
+            737,
+            781,
+            796,
+            797
+        ],
+        "graph_name": "./hard-instances/BubbleSort_6_4.aag"
+    },
+    "21": {
+        "bucket_literals": [
+            1898,
+            2202,
+            2211,
+            1569,
+            1325,
+            1585,
+            1760,
+            1745,
+            1748,
+            1751,
+            1790,
+            1772,
+            1799
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "22": {
+        "bucket_literals": [
+            884,
+            890,
+            893,
+            1457,
+            1467,
+            2199,
+            2214,
+            2493,
+            300,
+            904,
+            922,
+            943,
+            949
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "23": {
+        "bucket_literals": [
+            1025,
+            1040,
+            1076,
+            1064,
+            1079,
+            1049,
+            1073,
+            2498,
+            523,
+            1346,
+            483,
+            2077,
+            1356
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "24": {
+        "bucket_literals": [
+            2252,
+            50,
+            395,
+            405,
+            621,
+            54,
+            866,
+            896,
+            1579,
+            1583,
+            2073,
+            105,
+            777
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "25": {
+        "bucket_literals": [
+            1309,
+            1651,
+            752,
+            411,
+            450,
+            966,
+            981,
+            972,
+            984,
+            990,
+            1005,
+            2036,
+            2040
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "26": {
+        "bucket_literals": [
+            340,
+            520,
+            557,
+            572,
+            690,
+            719,
+            734,
+            480,
+            490,
+            655,
+            590,
+            600,
+            765
+        ],
+        "graph_name": "./hard-instances/BubbleSort_6_4.aag"
+    },
+    "27": {
+        "bucket_literals": [
+            934,
+            925,
+            2462,
+            2499,
+            2501,
+            2573,
+            2588,
+            1819,
+            1829,
+            2261,
+            1763,
+            1781,
+            1784
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "28": {
+        "bucket_literals": [
+            1677,
+            713,
+            2177,
+            441,
+            517,
+            521,
+            2114,
+            261,
+            637,
+            1031,
+            1052,
+            1055,
+            1022
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "29": {
+        "bucket_literals": [
+            810,
+            820,
+            838,
+            841,
+            305,
+            215,
+            219,
+            645,
+            670,
+            160,
+            164,
+            380,
+            384
+        ],
+        "graph_name": "./hard-instances/BubbleSort_6_4.aag"
+    },
+    "30": {
+        "bucket_literals": [
+            793,
+            1028,
+            1016,
+            1019,
+            1061,
+            1043,
+            1067,
+            1070,
+            1547,
+            1796,
+            221,
+            787,
+            225
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "31": {
+        "bucket_literals": [
+            848,
+            40,
+            755,
+            105,
+            395,
+            554,
+            560,
+            777,
+            425,
+            260,
+            95,
+            325,
+            337
+        ],
+        "graph_name": "./hard-instances/BubbleSort_6_4.aag"
+    },
+    "32": {
+        "bucket_literals": [
+            2042,
+            2222,
+            2225,
+            2228,
+            2264,
+            2249,
+            583,
+            593,
+            852,
+            855,
+            1102,
+            1112,
+            1167
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "33": {
+        "bucket_literals": [
+            284,
+            431,
+            919,
+            937,
+            940,
+            946,
+            2180,
+            2487,
+            660,
+            916,
+            928,
+            2079,
+            2258
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    },
+    "34": {
+        "bucket_literals": [
+            676,
+            2575
+        ],
+        "graph_name": "./hard-instances/PancakeSort_6_4.aag"
+    }
+}

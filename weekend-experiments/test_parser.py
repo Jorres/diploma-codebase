@@ -28,11 +28,10 @@ def test_read_large_aig():
     # assert set(lines_before) == set(lines_after)
     pass
 
-
 def test_remove_identical_small_graph_ands():
     aig_file = "./test-data/small-graph-1.aag"
 
-    g = Graph(aig_file)
+    g = Graph(aig_file, "L")
     nodes_before = len(g.node_names)
     assert nodes_before == 6
 
@@ -47,7 +46,7 @@ def test_remove_identical_small_graph_ands():
 def test_remove_identical_small_graph_nots():
     aig_file = "./test-data/small-graph-2.aag"
 
-    g = Graph(aig_file)
+    g = Graph(aig_file, "L")
     nodes_before = len(g.node_names)
     assert nodes_before == 6
 
@@ -62,7 +61,7 @@ def test_remove_identical_small_graph_nots():
 def test_remove_identical_should_remove_all_at_once():
     aig_files = ["./test-data/BubbleSort_4_3.aag", "./test-data/PancakeSort_4_3.aag"]
     for aig_file in aig_files:
-        g = Graph(aig_file)
+        g = Graph(aig_file, "L")
         nodes_before = len(g.node_names)
         g.remove_identical()
         nodes_after_1 = len(g.node_names)

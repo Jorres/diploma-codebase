@@ -6,7 +6,7 @@ from parser import Parser
 
 
 class Graph:
-    def __init__(self, filename):
+    def __init__(self, filename, tag):
         lit_parents, lit_children, lit_inputs, lit_outputs = Parser().parse(filename)
 
         topsort = self.make_topsort(lit_parents, lit_children, lit_inputs)
@@ -14,6 +14,7 @@ class Graph:
         self.children = defaultdict(list)
         self.parents = defaultdict(list)
         self.node_names = []
+        self.tag = tag
 
         # Since output nodes are also regular gates,
         # we need to store a mapping like: 'o18' -> 'a333'
@@ -22,13 +23,18 @@ class Graph:
         self.n_inputs = len(lit_inputs)
         self.n_outputs = len(lit_outputs)
 
-        lit_to_name = self.graph_edges_from_topsort(
+        name_to_lit, lit_to_name = self.graph_edges_from_topsort(
             topsort, lit_children
         )
+
+        self.source_name_to_lit = name_to_lit
+        self.source_lit_to_name = lit_to_name
 
         for output_id, output_lit in enumerate(lit_outputs):
             output_name = f"o{output_id}"
             self.output_name_to_node_name[output_name] = lit_to_name[output_lit]
+
+        self.name = filename
 
     def make_topsort(self, lit_parents, lit_children, lit_inputs):
         topsort = list()
@@ -60,22 +66,23 @@ class Graph:
         last_and = 0
 
         lit_to_name = dict()
+        name_to_lit = dict()
 
         for lit in topsort:
             le = len(lit_children[lit])
             # Zero children mean simple input
             if le == 0:
-                name = f"v{last_inp}"
+                name = f"v{last_inp}{self.tag}"
                 last_inp += 1
             # One child means inverter gate
             elif le == 1:
-                name = f"i{last_inv}"
+                name = f"i{last_inv}{self.tag}"
                 child = lit_to_name[lit_children[lit][0]]
                 self.add_edge(child, name)
                 last_inv += 1
             # Two children mean and gate
             elif le == 2:
-                name = f"a{last_and}"
+                name = f"a{last_and}{self.tag}"
                 left_child = lit_to_name[lit_children[lit][0]]
                 right_child = lit_to_name[lit_children[lit][1]]
                 self.add_edge(left_child, name)
@@ -84,11 +91,12 @@ class Graph:
             else:
                 assert False, "Graph node has wrong number of children"
             lit_to_name[lit] = name
+            name_to_lit[name] = lit
             self.node_names.append(name)
 
         assert len(self.node_names) == len(topsort)
         print("Not gates: {}, and gates: {}".format(last_inv, last_and))
-        return lit_to_name
+        return name_to_lit, lit_to_name
 
     def input_var_to_cnf_var(self, input, pool):
         return pool.v_to_id(input)
@@ -105,7 +113,7 @@ class Graph:
 
         for i in range(self.n_inputs):
             ith_input_var = (inputs & (1 << i)) > 0
-            name = "v" + str(i)
+            name = f"v{i}{self.tag}"
             result[name] = ith_input_var
 
         for name in self.node_names:
@@ -141,7 +149,7 @@ class Graph:
         for input_id in range(self.n_inputs):
             input_lit = first_free_lit
             input_lines.append(f"{input_lit}\n")
-            name_to_lit[f"v{input_id}"] = first_free_lit
+            name_to_lit[f"v{input_id}{self.tag}"] = first_free_lit
             first_free_lit += 2
 
         and_lines = list()
@@ -220,8 +228,9 @@ class Graph:
                 left, right = self.children[node]
 
                 # Make sure i100i101 and i101i100 actually map to one node
-                # by ordering by gate_id
-                if int(left[1:]) > int(right[1:]):
+                # by ordering by gate_id.
+                # Also, cutting down the last character since it is usually the tag.
+                if int(left[1:-1]) > int(right[1:-1]):
                     tmp = left
                     left = right
                     right = tmp

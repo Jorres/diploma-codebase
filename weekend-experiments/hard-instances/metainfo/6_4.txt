@@ -23,3 +23,281 @@
     "time": "77.24062705039978",
     "outcome": true
 }
+{
+    "left_schema": "./hard-instances/BubbleSort_6_4.aag",
+    "right_schema": "./hard-instances/PancakeSort_6_4.aag",
+    "type": "naive",
+    "solver_only_time_no_preparation": 20.271230220794678,
+    "time": "20.34264874458313",
+    "outcome": true
+}
+{
+    "max_cartesian_size": 100000,
+    "disbalance_threshold": 0.02,
+    "should_include_nots": false,
+    "type": "domain",
+    "one_defined": 39,
+    "one_saturated_domains": 3,
+    "actual_cartesian_size": 242,
+    "total_vars_in_decomp": 23,
+    "distribution": [
+        11,
+        22
+    ],
+    "some_biggest_runtimes": [
+        17.593018531799316,
+        2.527642250061035,
+        0.4268932342529297
+    ],
+    "sat_calls_only_runtimes": 24.781055688858032,
+    "left_schema": "./hard-instances/BubbleSort_6_4.aag",
+    "right_schema": "./hard-instances/PancakeSort_6_4.aag",
+    "time": "44.921868324279785",
+    "outcome": true
+}
+{
+    "left_schema": "./hard-instances/BubbleSort_6_4.aag",
+    "right_schema": "./hard-instances/PancakeSort_6_4.aag",
+    "type": "open_xors",
+    "runtimes_0": [
+        0.006898403167724609,
+        6.011064767837524,
+        6.201819181442261,
+        0.0069921016693115234
+    ],
+    "runtimes_1": [
+        0.002873659133911133,
+        1.6870415210723877,
+        1.0411622524261475,
+        0.0024209022521972656
+    ],
+    "runtimes_2": [
+        0.0010533332824707031,
+        0.1100316047668457,
+        0.0686042308807373,
+        0.002966642379760742
+    ],
+    "runtimes_3": [
+        0.0010292530059814453,
+        0.0017168521881103516,
+        0.0002548694610595703,
+        0.002328157424926758
+    ],
+    "runtimes_4": [
+        0.0010874271392822266,
+        19.9760684967041,
+        14.72002363204956,
+        0.012267112731933594
+    ],
+    "runtimes_5": [
+        0.0020592212677001953,
+        4.650500774383545,
+        2.1650052070617676,
+        0.002605438232421875
+    ],
+    "runtimes_6": [
+        0.0016775131225585938,
+        0.29329824447631836,
+        0.1555933952331543,
+        0.0031197071075439453
+    ],
+    "runtimes_7": [
+        0.0030028820037841797,
+        0.006209611892700195,
+        0.0037212371826171875,
+        0.006581783294677734
+    ],
+    "runtimes_8": [
+        0.003844022750854492,
+        24.817026615142822,
+        16.817687273025513,
+        0.003606081008911133
+    ],
+    "runtimes_9": [
+        0.002147197723388672,
+        7.47060227394104,
+        3.7966599464416504,
+        0.003622293472290039
+    ],
+    "runtimes_10": [
+        0.007193088531494141,
+        0.34098339080810547,
+        0.16693782806396484,
+        0.00488591194152832
+    ],
+    "runtimes_11": [
+        0.0031969547271728516,
+        0.014322757720947266,
+        0.006392717361450195,
+        0.0045359134674072266
+    ],
+    "runtimes_12": [
+        0.0019214153289794922,
+        15.062515258789062,
+        11.367596626281738,
+        0.0038671493530273438
+    ],
+    "runtimes_13": [
+        0.0012905597686767578,
+        2.7954208850860596,
+        3.685335159301758,
+        0.0037767887115478516
+    ],
+    "runtimes_14": [
+        0.0009455680847167969,
+        0.1955704689025879,
+        0.19212079048156738,
+        0.0037140846252441406
+    ],
+    "runtimes_15": [
+        0.0060291290283203125,
+        0.012389421463012695,
+        0.00759577751159668,
+        0.008296966552734375
+    ],
+    "runtimes_16": [
+        0.002953052520751953,
+        5.960257053375244,
+        6.290509223937988,
+        0.00407862663269043
+    ],
+    "runtimes_17": [
+        0.0010917186737060547,
+        0.5118732452392578,
+        1.1367568969726562,
+        0.0046350955963134766
+    ],
+    "runtimes_18": [
+        0.0011925697326660156,
+        0.03850364685058594,
+        0.05939650535583496,
+        0.0035974979400634766
+    ],
+    "runtimes_19": [
+        0.004042148590087891,
+        0.0007939338684082031,
+        0.004673004150390625,
+        0.006130218505859375
+    ],
+    "runtimes_20": [
+        0.004880666732788086,
+        1.3418676853179932,
+        0.3488490581512451,
+        0.002637147903442383
+    ],
+    "runtimes_21": [
+        0.001207113265991211,
+        0.041117191314697266,
+        0.16867685317993164,
+        0.0059206485748291016
+    ],
+    "runtimes_22": [
+        0.0014605522155761719,
+        0.004311561584472656,
+        0.02086186408996582,
+        0.0052890777587890625
+    ],
+    "runtimes_23": [
+        0.0036122798919677734,
+        0.0006799697875976562,
+        0.009487628936767578,
+        0.007081031799316406
+    ],
+    "total_time": "160.00003004074097",
+    "outcome": true
+}
+{
+    "max_cartesian_size": 100000,
+    "disbalance_threshold": 0.02,
+    "should_include_nots": false,
+    "type": "domain",
+    "one_defined": 39,
+    "one_saturated_domains": 3,
+    "actual_cartesian_size": 242,
+    "total_vars_in_decomp": 23,
+    "distribution": [
+        11,
+        22
+    ],
+    "some_biggest_runtimes": [
+        17.77112627029419,
+        2.5296216011047363,
+        0.43054938316345215
+    ],
+    "sat_calls_only_runtimes": 25.056121110916138,
+    "left_schema": "./hard-instances/BubbleSort_6_4.aag",
+    "right_schema": "./hard-instances/PancakeSort_6_4.aag",
+    "time": "44.9464328289032",
+    "outcome": true
+}
+{
+    "max_cartesian_size": 100000,
+    "disbalance_threshold": 0.02,
+    "should_include_nots": false,
+    "type": "domain",
+    "one_defined": 39,
+    "one_saturated_domains": 3,
+    "actual_cartesian_size": 242,
+    "total_vars_in_decomp": 23,
+    "distribution": [
+        11,
+        22
+    ],
+    "some_biggest_runtimes": [
+        17.995261907577515,
+        2.5571351051330566,
+        0.46530795097351074
+    ],
+    "left_schema": "./hard-instances/BubbleSort_6_4.aag",
+    "right_schema": "./hard-instances/PancakeSort_6_4.aag",
+    "time": "45.16743493080139",
+    "outcome": true
+}
+{
+    "max_cartesian_size": 100000,
+    "disbalance_threshold": 0.02,
+    "should_include_nots": false,
+    "type": "domain",
+    "one_defined": 39,
+    "one_saturated_domains": 3,
+    "actual_cartesian_size": 242,
+    "total_vars_in_decomp": 23,
+    "distribution": [
+        11,
+        22
+    ],
+    "some_biggest_runtimes": [
+        18.014246940612793,
+        2.5283360481262207,
+        0.4329228401184082
+    ],
+    "left_schema": "./hard-instances/BubbleSort_6_4.aag",
+    "right_schema": "./hard-instances/PancakeSort_6_4.aag",
+    "time": "45.40522742271423",
+    "outcome": true
+}
+{
+    "max_cartesian_size": 100000,
+    "disbalance_threshold": 0.1,
+    "should_include_nots": false,
+    "type": "domain",
+    "one_defined": 0,
+    "one_saturated_domains": 0,
+    "actual_cartesian_size": 2304,
+    "total_vars_in_decomp": 52,
+    "distribution": [
+        2,
+        2,
+        24,
+        24
+    ],
+    "some_biggest_runtimes": [
+        21.419257402420044,
+        6.243395090103149,
+        1.263911247253418
+    ],
+    "left_schema": "./hard-instances/BubbleSort_6_4.aag",
+    "right_schema": "./hard-instances/PancakeSort_6_4.aag",
+    "time": "98.10397791862488",
+    "outcome": true
+}
