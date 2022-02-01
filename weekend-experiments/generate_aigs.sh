@@ -19,6 +19,6 @@ for i in "6 4" "4 3" "7 4" "8 4"; do
     sed -i "s/define n ${a[1]}/define n N/" "${FOLDER}"/PancakeSort.alg
 done
 
-python generate_labels_for_aig.py "${FOLDER}"
+# python generate_labels_for_aig.py "${FOLDER}"
 
 # python main.py

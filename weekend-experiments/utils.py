@@ -34,3 +34,13 @@ def solve_with_conflict_limit(solver, assumptions, limit):
     solver.conf_budget(limit)
     result = solver.solve_limited(assumptions=assumptions)
     return result
+
+
+def replace_in_list(lst, what, with_what):
+    replaced = False
+    for i in range(len(lst)):
+        if lst[i] == what:
+            lst[i] = with_what
+            replaced = True
+            break
+    assert replaced, "Replacement expected, but didn't happen"

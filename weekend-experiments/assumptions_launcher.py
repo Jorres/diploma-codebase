@@ -15,10 +15,11 @@ def launch_comparison(tasks_file, cnf_file):
     cnf = pysat.formula.CNF(from_file=cnf_file)
 
     with open(tasks_file, "r") as f:
-        tasks = json.load(f)['tasks']
+        tasks = list(reversed(sorted(json.load(f)['tasks'])))[:3]
 
     results = list()
     for (task_time, task_id, assumptions) in tasks:
+        print(task_time, task_id)
         s = Solver()
         s.add_clauses(cnf.clauses)
         for assumption in assumptions:
@@ -28,7 +29,7 @@ def launch_comparison(tasks_file, cnf_file):
         t_fn = time.time()
         results.append((task_time, t_fn - t_st))
 
-    for (task_time, crypto_time) in list(reversed(sorted(results)))[:3]:
+    for (task_time, crypto_time) in results:
         print(f"My time: {task_time}, crypto clause time: {crypto_time}")
 
 

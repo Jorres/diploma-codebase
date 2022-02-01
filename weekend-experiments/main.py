@@ -21,7 +21,7 @@ import utils as U
 DISBALANCE_THRESHOLD = 0.01
 
 # This one is best left between 10 and 15, 2 ^ BUCKET_SIZE tasks are solved
-BUCKET_SIZE = 15
+BUCKET_SIZE = 13
 
 # Ideally, for every test there exists a perfect moment where we can stop
 # adding domains into the cartesian product. But this is some reasonable
@@ -62,7 +62,7 @@ def find_unbalanced_gates(g, should_include_nots):
     )
 
     if not should_include_nots:
-        fractions = filter(lambda a: not a[1].startswith("i"), fractions)
+        fractions = list(filter(lambda a: not a[1].startswith("i"), fractions))
 
     # filter the gates that are unbalanced enough
     unbalanced_to_zero = list(
@@ -81,20 +81,25 @@ def find_unbalanced_gates(g, should_include_nots):
 
     print(f"Unbalanced to zero: {len(unbalanced_to_zero)}")
     print(f"Unbalanced to one: {len(unbalanced_to_one)}")
+    unbalanced_gates = list(map(lambda p: p[1], unbalanced_to_zero + unbalanced_to_one))
 
-    n_buckets = (
-        math.floor((len(unbalanced_to_zero) + len(unbalanced_to_one)) / BUCKET_SIZE) + 1
-    )
-    buckets = [list() for i in range(n_buckets)]
+    # n_buckets = (
+    #     math.floor((len(fractions)) / BUCKET_SIZE) + 1
+    # )
+    # buckets = [list() for i in range(n_buckets)]
+    buckets = [
+        unbalanced_gates[x : x + BUCKET_SIZE]
+        for x in range(0, len(unbalanced_gates), BUCKET_SIZE)
+    ]
 
-    last_bucket = 0
-    for _, gate_name in unbalanced_to_zero:
-        buckets[last_bucket].append(gate_name)
-        last_bucket = (last_bucket + 1) % n_buckets
+    # last_bucket = 0
+    # for _, gate_name in unbalanced_to_zero:
+    #     buckets[last_bucket].append(gate_name)
+    #     last_bucket = (last_bucket + 1) % n_buckets
 
-    for _, gate_name in unbalanced_to_one:
-        buckets[last_bucket].append(gate_name)
-        last_bucket = (last_bucket + 1) % n_buckets
+    # for _, gate_name in unbalanced_to_one:
+    #     buckets[last_bucket].append(gate_name)
+    #     last_bucket = (last_bucket + 1) % n_buckets
 
     return buckets
 
@@ -197,6 +202,11 @@ def check_for_equivalence(
     for saturation, bucket, domain, tag in shared_domain_info:
         if len(domain) == 1:
             one_saturated_domains += 1
+            # for gate in bucket:
+            #     if tag == "L":
+            #         print(gate, g1.children[gate])
+            #     if tag == "R":
+            #         print(gate, g2.children[gate])
             for unit_id, gate_name in enumerate(bucket):
                 domain_value = domain[0]
                 if tag == "L":
@@ -327,7 +337,7 @@ def generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2):
         shared_cnf.append([-1 * input_g1_var, input_g2_var])
         shared_cnf.append([input_g1_var, -1 * input_g2_var])
 
-    for output_id in range(len(g1.outputs)):
+    for output_id in range(g1.n_outputs):
         # Add clause for output xor gate
         xor_gate = pool2.v_to_id("xor_" + str(output_id))
         output_code_name = "o" + str(output_id)
@@ -343,7 +353,7 @@ def generate_miter_scheme(shared_cnf, pool1, pool2, g1, g2):
 
     # OR together all new xor_ variables
     lst = []
-    for output_id in range(len(g1.outputs)):
+    for output_id in range(g1.n_outputs):
         lst.append(pool2.v_to_id("xor_" + str(output_id)))
     shared_cnf.append(lst)
 
@@ -400,6 +410,9 @@ def domain_equivalence_check(
 ):
     g1 = G.Graph(test_path_left)
     g2 = G.Graph(test_path_right)
+
+    g1.remove_identical()
+    g2.remove_identical()
 
     t_start = time.time()
     metainfo = dict()
@@ -466,6 +479,8 @@ def validate_naively(g1, g2, metainfo, cnf_file):
 def naive_equivalence_check(test_path_left, test_path_right, metainfo_file, cnf_file):
     g1 = G.Graph(test_path_left)
     g2 = G.Graph(test_path_right)
+    g1.remove_identical()
+    g2.remove_identical()
 
     metainfo = dict()
     metainfo["left_schema"] = test_path_left
@@ -482,12 +497,12 @@ def naive_equivalence_check(test_path_left, test_path_right, metainfo_file, cnf_
 if __name__ == "__main__":
     experiments = [
         # "4_3",
-        # "6_4",
-        "7_4",
+        "6_4",
+        # "7_4",
         # "8_4"
     ]
 
-    max_cartesian_sizes = [10000000]
+    max_cartesian_sizes = [100000]
     unbalanced_thresholds = [0.02]
 
     for test_shortname in experiments:

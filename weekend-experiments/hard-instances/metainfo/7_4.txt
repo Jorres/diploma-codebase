@@ -1,33 +1,32 @@
 {
+    "max_cartesian_size": 100000,
+    "disbalance_threshold": 0.02,
+    "should_include_nots": false,
+    "type": "domain",
+    "one_defined": 117,
+    "one_saturated_domains": 9,
+    "actual_cartesian_size": 900,
+    "total_vars_in_decomp": 26,
+    "distribution": [
+        9,
+        100
+    ],
+    "some_biggest_runtimes": [
+        231.25903415679932,
+        68.31603670120239,
+        10.556456804275513
+    ],
+    "sat_calls_only_runtimes": 377.5525279045105,
     "left_schema": "./hard-instances/BubbleSort_7_4.aag",
     "right_schema": "./hard-instances/PancakeSort_7_4.aag",
-    "type": "naive",
-    "solver_only_time_no_preparation": 218.76150274276733,
-    "time": "218.86453485488892",
+    "time": "411.0037751197815",
     "outcome": true
 }
 {
-    "max_cartesian_size": 100000,
-    "disbalance_threshold": 0.03,
-    "should_include_nots": false,
-    "type": "domain",
-    "one_defined": 105,
-    "one_saturated_domains": 7,
-    "actual_cartesian_size": 11856,
-    "total_vars_in_decomp": 44,
-    "distribution": [
-        2,
-        78,
-        76
-    ],
-    "some_biggest_runtimes": [
-        268.52578020095825,
-        35.79689121246338,
-        32.22510647773743
-    ],
-    "sat_calls_only_runtimes": 579.5511889457703,
     "left_schema": "./hard-instances/BubbleSort_7_4.aag",
     "right_schema": "./hard-instances/PancakeSort_7_4.aag",
-    "time": "627.8271107673645",
+    "type": "naive",
+    "solver_only_time_no_preparation": 191.8372528553009,
+    "time": "191.94296741485596",
     "outcome": true
 }
