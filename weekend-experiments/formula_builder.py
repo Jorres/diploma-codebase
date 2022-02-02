@@ -87,3 +87,48 @@ def make_united_miter_from_two_graphs(g1, g2, pool):
         process_node(formula, g2, g2.node_names[p2], pool, "R")
         p2 += 1
     return formula
+
+
+def generate_miter_without_xor(shared_cnf, pool, g1, g2):
+    assert g1.n_inputs == g2.n_inputs
+
+    # TODO re-use input variables instead of adding clauses on inputs equality
+    for input_id in range(0, g1.n_inputs):
+        # Add clauses for input equality
+        input_g1_var = g1.input_var_to_cnf_var(f"v{input_id}{g1.tag}", pool)
+        input_g2_var = g2.input_var_to_cnf_var(f"v{input_id}{g2.tag}", pool)
+
+        # EQ Tseyting encoding
+        shared_cnf.append([-1 * input_g1_var, input_g2_var])
+        shared_cnf.append([input_g1_var, -1 * input_g2_var])
+    return shared_cnf
+
+
+def append_xor_to_miter(shared_cnf, pool, g1, g2):
+    for output_id in range(g1.n_outputs):
+        # Add clause for output xor gate
+        xor_gate = pool.v_to_id(f"xor_{output_id}")
+        output_code_name = f"o{output_id}"
+        left_output = g1.output_var_to_cnf_var(output_code_name, pool)
+        right_output = g2.output_var_to_cnf_var(output_code_name, pool)
+        print(left_output, right_output, xor_gate)
+
+        # XOR Tseytin encoding
+        # xorgate <=> left xor right
+        shared_cnf.append([-1 * left_output, -1 * right_output, -1 * xor_gate])
+        shared_cnf.append([left_output, right_output, -1 * xor_gate])
+        shared_cnf.append([left_output, -1 * right_output, xor_gate])
+        shared_cnf.append([-1 * left_output, right_output, xor_gate])
+
+    # OR together all new xor_ variables
+    lst = []
+    for output_id in range(g1.n_outputs):
+        lst.append(pool.v_to_id(f"xor_{output_id}"))
+    shared_cnf.append(lst)
+
+    return shared_cnf
+
+
+def generate_miter_scheme(shared_cnf, pool, g1, g2):
+    generate_miter_without_xor(shared_cnf, pool, g1, g2)
+    return append_xor_to_miter(shared_cnf, pool, g1, g2)

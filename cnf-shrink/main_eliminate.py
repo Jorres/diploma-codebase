@@ -79,10 +79,10 @@ def run_on_iscas():
 
 def run_on_sorts():
     experiments = [
-        # "Sort_4_3.aig",
+        "Sort_4_3.aig",
         # "Sort_6_4.aig",
         # "Sort_7_4.aig",
-        "Sort_8_4.aig",
+        # "Sort_8_4.aig",
         # "Sort_8_5.aig",
         # "Sort_8_6.aig",
         # "Sort_8_7.aig",
@@ -91,7 +91,7 @@ def run_on_sorts():
     ]
 
     for test_suff in experiments:
-        for kind in ["Bubble", "Pancake"]:
+        for kind in ["Bubble"]:
             test_name = kind + test_suff
             optimize_graph("new_sorts", test_name,
                            "elim_results", "results.txt")

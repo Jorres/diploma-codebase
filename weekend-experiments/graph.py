@@ -1,13 +1,24 @@
 import copy
+import aiger
 
 from collections import defaultdict
 import utils as U
-from parser import Parser
+import aig_parser as P
 
 
 class Graph:
-    def __init__(self, filename, tag):
-        lit_parents, lit_children, lit_inputs, lit_outputs = Parser().parse(filename)
+    def __init__(self, filename, tag, validate_with_aiger=False):
+        if validate_with_aiger:
+            aiger.load(filename)
+            with open(filename, "r") as f:
+                header = f.readline().strip().split(" ")
+                if len(header) != 6:
+                    raise ValueError
+                _, max_id, inputs, latches, outputs, ands = header
+                if int(latches) > 0:
+                    raise ValueError
+
+        lit_parents, lit_children, lit_inputs, lit_outputs = P.Parser().parse(filename)
 
         topsort = self.make_topsort(lit_parents, lit_children, lit_inputs)
 
@@ -23,9 +34,7 @@ class Graph:
         self.n_inputs = len(lit_inputs)
         self.n_outputs = len(lit_outputs)
 
-        name_to_lit, lit_to_name = self.graph_edges_from_topsort(
-            topsort, lit_children
-        )
+        name_to_lit, lit_to_name = self.graph_edges_from_topsort(topsort, lit_children)
 
         self.source_name_to_lit = name_to_lit
         self.source_lit_to_name = lit_to_name
@@ -42,6 +51,7 @@ class Graph:
         visited = set()
         children_visited = defaultdict(int)
         q = copy.deepcopy(lit_inputs)
+
         while len(q) > 0:
             v = q.pop(0)
             visited.add(v)
@@ -67,18 +77,21 @@ class Graph:
 
         lit_to_name = dict()
         name_to_lit = dict()
+        self.node_to_depth = dict()
 
         for lit in topsort:
             le = len(lit_children[lit])
             # Zero children mean simple input
             if le == 0:
                 name = f"v{last_inp}{self.tag}"
+                self.node_to_depth[name] = 0
                 last_inp += 1
             # One child means inverter gate
             elif le == 1:
                 name = f"i{last_inv}{self.tag}"
                 child = lit_to_name[lit_children[lit][0]]
                 self.add_edge(child, name)
+                self.node_to_depth[name] = self.node_to_depth[child] + 1
                 last_inv += 1
             # Two children mean and gate
             elif le == 2:
@@ -87,6 +100,10 @@ class Graph:
                 right_child = lit_to_name[lit_children[lit][1]]
                 self.add_edge(left_child, name)
                 self.add_edge(right_child, name)
+                self.node_to_depth[name] = (
+                    max(self.node_to_depth[left_child], self.node_to_depth[right_child])
+                    + 1
+                )
                 last_and += 1
             else:
                 assert False, "Graph node has wrong number of children"
@@ -140,7 +157,6 @@ class Graph:
 
         name_to_lit = dict()
 
-
         header = f"aag {m} {self.n_inputs} 0 {self.n_outputs} {a}\n"
 
         input_lines = list()
@@ -169,9 +185,7 @@ class Graph:
 
         output_lines = list()
         for output_id in range(self.n_outputs):
-            output_lit = name_to_lit[
-                self.output_name_to_node_name[f"o{output_id}"]
-            ]
+            output_lit = name_to_lit[self.output_name_to_node_name[f"o{output_id}"]]
             output_lines.append(f"{output_lit}\n")
 
         with open(filename, "w") as f:
@@ -199,14 +213,14 @@ class Graph:
                 self.output_name_to_node_name[f"o{output_id}"] = with_what
 
         for parent in self.parents[to_replace]:
-            if parent.startswith('a'):
+            if parent.startswith("a"):
                 left, right = self.children[parent]
                 if left == right:
                     self.replace_node_with_other_node(parent, left, to_replace_set)
 
     def remove_identical(self):
-        # These dictionaries map children into nodes. E.g. 
-        # node a123 has children i100, i101, then 
+        # These dictionaries map children into nodes. E.g.
+        # node a123 has children i100, i101, then
         # in existing_ands there is entry "i100i101" -> a123
         existing_ands = dict()
         existing_nots = dict()
@@ -216,14 +230,16 @@ class Graph:
             if node in to_replace:
                 continue
 
-            if node.startswith('i'):
+            if node.startswith("i"):
                 assert len(self.children[node]) == 1
                 child = self.children[node][0]
                 if child in existing_nots:
-                    self.replace_node_with_other_node(node, existing_nots[child], to_replace)
+                    self.replace_node_with_other_node(
+                        node, existing_nots[child], to_replace
+                    )
                 else:
                     existing_nots[child] = node
-            elif node.startswith('a'):
+            elif node.startswith("a"):
                 assert len(self.children[node]) == 2
                 left, right = self.children[node]
 
@@ -237,7 +253,9 @@ class Graph:
 
                 and_key = left + right
                 if and_key in existing_ands:
-                    self.replace_node_with_other_node(node, existing_ands[and_key], to_replace)
+                    self.replace_node_with_other_node(
+                        node, existing_ands[and_key], to_replace
+                    )
                 else:
                     existing_ands[and_key] = node
 
@@ -247,7 +265,7 @@ class Graph:
                 new_node_names.append(name)
         self.node_names = new_node_names
 
-        replaced_ands = list(filter(lambda n: n.startswith('a'), to_replace))
-        replaced_nots = list(filter(lambda n: n.startswith('i'), to_replace))
+        replaced_ands = list(filter(lambda n: n.startswith("a"), to_replace))
+        replaced_nots = list(filter(lambda n: n.startswith("i"), to_replace))
 
-        print(f"removed {len(replaced_ands)}, {len(replaced_nots)}")
+        print(f"Removed {len(replaced_ands)}, {len(replaced_nots)} in {self.name}")

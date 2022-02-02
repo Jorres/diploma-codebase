@@ -1,6 +1,7 @@
 # Python runtime magic
 **/env
 __pycache__
+.pytest_cache
 
 # Various todo notes in any format
 *todo*

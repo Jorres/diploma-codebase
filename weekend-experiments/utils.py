@@ -1,4 +1,6 @@
 from threading import Timer
+import formula_builder as FB
+import json
 
 
 def print_to_file(filename, data):
@@ -9,11 +11,6 @@ def print_to_file(filename, data):
 
 def interrupt(s):
     s.interrupt()
-
-
-def while_true_generator():
-    while True:
-        yield
 
 
 def solve_with_timeout(solver, assumptions, timeout):
@@ -34,6 +31,23 @@ def solve_with_conflict_limit(solver, assumptions, limit):
     solver.conf_budget(limit)
     result = solver.solve_limited(assumptions=assumptions)
     return result
+
+
+def get_bit_from_domain(bitvector, gate_id):
+    if (bitvector & (1 << gate_id)) > 0:
+        return 1
+    else:
+        return -1
+
+
+def prepare_shared_cnf_from_two_graphs(g1, g2):
+    pool = FB.TPoolHolder()
+    shared_cnf = FB.make_united_miter_from_two_graphs(g1, g2, pool)
+    return shared_cnf.clauses, pool
+
+def dump_dict(data, file):
+    with open(file, "a+") as f:
+        f.write(json.dumps(data, indent=4))
 
 
 def replace_in_list(lst, what, with_what):
