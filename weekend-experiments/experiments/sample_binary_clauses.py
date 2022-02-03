@@ -19,6 +19,7 @@ from formula_builder import (
 from graph import Graph
 
 from pysat.solvers import Maplesat as PysatSolver
+from pycryptosat import Solver
 
 import utils as U
 import eq_checkers as EQ
@@ -53,12 +54,14 @@ def extract_info(cnf, pool, g1, g2, metainfo, test_shortname):
         f"./experiments/sample_binary_clauses/{test_shortname}.cnf"
     )
 
-    with open(f"./experiments/sample_binary_clauses/{test_shortname}_learnt.txt", "w+") as f:
+    with open(
+        f"./experiments/sample_binary_clauses/{test_shortname}_learnt.txt", "w+"
+    ) as f:
         for clause in learnt_clauses:
             f.write(f"{clause[0]} {clause[1]}\n")
 
 
-def check_naive_vs_sampling(
+def prepare_extract_info(
     left_schema_file, right_schema_file, metainfo_file, test_shortname
 ):
     g1 = Graph(left_schema_file, "L")
@@ -69,14 +72,33 @@ def check_naive_vs_sampling(
     metainfo = dict()
 
     shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
+    shared_cnf = generate_miter_scheme(shared_cnf, pool, g1, g2)
 
     extract_info(shared_cnf, pool, g1, g2, metainfo, test_shortname)
 
     U.dump_dict(metainfo, metainfo_file)
 
 
+def compare_using_info(cnf_file, info_filename):
+    formula = pysat.formula.CNF(from_file=cnf_file)
+    with open(info_filename, "r") as f:
+        lines = f.readlines()
+    # for line in lines:
+    #     clause = map(int,line.strip().split(" "))
+    #     formula.append(clause)
+
+    solver = Solver()
+    solver.add_clauses(formula.clauses)
+
+    t1 = time.time()
+    res, solution = solver.solve()
+    t2 = time.time()
+
+    print(f"Solved with info in {t2 - t1} seconds")
+
+
 def sample_binary_clauses():
-    experiments = ["6_4"]
+    experiments = ["4_3"]
     for test_shortname in experiments:
         left_schema_name = f"BubbleSort_{test_shortname}"
         right_schema_name = f"PancakeSort_{test_shortname}"
@@ -90,8 +112,13 @@ def sample_binary_clauses():
         metainfo_file = f"./experiments/pairs_in_2m_schema/{test_shortname}.txt"
         # tasks_dump_file = f"./hard-instances/assumptions/{test_shortname}.txt"
 
-        check_naive_vs_sampling(
+        prepare_extract_info(
             left_schema_file, right_schema_file, metainfo_file, test_shortname
+        )
+
+        compare_using_info(
+            f"./experiments/sample_binary_clauses/{test_shortname}.cnf",
+            f"./experiments/sample_binary_clauses/{test_shortname}_learnt.txt",
         )
 
 
