@@ -14,10 +14,9 @@ def find_unbalancedness_for_graph_nodes(g):
     print("Random sampling unbalanced nodes, {} samples".format(H.RANDOM_SAMPLE_SIZE))
 
     random.seed(42)
-    complete_input_size = range(2 ** g.n_inputs)
-    random_sample = random.sample(
-        complete_input_size, min(len(complete_input_size), H.RANDOM_SAMPLE_SIZE)
-    )
+    complete_input_range = range(2 ** g.n_inputs)
+    random_sample_size =  min(len(complete_input_range), H.RANDOM_SAMPLE_SIZE)
+    random_sample = random.sample(complete_input_range, random_sample_size)
 
     had_true_on_node = defaultdict(int)
 
@@ -33,7 +32,7 @@ def find_unbalancedness_for_graph_nodes(g):
     # fractions : [(disbalance, gate_name)]
     return list(
         map(
-            lambda name_cnt: (name_cnt[1] / H.RANDOM_SAMPLE_SIZE, name_cnt[0]),
+            lambda name_cnt: (name_cnt[1] / random_sample_size, name_cnt[0]),
             had_true_on_node.items(),
         )
     )
