@@ -4,6 +4,7 @@ import itertools
 import json
 import pysat
 import os
+import sys
 
 from collections import defaultdict
 from tqdm import tqdm
@@ -253,43 +254,32 @@ def topsort_order_equivalence_check(test_path_left, test_path_right, metainfo_fi
     U.print_to_file(metainfo_file, json.dumps(metainfo, indent=4))
 
 
-
-
 if __name__ == "__main__":
     experiments = ["4_3", "6_4", "7_4", "8_4"]
 
-    # for test_shortname in experiments:
-    #     left_schema_name = f"BubbleSort_{test_shortname}"
-    #     right_schema_name = f"PancakeSort_{test_shortname}"
+    for test_shortname in experiments:
+        left_schema_name = f"BubbleSort_{test_shortname}"
+        right_schema_name = f"PancakeSort_{test_shortname}"
 
-    #     left_schema_file = f"./hard-instances/{left_schema_name}.aag"
-    #     right_schema_file = f"./hard-instances/{right_schema_name}.aag"
+        left_schema_file = f"./hard-instances/{left_schema_name}.aag"
+        right_schema_file = f"./hard-instances/{right_schema_name}.aag"
 
-    #     cnf_file = f"./hard-instances/cnf/{test_shortname}.cnf"
-    #     cnf_naive_file = f"./hard-instances/cnf/{test_shortname}_naive.cnf"
+        cnf_file = f"./hard-instances/cnf/{test_shortname}.cnf"
+        cnf_naive_file = f"./hard-instances/cnf/{test_shortname}_naive.cnf"
 
-    #     metainfo_file = f"./hard-instances/metainfo/{test_shortname}.txt"
-    #     tasks_dump_file = f"./hard-instances/assumptions/{test_shortname}.txt"
+        metainfo_file = f"./hard-instances/metainfo/{test_shortname}.txt"
+        tasks_dump_file = f"./hard-instances/assumptions/{test_shortname}.txt"
 
-    #     prepare_graph_for_backbones(left_schema_file)
-    #     prepare_graph_for_backbones(right_schema_file)
+        # topsort_order_equivalence_check(left_schema_file, right_schema_file, metainfo_file)
 
-    #     # topsort_order_equivalence_check(left_schema_file, right_schema_file, metainfo_file)
+        # naive_equivalence_check(
+        #     left_schema_file, right_schema_file, metainfo_file, cnf_naive_file
+        # )
 
-    #     # naive_equivalence_check(
-    #     #     left_schema_file, right_schema_file, metainfo_file, cnf_naive_file
-    #     # )
-
-    #     # for max_cartesian_size in max_cartesian_sizes:
-    #     #     for unbalanced_threshold in unbalanced_thresholds:
-    #     #         MAX_CARTESIAN_PRODUCT_SIZE = 100000
-    #     #         DISBALANCE_THRESHOLD = unbalanced_threshold
-    #     #         domain_equivalence_check(
-    #     #             left_schema_file,
-    #     #             right_schema_file,
-    #     #             metainfo_file,
-    #     #             cnf_file,
-    #     #             tasks_dump_file,
-    #     #         )
-    #     #         # domain_equivalence_check(left_schema_file,
-    #     #         #                          right_schema_file, metainfo_file)
+        domain_equivalence_check(
+            left_schema_file,
+            right_schema_file,
+            metainfo_file,
+            cnf_file,
+            tasks_dump_file,
+        )
