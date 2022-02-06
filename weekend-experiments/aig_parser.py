@@ -67,6 +67,4 @@ class Parser:
         and_end = output_end + a
         self.parse_ands(lines[output_end:and_end])
 
-        # assert len(lines) == 1 + i + o + a, "Parsing anything but I, O, A is yet unsupported"
-
         return self.lit_parents, self.lit_children, self.input_to_lit, self.output_to_lit

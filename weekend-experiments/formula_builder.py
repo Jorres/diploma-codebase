@@ -40,7 +40,7 @@ def encode_not(formula, v, child, pool):
     ])
 
 
-def process_node(formula, g, name, pool, tag):
+def process_node(formula, g, name, pool):
     if name.startswith('i'):
         child = g.children[name][0]
         encode_not(formula, name, child, pool)
@@ -54,7 +54,7 @@ def make_formula_from_my_graph(g, pool):
     formula = pysat.formula.CNF()
 
     for name in g.node_names:
-        process_node(formula, g, name, pool, None)
+        process_node(formula, g, name, pool)
 
     return formula
 
@@ -73,34 +73,24 @@ def make_united_miter_from_two_graphs(g1, g2, pool):
     while p1 < len(g1.node_names) and p2 < len(g2.node_names):
         cur_ratio = (p1 + 1) / (p2 + 1)
         if cur_ratio < ratio:
-            process_node(formula, g1, g1.node_names[p1], pool, "L")
+            process_node(formula, g1, g1.node_names[p1], pool)
             p1 += 1
         else:
-            process_node(formula, g2, g2.node_names[p2], pool, "R")
+            process_node(formula, g2, g2.node_names[p2], pool)
             p2 += 1
 
     while p1 < len(g1.node_names):
-        process_node(formula, g1, g1.node_names[p1], pool, "L")
+        process_node(formula, g1, g1.node_names[p1], pool)
         p1 += 1
 
     while p2 < len(g2.node_names):
-        process_node(formula, g2, g2.node_names[p2], pool, "R")
+        process_node(formula, g2, g2.node_names[p2], pool)
         p2 += 1
     return formula
 
 
 def generate_miter_without_xor(shared_cnf, pool, g1, g2):
     assert g1.n_inputs == g2.n_inputs
-
-    # TODO re-use input variables instead of adding clauses on inputs equality
-    for input_id in range(0, g1.n_inputs):
-        # Add clauses for input equality
-        input_g1_var = g1.input_var_to_cnf_var(f"v{input_id}{g1.tag}", pool)
-        input_g2_var = g2.input_var_to_cnf_var(f"v{input_id}{g2.tag}", pool)
-
-        # EQ Tseyting encoding
-        shared_cnf.append([-1 * input_g1_var, input_g2_var])
-        shared_cnf.append([input_g1_var, -1 * input_g2_var])
     return shared_cnf
 
 
@@ -111,7 +101,6 @@ def append_xor_to_miter(shared_cnf, pool, g1, g2):
         output_code_name = f"o{output_id}"
         left_output = g1.output_var_to_cnf_var(output_code_name, pool)
         right_output = g2.output_var_to_cnf_var(output_code_name, pool)
-        print(left_output, right_output, xor_gate)
 
         # XOR Tseytin encoding
         # xorgate <=> left xor right

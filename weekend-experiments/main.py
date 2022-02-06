@@ -232,7 +232,7 @@ def naive_equivalence_check(test_path_left, test_path_right, metainfo_file, cnf_
     U.print_to_file(metainfo_file, json.dumps(metainfo, indent=4))
 
 
-def topsort_order_equivalence_check(test_path_left, test_path_right, metainfo_file):
+def check_open_xors_equivalence(test_path_left, test_path_right, metainfo_file):
     print(test_path_left, test_path_right)
     g1 = G.Graph(test_path_left, "L")
     g2 = G.Graph(test_path_right, "R")
@@ -255,7 +255,7 @@ def topsort_order_equivalence_check(test_path_left, test_path_right, metainfo_fi
 
 
 if __name__ == "__main__":
-    experiments = ["4_3", "6_4", "7_4", "8_4"]
+    experiments = ["4_3", "6_4"]
 
     for test_shortname in experiments:
         left_schema_name = f"BubbleSort_{test_shortname}"
@@ -270,7 +270,7 @@ if __name__ == "__main__":
         metainfo_file = f"./hard-instances/metainfo/{test_shortname}.txt"
         tasks_dump_file = f"./hard-instances/assumptions/{test_shortname}.txt"
 
-        # topsort_order_equivalence_check(left_schema_file, right_schema_file, metainfo_file)
+        # check_open_xors_equivalence(left_schema_file, right_schema_file, metainfo_file)
 
         # naive_equivalence_check(
         #     left_schema_file, right_schema_file, metainfo_file, cnf_naive_file

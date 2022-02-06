@@ -45,6 +45,11 @@ class Graph:
 
         self.name = filename
 
+    def shortname(self):
+        if "/" not in self.name:
+            return self.name
+        return self.name.split("/")[-1]
+
     def make_topsort(self, lit_parents, lit_children, lit_inputs):
         topsort = list()
 
@@ -83,7 +88,7 @@ class Graph:
             le = len(lit_children[lit])
             # Zero children mean simple input
             if le == 0:
-                name = f"v{last_inp}{self.tag}"
+                name = f"v{last_inp}"
                 self.node_to_depth[name] = 0
                 last_inp += 1
             # One child means inverter gate
@@ -130,7 +135,7 @@ class Graph:
 
         for i in range(self.n_inputs):
             ith_input_var = (inputs & (1 << i)) > 0
-            name = f"v{i}{self.tag}"
+            name = f"v{i}"
             result[name] = ith_input_var
 
         for name in self.node_names:
@@ -165,7 +170,7 @@ class Graph:
         for input_id in range(self.n_inputs):
             input_lit = first_free_lit
             input_lines.append(f"{input_lit}\n")
-            name_to_lit[f"v{input_id}{self.tag}"] = first_free_lit
+            name_to_lit[f"v{input_id}"] = first_free_lit
             first_free_lit += 2
 
         and_lines = list()
@@ -218,6 +223,29 @@ class Graph:
                 if left == right:
                     self.replace_node_with_other_node(parent, left, to_replace_set)
 
+    def calculate_dists_from(self, name):
+        q = [name]
+        dist = dict()
+        dist[name] = 0
+
+        visited = set()
+        visited.add(name)
+        while len(q) > 0:
+            v = q.pop(0)
+            for to in self.children[v] + self.parents[v]:
+                if to not in visited:
+                    dist[to] = dist[v] + 1
+                    q.append(to)
+                    visited.add(to)
+
+        return dist
+
+    def get_number_from_name(self, name):
+        if name.startswith("v"):
+            return name[1:]
+        else:
+            return name[1:-1]
+
     def remove_identical(self):
         # These dictionaries map children into nodes. E.g.
         # node a123 has children i100, i101, then
@@ -246,7 +274,7 @@ class Graph:
                 # Make sure i100i101 and i101i100 actually map to one node
                 # by ordering by gate_id.
                 # Also, cutting down the last character since it is usually the tag.
-                if int(left[1:-1]) > int(right[1:-1]):
+                if self.get_number_from_name(left) > self.get_number_from_name(right):
                     tmp = left
                     left = right
                     right = tmp
@@ -268,4 +296,6 @@ class Graph:
         replaced_ands = list(filter(lambda n: n.startswith("a"), to_replace))
         replaced_nots = list(filter(lambda n: n.startswith("i"), to_replace))
 
-        print(f"Removed {len(replaced_ands)}, {len(replaced_nots)} in {self.name}")
+        print(
+            f"Removed {len(replaced_ands)}, {len(replaced_nots)} in {self.shortname()}"
+        )
