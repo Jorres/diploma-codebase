@@ -5,6 +5,7 @@ import json
 import time
 import copy
 import random
+import concurrent.futures
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -69,6 +70,17 @@ def get_data_from_double_schema(left_file, right_file):
 
     return data
 
+def single_task(lname, rname, data, shared_cnf, pool):
+    solver = Solver()
+    solver.add_clauses(shared_cnf)
+
+    results, result_runtimes = calculate_pair_compatibility(
+        solver, lname, rname, pool
+    )
+
+    dist = dist_from_i[rname]
+    data.append((sum(result_runtimes), results, result_runtimes, dist))
+
 
 def get_data_from_single_schema(file):
     g = Graph(file, "L")
@@ -77,23 +89,27 @@ def get_data_from_single_schema(file):
     pool = TPoolHolder()
     shared_cnf = make_formula_from_my_graph(g, pool)
 
+    pool_size = 6
+    datas = [list() for _ in range(pool_size)]
+    shared_cnfs = [copy.deepcopy(shared_cnf) for _ in range(pool_size)]
+    threadpool = concurrent.futures.ThreadPoolExecutor(6)
 
-    data = list()
     n = len(g.node_names)
     for i in tqdm(range(n)):
         lname = g.node_names[i]
         dist_from_i = g.calculate_dists_from(lname)
         for j in range(i, n):
-            solver = Solver()
-            solver.add_clauses(shared_cnf)
             rname = g.node_names[j]
+            future = threadpool.submit(lname, rname, data, shared_cnf, poolsingle_task, ())
+            # solver = Solver()
+            # solver.add_clauses(shared_cnf)
 
-            results, result_runtimes = calculate_pair_compatibility(
-                solver, lname, rname, pool
-            )
+            # results, result_runtimes = calculate_pair_compatibility(
+            #     solver, lname, rname, pool
+            # )
 
-            dist = dist_from_i[rname]
-            data.append((sum(result_runtimes), results, result_runtimes, dist))
+            # dist = dist_from_i[rname]
+            # data.append((sum(result_runtimes), results, result_runtimes, dist))
 
     return data
 
@@ -111,12 +127,10 @@ def dump_data_into_file(data, filename):
 def collect_data_on_single():
     # specials = ["a51_stream114", "bivium-no-init_stream200", "md4_48"]
     specials = ["bivium-no-init_stream200"]
-    sorts_shortnames = ["6_4", "7_4"]
+    sorts_shortnames = ["7_4"]
     sorts = [f"BubbleSort_{x}" for x in sorts_shortnames] + [
         f"PancakeSort_{x}" for x in sorts_shortnames
     ]
-
-    print(sorts + specials)
 
     for experiment in sorts + specials:
         schema_file = f"./hard-instances/{experiment}.aag"
@@ -139,5 +153,5 @@ def collect_data_on_combined():
 
 
 if __name__ == "__main__":
-    # collect_data_on_single()
-    collect_data_on_combined()
+    collect_data_on_single()
+    # collect_data_on_combined()
