@@ -38,21 +38,12 @@ def calculate_pair_compatibility(solver, l, r, pool):
             result_runtimes.append(t2 - t1)
     return results, result_runtimes
 
-
-def get_data_from_double_schema(left_file, right_file):
-    g1 = Graph(left_file, "L")
-    g2 = Graph(right_file, "R")
-    g1.remove_identical()
-    g2.remove_identical()
-    shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
-    shared_cnf = generate_miter_without_xor(shared_cnf, pool, g1, g2)
-
-    to_be_taken_len = int(len(g1.node_names) / 100)
+def take_some_from(g1, g2, shared_cnf, pool, data):
+    to_be_taken_len = int(len(g1.node_names) / 50)
     to_be_taken = copy.deepcopy(g1.node_names)
     random.shuffle(to_be_taken)
     to_be_taken = to_be_taken[:to_be_taken_len]
 
-    data = list()
     for lname in tqdm(to_be_taken):
         for rname in g2.node_names:
             solver = Solver()
@@ -62,6 +53,20 @@ def get_data_from_double_schema(left_file, right_file):
             )
             dist = g1.node_to_depth[lname] + g2.node_to_depth[rname]
             data.append((sum(result_runtimes), results, result_runtimes, dist))
+
+def get_data_from_double_schema(left_file, right_file):
+    g1 = Graph(left_file, "L")
+    g2 = Graph(right_file, "R")
+    g1.remove_identical()
+    g2.remove_identical()
+    shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
+    shared_cnf = generate_miter_without_xor(shared_cnf, pool, g1, g2)
+
+    data = list()
+
+    take_some_from(g1, g2, shared_cnf, pool, data)
+    take_some_from(g2, g1, shared_cnf, pool, data)
+
     return data
 
 
@@ -105,8 +110,8 @@ def dump_data_into_file(data, filename):
 
 def collect_data_on_single():
     # specials = ["a51_stream114", "bivium-no-init_stream200", "md4_48"]
-    specials = []
-    sorts_shortnames = ["4_3"]
+    specials = ["bivium-no-init_stream200"]
+    sorts_shortnames = ["6_4", "7_4"]
     sorts = [f"BubbleSort_{x}" for x in sorts_shortnames] + [
         f"PancakeSort_{x}" for x in sorts_shortnames
     ]
@@ -120,7 +125,7 @@ def collect_data_on_single():
 
 
 def collect_data_on_combined():
-    experiments = ["4_3", "6_4", "7_4"]
+    experiments = ["4_3"]
 
     for test_shortname in experiments:
         left_schema_name = f"BubbleSort_{test_shortname}"
@@ -134,5 +139,5 @@ def collect_data_on_combined():
 
 
 if __name__ == "__main__":
-    collect_data_on_single()
-    # collect_data_on_combined()
+    # collect_data_on_single()
+    collect_data_on_combined()
