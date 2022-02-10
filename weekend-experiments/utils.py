@@ -41,9 +41,11 @@ def get_bit_from_domain(bitvector, gate_id):
 
 
 def prepare_shared_cnf_from_two_graphs(g1, g2):
-    pool = FB.TPoolHolder()
+    # pool = FB.TPoolHolder()
+    pool = FB.PicklablePool()
     shared_cnf = FB.make_united_miter_from_two_graphs(g1, g2, pool)
     return shared_cnf.clauses, pool
+
 
 def dump_dict(data, file):
     with open(file, "a+") as f:

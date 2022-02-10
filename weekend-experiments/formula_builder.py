@@ -13,6 +13,26 @@ class TPoolHolder():
         return self.id_pool.obj(id)
 
 
+class PicklablePool:
+    def __init__(self):
+        self.v_to_id_dict = dict()
+        self.id_to_v_dict = dict()
+        self.cnt = 1
+
+    def v_to_id(self, name):
+        if name not in self.v_to_id_dict:
+            self.v_to_id_dict[name] = self.cnt
+            self.id_to_v_dict[self.cnt] = name
+            self.cnt += 1
+
+        return self.v_to_id_dict[name]
+
+
+    def id_to_v(self, id):
+        assert id in self.id_to_v_dict
+        return self.id_to_v_dict[id]
+
+
 def encode_and(formula, v, l, r, pool):
     formula.append([
         pool.v_to_id(l),
