@@ -6,7 +6,6 @@ import json
 def print_to_file(filename, data):
     with open(filename, "a+") as f:
         f.write(data + "\n")
-    pass
 
 
 def interrupt(s):
@@ -41,8 +40,8 @@ def get_bit_from_domain(bitvector, gate_id):
 
 
 def prepare_shared_cnf_from_two_graphs(g1, g2):
-    # pool = FB.TPoolHolder()
-    pool = FB.PicklablePool()
+    pool = FB.TPoolHolder()
+    # pool = FB.PicklablePool()
     shared_cnf = FB.make_united_miter_from_two_graphs(g1, g2, pool)
     return shared_cnf.clauses, pool
 

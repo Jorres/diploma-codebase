@@ -114,7 +114,7 @@ def generate_miter_without_xor(shared_cnf, pool, g1, g2):
     return shared_cnf
 
 
-def append_xor_to_miter(shared_cnf, pool, g1, g2):
+def append_xor_to_miter(shared_cnf, pool, g1, g2, mode):
     for output_id in range(g1.n_outputs):
         # Add clause for output xor gate
         xor_gate = pool.v_to_id(f"xor_{output_id}")
@@ -129,15 +129,36 @@ def append_xor_to_miter(shared_cnf, pool, g1, g2):
         shared_cnf.append([left_output, -1 * right_output, xor_gate])
         shared_cnf.append([-1 * left_output, right_output, xor_gate])
 
-    # OR together all new xor_ variables
-    lst = []
-    for output_id in range(g1.n_outputs):
-        lst.append(pool.v_to_id(f"xor_{output_id}"))
-    shared_cnf.append(lst)
+    if mode == "or":
+        # OR together all new xor_ variables
+        lst = []
+        for output_id in range(g1.n_outputs):
+            lst.append(pool.v_to_id(f"xor_{output_id}"))
+        shared_cnf.append(lst)
+    elif mode == "stairs":
+        # construct a ladder-like structure from OR's
+        a = "xor_0"
+        for output_id in range(1, g1.n_outputs):
+            c = f"stairs_or_{output_id}"
+            b = f"xor_{output_id}"
+
+            a_var = pool.v_to_id(a)
+            b_var = pool.v_to_id(b)
+            c_var = pool.v_to_id(c)
+
+            shared_cnf.append([a_var, b_var, -1 * c_var])
+            shared_cnf.append([-1 * a_var, c_var])
+            shared_cnf.append([-1 * b_var, c_var])
+
+            a = c
+
+        shared_cnf.append([pool.v_to_id(a)])
+    else:
+        assert False
 
     return shared_cnf
 
 
-def generate_miter_scheme(shared_cnf, pool, g1, g2):
+def generate_miter_scheme(shared_cnf, pool, g1, g2, mode="or"):
     generate_miter_without_xor(shared_cnf, pool, g1, g2)
-    return append_xor_to_miter(shared_cnf, pool, g1, g2)
+    return append_xor_to_miter(shared_cnf, pool, g1, g2, mode)

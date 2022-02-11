@@ -20,54 +20,63 @@ import eq_checkers as EQ
 
 import hyperparameters as H
 import domain_preprocessing as DP
+import tree_decomposition as TD
 
 
-# Calculates a cartesian product, encodes a miter schema,
-# then iterates over the product to make sure there is UNSAT on every possible
-# combination of domain values.
-def check_for_equivalence(
-    g1,
-    g2,
-    domains_info_left,
-    domains_info_right,
-    metainfo,
-    tasks_dump_file,
-    cnf_file,
-):
-    shared_domain_info = sorted(domains_info_left + domains_info_right)
-
-    shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
-
+def extract_domains_with_saturation_one_into_cnf(cnf, pool, domains, metainfo):
     one_saturated_domains = 0
     one_defined = 0
-
-    for saturation, bucket, domain, tag in shared_domain_info:
+    for saturation, bucket, domain, tag in domains:
         if len(domain) == 1:
             one_saturated_domains += 1
             for gate_id, gate_name in enumerate(bucket):
                 bitvector = domain[0]
                 modifier = U.get_bit_from_domain(bitvector, gate_id)
-                shared_cnf.append([modifier * pool.v_to_id(gate_name)])
+                cnf.append([modifier * pool.v_to_id(gate_name)])
                 one_defined += 1
         else:
             break
-
     metainfo["one_defined"] = one_defined
     metainfo["one_saturated_domains"] = one_saturated_domains
-    shared_domain_info = shared_domain_info[one_saturated_domains:]
+    return domains[one_saturated_domains:]
 
+
+def take_domains_until_threshold(domains, metainfo, max_product_size=H.MAX_CARTESIAN_PRODUCT_SIZE):
     cartesian_size = 1
     best_domains = list()
     total_vars_in_decomp = 0
-    for (saturation, bucket, domain, tag) in shared_domain_info:
-        if cartesian_size * len(domain) > H.MAX_CARTESIAN_PRODUCT_SIZE:
+    for saturation, bucket, domain, tag in domains:
+        if cartesian_size * len(domain) > max_product_size:
             break
-        best_domains.append(domain)
+        best_domains.append((domain, bucket))
         total_vars_in_decomp += len(bucket)
         cartesian_size *= len(domain)
 
     metainfo["actual_cartesian_size"] = cartesian_size
     metainfo["total_vars_in_decomp"] = total_vars_in_decomp
+    return best_domains, cartesian_size
+
+
+# Calculates a cartesian product, encodes a miter schema,
+# then iterates over the product to make sure there is UNSAT on every possible
+# combination of domain values.
+def all_domains_at_once_equivalence(
+    g1,
+    g2,
+    domains_info_left,
+    domains_info_right,
+    metainfo,
+):
+    shared_domain_info = sorted(domains_info_left + domains_info_right)
+    shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
+
+    shared_domain_info = extract_domains_with_saturation_one_into_cnf(
+        shared_cnf, pool, shared_domain_info, metainfo)
+
+    best_domains, cartesian_size = take_domains_until_threshold(shared_domain_info, metainfo)
+
+    # strip bucket info, not needed for cartesian product calculation
+    best_domains = [x[0] for x in best_domains]
 
     # construct the cartesian product of selected domains:
     combinations = itertools.product(*best_domains)
@@ -82,12 +91,8 @@ def check_for_equivalence(
 
     final_cnf = FB.generate_miter_scheme(shared_cnf, pool, g1, g2)
 
-    final_cnf_as_formula = pysat.formula.CNF(from_clauses=final_cnf)
-    final_cnf_as_formula.to_file(cnf_file)
-
     runtimes = []
     equivalent = True
-    tasks = list()
 
     solver = Solver()
     solver.add_clauses(final_cnf)
@@ -104,7 +109,6 @@ def check_for_equivalence(
 
         for domain_id, bitvector in enumerate(combination):
             saturation, bucket, domain, tag = shared_domain_info[domain_id]
-
             assert bitvector in domain
             for gate_id, gate_name in enumerate(bucket):
                 modifier = U.get_bit_from_domain(bitvector, gate_id)
@@ -114,7 +118,6 @@ def check_for_equivalence(
         sat_on_miter, solution = solver.solve(assumptions=assumptions)
         t2 = time.time()
         runtimes.append(t2 - t1)
-        tasks.append((t2 - t1, comb_id, assumptions))
 
         if sat_on_miter:
             equivalent = False
@@ -127,12 +130,81 @@ def check_for_equivalence(
         if len(runtimes) >= i:
             metainfo["some_biggest_runtimes"].append(runtimes[-i])
 
-    with open(tasks_dump_file, "w+") as f:
-        pretty_tasks = dict()
-        pretty_tasks["tasks"] = tasks
-        f.write(json.dumps(pretty_tasks, indent=4))
-
     return equivalent
+
+
+def tree_based_equivalence(
+    g1,
+    g2,
+    domains_info_left,
+    domains_info_right,
+    metainfo,
+):
+    shared_domain_info = sorted(domains_info_left + domains_info_right)
+    shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
+
+    shared_domain_info = extract_domains_with_saturation_one_into_cnf(
+        shared_cnf, pool, shared_domain_info, metainfo)
+
+    final_cnf = FB.generate_miter_scheme(shared_cnf, pool, g1, g2)
+
+    best_domains, cartesian_size = take_domains_until_threshold(
+        shared_domain_info, metainfo, H.MAX_CARTESIAN_PRODUCT_SIZE * H.MAX_CARTESIAN_PRODUCT_SIZE)
+
+    # layer of the calculation = baskets
+    # 2 baskets can be merged into 1 basket
+    # basket stores values in form of:
+    # list(int)
+    # [499238, 2384238]
+
+    # In addition, a basket stores the gate names for the bitvectors
+    # it holds. Once.
+    # ['a100' .. 'i123'], ['a437' .. 'i900']
+
+    baskets = TD.prepare_first_layer_of_baskets(best_domains)
+    assert len(baskets) == len(best_domains)
+
+    for basket in baskets:
+        basket.debug_print()
+
+    skipped = 0
+    layer = 0
+    with PysatSolver(bootstrap_with=final_cnf) as solver:
+        while len(baskets) > 1:
+            print(f"{layer=}")
+            layer += 1
+            new_baskets = list()
+            i = 0
+            while i < len(baskets):
+                if i + 1 >= len(baskets):
+                    new_baskets.append(baskets[i])
+                    i += 1
+                else:
+                    new_basket, skipped_this_time = baskets[i].merge(baskets[i + 1], solver, pool)
+                    print(f"{skipped_this_time=}")
+                    new_baskets.append(new_basket)
+                    skipped += skipped_this_time
+                    i += 2
+            assert len(baskets) > len(new_baskets)
+            baskets = new_baskets
+
+            print('----------')
+
+            for basket in baskets:
+                basket.debug_print()
+
+        final_basket = baskets[0]
+
+        for bitvector in tqdm(final_basket.bitvectors, desc="Last bucket"):
+            assumptions = TD.bitvector_to_assumptions(
+                bitvector, final_basket.gate_names_for_bitvectors, pool)
+
+            res = solver.solve(assumptions=assumptions)
+            if res:
+                return False
+
+    metainfo['skipped'] = skipped
+    return True
 
 
 def post_sampling_calculations(
@@ -143,9 +215,7 @@ def post_sampling_calculations(
     metainfo,
     buckets_left,
     buckets_right,
-    t_start,
-    tasks_dump_file,
-    cnf_file,
+    mode
 ):
     best_domains_left, shift = DP.calculate_domain_saturations(
         g1, buckets_left, tag="L", start_from=1
@@ -153,21 +223,28 @@ def post_sampling_calculations(
     best_domains_right, _ = DP.calculate_domain_saturations(
         g2, buckets_right, tag="R", start_from=shift + 1
     )
-    result = check_for_equivalence(
-        g1,
-        g2,
-        best_domains_left,
-        best_domains_right,
-        metainfo,
-        tasks_dump_file,
-        cnf_file,
-    )
-    t_finish = time.time()
 
-    time_elapsed = str(t_finish - t_start)
+    if mode == "tree-based":
+        result = tree_based_equivalence(
+            g1,
+            g2,
+            best_domains_left,
+            best_domains_right,
+            metainfo,
+        )
+    elif mode == "all-domains-at-once":
+        result = all_domains_at_once_equivalence(
+            g1,
+            g2,
+            best_domains_left,
+            best_domains_right,
+            metainfo,
+        )
+    else:
+        assert False
+
     metainfo["left_schema"] = test_path_left
     metainfo["right_schema"] = test_path_right
-    metainfo["time"] = time_elapsed
     metainfo["outcome"] = result
     return result
 
@@ -176,8 +253,7 @@ def domain_equivalence_check(
     test_path_left,
     test_path_right,
     metainfo_file,
-    cnf_file,
-    tasks_dump_file,
+    mode
 ):
     g1 = G.Graph(test_path_left, "L")
     g2 = G.Graph(test_path_right, "R")
@@ -194,7 +270,7 @@ def domain_equivalence_check(
     buckets_right = DP.find_unbalanced_gates(g2)
     print("Unbalanced nodes found, proceeding to building domains")
 
-    metainfo["type"] = "domain"
+    metainfo["type"] = mode
 
     result = post_sampling_calculations(
         g1,
@@ -204,10 +280,12 @@ def domain_equivalence_check(
         metainfo,
         buckets_left,
         buckets_right,
-        t_start,
-        tasks_dump_file,
-        cnf_file,
+        mode
     )
+
+    t_finish = time.time()
+    time_elapsed = str(t_finish - t_start)
+    metainfo["time"] = time_elapsed
 
     U.print_to_file(metainfo_file, json.dumps(metainfo, indent=4))
 
@@ -254,9 +332,8 @@ def check_open_xors_equivalence(test_path_left, test_path_right, metainfo_file):
     U.print_to_file(metainfo_file, json.dumps(metainfo, indent=4))
 
 
-if __name__ == "__main__":
-    experiments = ["4_3", "6_4"]
-
+def main():
+    experiments = ["7_4"]
     for test_shortname in experiments:
         left_schema_name = f"BubbleSort_{test_shortname}"
         right_schema_name = f"PancakeSort_{test_shortname}"
@@ -264,22 +341,24 @@ if __name__ == "__main__":
         left_schema_file = f"./hard-instances/{left_schema_name}.aag"
         right_schema_file = f"./hard-instances/{right_schema_name}.aag"
 
-        cnf_file = f"./hard-instances/cnf/{test_shortname}.cnf"
-        cnf_naive_file = f"./hard-instances/cnf/{test_shortname}_naive.cnf"
-
         metainfo_file = f"./hard-instances/metainfo/{test_shortname}.txt"
-        tasks_dump_file = f"./hard-instances/assumptions/{test_shortname}.txt"
 
-        # check_open_xors_equivalence(left_schema_file, right_schema_file, metainfo_file)
-
-        # naive_equivalence_check(
-        #     left_schema_file, right_schema_file, metainfo_file, cnf_naive_file
+        # domain_equivalence_check(
+        #     left_schema_file,
+        #     right_schema_file,
+        #     metainfo_file,
+        #     "tree-based",
         # )
+
+        naive_equivalence_check(left_schema_file, right_schema_file, metainfo_file, None)
 
         domain_equivalence_check(
             left_schema_file,
             right_schema_file,
             metainfo_file,
-            cnf_file,
-            tasks_dump_file,
+            "all-domains-at-once"
         )
+
+
+if __name__ == "__main__":
+    main()

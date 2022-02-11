@@ -25,7 +25,25 @@ def validate_naively(g1, g2, metainfo=None, cnf_file=None):
     return not result
 
 
-def validate_with_open_xors(g1, g2, metainfo):
+def validate_naively_stairs(g1, g2, metainfo=None, cnf_file=None):
+    shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
+    final_cnf = FB.generate_miter_scheme(shared_cnf, pool, g1, g2, mode="stairs")
+    if cnf_file:
+        pysat.formula.CNF(from_clauses=final_cnf).to_file(cnf_file)
+
+    solver = Solver()
+    solver.add_clauses(final_cnf)
+
+    t1 = time.time()
+    result, solution = solver.solve()
+    t2 = time.time()
+
+    if metainfo:
+        metainfo["solver_only_time_no_preparation"] = t2 - t1
+    return not result
+
+
+def validate_with_open_xors(g1, g2, metainfo=None):
     shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
 
     solver = Solver()
@@ -49,7 +67,9 @@ def validate_with_open_xors(g1, g2, metainfo):
                 t2 = time.time()
 
                 one_xor_runtime.append(t2 - t1)
-        metainfo[f"runtimes_{output_id}"] = one_xor_runtime
+
+        if metainfo:
+            metainfo[f"runtimes_{output_id}"] = one_xor_runtime
 
         if conj_table == [True, False, False, True]:
             print(f"Output {output_id} equivalent")
