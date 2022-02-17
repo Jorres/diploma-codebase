@@ -28,14 +28,19 @@ def find_unbalancedness_for_graph_nodes(g):
             if value:
                 had_true_on_node[name] += 1
 
+
+
     # map each gate to its saturation
     # fractions : [(disbalance, gate_name)]
-    return list(
+    fractions = list(
         map(
             lambda name_cnt: (name_cnt[1] / random_sample_size, name_cnt[0]),
             had_true_on_node.items(),
         )
     )
+
+    return list(filter(lambda item: not item[1].startswith("i"), fractions))
+
 
 
 # Returns names of nodes that are unbalanced enough, based on DISBALANCE_THRESHOLD.

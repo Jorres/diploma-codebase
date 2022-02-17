@@ -333,7 +333,7 @@ def check_open_xors_equivalence(test_path_left, test_path_right, metainfo_file):
 
 
 def main():
-    experiments = ["7_4"]
+    experiments = ["6_4", "7_4"]
     for test_shortname in experiments:
         left_schema_name = f"BubbleSort_{test_shortname}"
         right_schema_name = f"PancakeSort_{test_shortname}"

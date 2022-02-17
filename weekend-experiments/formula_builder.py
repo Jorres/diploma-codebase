@@ -33,23 +33,41 @@ class PicklablePool:
         return self.id_to_v_dict[id]
 
 
-def encode_and(formula, v, l, r, pool):
+def skip_nots(g, node):
+    modifier = 1
+    while node.startswith("i"):
+        assert len(g.children[node]) == 1
+        node = g.children[node][0]
+        modifier *= -1
+    return node, modifier
+
+
+def encode_and(formula, v, l, r, g, pool):
+    l, modifier_l = skip_nots(g, l)
+    r, modifier_r = skip_nots(g, r)
+
+    l_lit = pool.v_to_id(l) * modifier_l
+    r_lit = pool.v_to_id(r) * modifier_r
+    # l_lit = pool.v_to_id(l)
+    # r_lit = pool.v_to_id(r)
+    and_lit = pool.v_to_id(v)
+
     formula.append([
-        pool.v_to_id(l),
-        -1 * pool.v_to_id(v)
+        l_lit,
+        -1 * and_lit
     ])
     formula.append([
-        pool.v_to_id(r),
-        -1 * pool.v_to_id(v)
+        r_lit,
+        -1 * and_lit
     ])
     formula.append([
-        -1 * pool.v_to_id(l),
-        -1 * pool.v_to_id(r),
-        pool.v_to_id(v)
+        -1 * l_lit,
+        -1 * r_lit,
+        and_lit
     ])
 
 
-def encode_not(formula, v, child, pool):
+def encode_output_not(formula, v, child, pool):
     formula.append([
         -1 * pool.v_to_id(v),
         -1 * pool.v_to_id(child)
@@ -61,13 +79,13 @@ def encode_not(formula, v, child, pool):
 
 
 def process_node(formula, g, name, pool):
-    if name.startswith('i'):
+    if name.startswith('i') and name in g.output_node_names:
         child = g.children[name][0]
-        encode_not(formula, name, child, pool)
+        encode_output_not(formula, name, child, pool)
 
     if name.startswith('a'):
         l, r = g.children[name]
-        encode_and(formula, name, l, r, pool)
+        encode_and(formula, name, l, r, g, pool)
 
 
 def make_formula_from_my_graph(g, pool):

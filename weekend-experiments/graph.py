@@ -38,9 +38,11 @@ class Graph:
 
         self.source_name_to_lit = name_to_lit
         self.source_lit_to_name = lit_to_name
+        self.output_node_names = set()
 
         for output_id, output_lit in enumerate(lit_outputs):
             output_name = f"o{output_id}"
+            self.output_node_names.add(lit_to_name[output_lit])
             self.output_name_to_node_name[output_name] = lit_to_name[output_lit]
 
         self.name = filename
