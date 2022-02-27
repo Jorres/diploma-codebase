@@ -8,6 +8,7 @@ import formula_builder as FB
 
 
 def validate_naively(g1, g2, metainfo=None, cnf_file=None):
+    print("hello")
     shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
     final_cnf = FB.generate_miter_scheme(shared_cnf, pool, g1, g2)
     if cnf_file:
@@ -18,6 +19,7 @@ def validate_naively(g1, g2, metainfo=None, cnf_file=None):
 
     t1 = time.time()
     result, solution = solver.solve()
+    print(result)
     t2 = time.time()
 
     if metainfo:

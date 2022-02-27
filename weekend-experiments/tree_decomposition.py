@@ -22,6 +22,28 @@ def bitvector_to_assumptions(bitvector, gate_names, pool):
     return assumptions
 
 
+def merge_baskets(baskets, solver, pool):
+    skipped = 0
+    layer = 0
+    while len(baskets) > 1:
+        layer += 1
+        new_baskets = list()
+        i = 0
+        while i < len(baskets):
+            if i + 1 >= len(baskets):
+                new_baskets.append(baskets[i])
+                i += 1
+            else:
+                new_basket, skipped_this_time = baskets[i].merge(baskets[i + 1], solver, pool)
+                new_baskets.append(new_basket)
+                skipped += skipped_this_time
+                i += 2
+        assert len(baskets) > len(new_baskets)
+        baskets = new_baskets
+
+    return baskets[0], skipped
+
+
 class Basket:
     def __init__(self, bitvectors, gate_names):
         self.bitvectors = bitvectors
@@ -61,11 +83,7 @@ class Basket:
                 if res or res is None:
                     resulting_bucket_bitvectors.append(shared_bitvector)
                 else:  # ok, UNSAT reached, skip it
-                    # print(f"skipped {shared_bitvector}")
                     skipped += 1
-                    assert not res
                     continue
-
-        # print(f"{resulting_bucket_bitvectors=} {shared_gate_names=}")
 
         return Basket.from_two_baskets(resulting_bucket_bitvectors, shared_gate_names), skipped

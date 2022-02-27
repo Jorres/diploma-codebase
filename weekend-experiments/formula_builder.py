@@ -43,13 +43,13 @@ def skip_nots(g, node):
 
 
 def encode_and(formula, v, l, r, g, pool):
-    l, modifier_l = skip_nots(g, l)
-    r, modifier_r = skip_nots(g, r)
+    # l, modifier_l = skip_nots(g, l)
+    # r, modifier_r = skip_nots(g, r)
 
-    l_lit = pool.v_to_id(l) * modifier_l
-    r_lit = pool.v_to_id(r) * modifier_r
-    # l_lit = pool.v_to_id(l)
-    # r_lit = pool.v_to_id(r)
+    # l_lit = pool.v_to_id(l) * modifier_l
+    # r_lit = pool.v_to_id(r) * modifier_r
+    l_lit = pool.v_to_id(l)
+    r_lit = pool.v_to_id(r)
     and_lit = pool.v_to_id(v)
 
     formula.append([
@@ -79,7 +79,7 @@ def encode_output_not(formula, v, child, pool):
 
 
 def process_node(formula, g, name, pool):
-    if name.startswith('i') and name in g.output_node_names:
+    if name.startswith('i'): # and name in g.output_node_names:
         child = g.children[name][0]
         encode_output_not(formula, name, child, pool)
 

@@ -124,6 +124,8 @@ def all_domains_at_once_equivalence(
             break
 
     runtimes = sorted(runtimes)
+    total_solving_runtime = sum(runtimes)
+    metainfo["solver_runtime_only"] = total_solving_runtime
     metainfo["some_biggest_runtimes"] = []
 
     for i in range(1, 4):
@@ -164,36 +166,8 @@ def tree_based_equivalence(
     baskets = TD.prepare_first_layer_of_baskets(best_domains)
     assert len(baskets) == len(best_domains)
 
-    for basket in baskets:
-        basket.debug_print()
-
-    skipped = 0
-    layer = 0
     with PysatSolver(bootstrap_with=final_cnf) as solver:
-        while len(baskets) > 1:
-            print(f"{layer=}")
-            layer += 1
-            new_baskets = list()
-            i = 0
-            while i < len(baskets):
-                if i + 1 >= len(baskets):
-                    new_baskets.append(baskets[i])
-                    i += 1
-                else:
-                    new_basket, skipped_this_time = baskets[i].merge(baskets[i + 1], solver, pool)
-                    print(f"{skipped_this_time=}")
-                    new_baskets.append(new_basket)
-                    skipped += skipped_this_time
-                    i += 2
-            assert len(baskets) > len(new_baskets)
-            baskets = new_baskets
-
-            print('----------')
-
-            for basket in baskets:
-                basket.debug_print()
-
-        final_basket = baskets[0]
+        final_basket, skipped = TD.merge_baskets(solver, baskets, pool)
 
         for bitvector in tqdm(final_basket.bitvectors, desc="Last bucket"):
             assumptions = TD.bitvector_to_assumptions(
@@ -335,13 +309,13 @@ def check_open_xors_equivalence(test_path_left, test_path_right, metainfo_file):
 def main():
     experiments = ["6_4", "7_4"]
     for test_shortname in experiments:
-        left_schema_name = f"BubbleSort_{test_shortname}"
-        right_schema_name = f"PancakeSort_{test_shortname}"
+        left_schema_name = f"PancakeSort_{test_shortname}"
+        right_schema_name = f"SelectionSort_{test_shortname}"
 
-        left_schema_file = f"./hard-instances/{left_schema_name}.aag"
-        right_schema_file = f"./hard-instances/{right_schema_name}.aag"
+        left_schema_file = f"./hard-instances/fraag/{left_schema_name}.aag"
+        right_schema_file = f"./hard-instances/fraag/{right_schema_name}.aag"
 
-        metainfo_file = f"./hard-instances/metainfo/{test_shortname}.txt"
+        metainfo_file = f"./hard-instances/metainfo/PvS_{test_shortname}.txt"
 
         # domain_equivalence_check(
         #     left_schema_file,
@@ -350,7 +324,7 @@ def main():
         #     "tree-based",
         # )
 
-        naive_equivalence_check(left_schema_file, right_schema_file, metainfo_file, None)
+        # naive_equivalence_check(left_schema_file, right_schema_file, metainfo_file, None)
 
         domain_equivalence_check(
             left_schema_file,

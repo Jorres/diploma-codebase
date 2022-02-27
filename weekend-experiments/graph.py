@@ -85,6 +85,7 @@ class Graph:
         lit_to_name = dict()
         name_to_lit = dict()
         self.node_to_depth = dict()
+        self.node_to_level = dict()
 
         for lit in topsort:
             le = len(lit_children[lit])
@@ -92,6 +93,7 @@ class Graph:
             if le == 0:
                 name = f"v{last_inp}"
                 self.node_to_depth[name] = 0
+                self.node_to_level[name] = 0
                 last_inp += 1
             # One child means inverter gate
             elif le == 1:
@@ -99,6 +101,7 @@ class Graph:
                 child = lit_to_name[lit_children[lit][0]]
                 self.add_edge(child, name)
                 self.node_to_depth[name] = self.node_to_depth[child] + 1
+                self.node_to_level[name] = self.node_to_level[child] + 1
                 last_inv += 1
             # Two children mean and gate
             elif le == 2:
@@ -111,9 +114,14 @@ class Graph:
                     max(self.node_to_depth[left_child], self.node_to_depth[right_child])
                     + 1
                 )
+                self.node_to_level[name] = (
+                    min(self.node_to_level[left_child], self.node_to_level[right_child])
+                    + 1
+                )
                 last_and += 1
             else:
                 assert False, "Graph node has wrong number of children"
+
             lit_to_name[lit] = name
             name_to_lit[name] = lit
             self.node_names.append(name)
