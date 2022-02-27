@@ -1,9 +1,5 @@
 # diploma-codebase
 
-## chain-synthesis
-
-Experiment with schema synthesis using DAG topologies.
-
 ## weekend-experiments
 
 (yes, I know, not the best name for the folder. TLDR will
@@ -26,3 +22,18 @@ any means, but if THEY fail, something is definitely way off.
 Just launch `pytest`. Tests try to cover graph parsing, equivalence checking
 and utilities.
 
+#### Entrypoint to checking equivalence: `main.py`
+
+`main` function contains a wrapper that takes source files (aags, fraags) from 
+`./weekend-experiments/hard-instances/`. Three main ways to check for equivalence:
+1. Naive way -  `naive_equivalence_check`
+2. Using tree decomposition -  `domain_equivalence_check(..., "tree-based")`
+3. Full cartesian product traversal -  `domain_equivalence_check(..., "all-domains-at-once")`
+
+All of the approaches generate JSON-reports in `./weekend-experiments/hard-instances/metainfo`, that
+contain info about runtimes, the most difficult instances, and constructed domains.
+
+
+## chain-synthesis
+
+Experiment with schema synthesis using DAG topologies. Discontinued. 
