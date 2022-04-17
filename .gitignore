@@ -24,3 +24,5 @@ cryptominisat*
 Transalg.exe
 
 data_dist
+
+*.txt
