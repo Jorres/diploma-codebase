@@ -70,8 +70,6 @@ def prepare_extract_info(
 ):
     g1 = Graph(left_schema_file, "L")
     g2 = Graph(right_schema_file, "R")
-    g1.remove_identical()
-    g2.remove_identical()
 
     metainfo = dict()
 

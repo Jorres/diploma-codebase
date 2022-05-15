@@ -50,6 +50,7 @@ def encode_and(formula, v, l, r, g, pool):
     # r_lit = pool.v_to_id(r) * modifier_r
     l_lit = pool.v_to_id(l)
     r_lit = pool.v_to_id(r)
+
     and_lit = pool.v_to_id(v)
 
     formula.append([
@@ -79,7 +80,7 @@ def encode_output_not(formula, v, child, pool):
 
 
 def process_node(formula, g, name, pool):
-    if name.startswith('i'): # and name in g.output_node_names:
+    if name.startswith('i'):
         child = g.children[name][0]
         encode_output_not(formula, name, child, pool)
 
@@ -89,7 +90,7 @@ def process_node(formula, g, name, pool):
 
 
 def make_formula_from_my_graph(g, pool):
-    formula = pysat.formula.CNF()
+    formula = pysat.formula.CNF(comment_lead='c')
 
     for name in g.node_names:
         process_node(formula, g, name, pool)
@@ -97,33 +98,14 @@ def make_formula_from_my_graph(g, pool):
     return formula
 
 
-# The trick of this function is to encode both schemas
-# more or less simultaneously, top-to-bottom. In this way
-# XOR variables in miter will be closer index-wise, this
-# may help the solver as it relies on cnf variable order.
-def make_united_miter_from_two_graphs(g1, g2, pool):
-    ratio = len(g1.node_names) / len(g2.node_names)
+def make_united_miter_from_two_graphs(g1, g2, pool=TPoolHolder()):
     formula = pysat.formula.CNF()
 
-    p1 = 0
-    p2 = 0
+    for node_name in g1.node_names:
+        process_node(formula, g1, node_name, pool)
+    for node_name in g2.node_names:
+        process_node(formula, g2, node_name, pool)
 
-    while p1 < len(g1.node_names) and p2 < len(g2.node_names):
-        cur_ratio = (p1 + 1) / (p2 + 1)
-        if cur_ratio < ratio:
-            process_node(formula, g1, g1.node_names[p1], pool)
-            p1 += 1
-        else:
-            process_node(formula, g2, g2.node_names[p2], pool)
-            p2 += 1
-
-    while p1 < len(g1.node_names):
-        process_node(formula, g1, g1.node_names[p1], pool)
-        p1 += 1
-
-    while p2 < len(g2.node_names):
-        process_node(formula, g2, g2.node_names[p2], pool)
-        p2 += 1
     return formula
 
 

@@ -71,8 +71,6 @@ def take_some_from(g1, g2, shared_cnf, pool, futures, threadpool):
 def get_data_from_double_schema(left_file, right_file):
     g1 = Graph(left_file, "L")
     g2 = Graph(right_file, "R")
-    g1.remove_identical()
-    g2.remove_identical()
     shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
     shared_cnf = generate_miter_without_xor(shared_cnf, pool, g1, g2)
 
@@ -111,7 +109,6 @@ def single_task(lname, right_nodenames, shared_cnf, pool, dist_from_i):
 
 def get_data_from_single_schema(file, experiment):
     g = Graph(file, "L")
-    g.remove_identical()
 
     pool = PicklablePool()
     shared_cnf = make_formula_from_my_graph(g, pool)

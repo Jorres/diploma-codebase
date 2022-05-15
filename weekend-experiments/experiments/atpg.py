@@ -35,8 +35,6 @@ def generate_stuck_at_faults(experiment):
     aag_filename = f"./hard-instances/fraag/{experiment}"
     g_left = Graph(aag_filename, "L")
     g_right = Graph(aag_filename, "R")
-    g_left.remove_identical()
-    g_right.remove_identical()
 
     pool = FB.TPoolHolder()
     cnf_correct = FB.make_formula_from_my_graph(g_left, pool)

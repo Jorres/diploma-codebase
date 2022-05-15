@@ -22,9 +22,6 @@ def test_two_schemas_equivalent_naively():
 
         g1 = Graph(left_schema_file, "L")
         g2 = Graph(right_schema_file, "R")
-        g1.remove_identical()
-        g2.remove_identical()
-
         assert EQ.validate_naively(g1, g2)
         assert EQ.validate_with_open_xors(g1, g2)
         assert EQ.validate_naively_stairs(g1, g2)
@@ -42,8 +39,6 @@ def test_schema_not_equivalent_to_faulty_variant():
 
         g1 = Graph(left_schema_file, "L")
         g2 = Graph(right_schema_file, "R")
-        g1.remove_identical()
-        g2.remove_identical()
 
         assert not EQ.validate_naively(g1, g2)
         assert not EQ.validate_with_open_xors(g1, g2)

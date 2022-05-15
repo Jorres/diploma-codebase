@@ -2,25 +2,32 @@ import pysat
 import time
 
 from pycryptosat import Solver
+from pysat.solvers import Maplesat as PysatSolver
+
 
 import utils as U
 import formula_builder as FB
 
 
 def validate_naively(g1, g2, metainfo=None, cnf_file=None):
-    print("hello")
     shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
     final_cnf = FB.generate_miter_scheme(shared_cnf, pool, g1, g2)
     if cnf_file:
         pysat.formula.CNF(from_clauses=final_cnf).to_file(cnf_file)
 
-    solver = Solver()
-    solver.add_clauses(final_cnf)
+    with PysatSolver(bootstrap_with=final_cnf) as solver:
+        print("Using pysat solver")
+        t1 = time.time()
+        result = solver.solve()
+        print(result)
+        t2 = time.time()
 
-    t1 = time.time()
-    result, solution = solver.solve()
-    print(result)
-    t2 = time.time()
+    # solver = Solver()
+    # solver.add_clauses(final_cnf)
+
+    # t1 = time.time()
+    # result, solution = solver.solve()
+    # t2 = time.time()
 
     if metainfo:
         metainfo["solver_only_time_no_preparation"] = t2 - t1

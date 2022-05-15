@@ -22,8 +22,6 @@ import utils as U
 def check_pairs_in_2m_schema(left_file, right_file, metainfo_file):
     g1 = Graph(left_file, "L")
     g2 = Graph(right_file, "R")
-    g1.remove_identical()
-    g2.remove_identical()
     shared_cnf, pool = U.prepare_shared_cnf_from_two_graphs(g1, g2)
     shared_cnf = generate_miter_without_xor(shared_cnf, pool, g1, g2)
 

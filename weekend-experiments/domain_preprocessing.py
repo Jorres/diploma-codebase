@@ -49,14 +49,9 @@ def find_unbalanced_gates(g):
 
     fractions = list(filter(lambda a: not a[1].startswith("i"), fractions))
 
-    # filter the gates that are unbalanced enough
-    unbalanced = list(
-        filter(
-            lambda p: p[0] < H.DISBALANCE_THRESHOLD
-            or p[0] > (1 - H.DISBALANCE_THRESHOLD),
-            fractions,
-        )
-    )
+    fractions = list(sorted(fractions))
+
+    unbalanced = fractions
 
     unbalanced_gates = list(map(lambda p: p[1], unbalanced))
 
